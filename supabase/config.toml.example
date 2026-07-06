@@ -1,0 +1,6 @@
+# Fragmento para tu supabase/config.toml (o config del proyecto con `supabase init`).
+# El hook de correo llama a la función SIN JWT de usuario, así que debe ir sin
+# verificación de JWT.
+
+[functions.send-email]
+verify_jwt = false

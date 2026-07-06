@@ -1,0 +1,56 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'driver_requests_screen.dart';
+import 'driver_trips_screen.dart';
+import '../profile/profile_screen.dart';
+
+/// Contenedor principal del conductor con navegación inferior.
+class DriverShell extends ConsumerStatefulWidget {
+  const DriverShell({super.key});
+
+  @override
+  ConsumerState<DriverShell> createState() => _DriverShellState();
+}
+
+class _DriverShellState extends ConsumerState<DriverShell> {
+  int _index = 0;
+
+  static const _tabs = [
+    DriverRequestsScreen(),
+    DriverTripsScreen(),
+    ProfileScreen(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        bottom: false,
+        child: IndexedStack(index: _index, children: _tabs),
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _index,
+        onDestinationSelected: (i) => setState(() => _index = i),
+        height: 68,
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.notifications_none_rounded),
+            selectedIcon: Icon(Icons.notifications_rounded),
+            label: 'Solicitudes',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.route_outlined),
+            selectedIcon: Icon(Icons.route_rounded),
+            label: 'Mis viajes',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline_rounded),
+            selectedIcon: Icon(Icons.person_rounded),
+            label: 'Perfil',
+          ),
+        ],
+      ),
+    );
+  }
+}
