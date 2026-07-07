@@ -1,0 +1,21 @@
+# Dependencias
+node_modules
+.pnp
+.pnp.js
+
+# Build
+dist
+dist-ssr
+*.local
+
+# Entorno
+.env
+.env.*
+!.env.example
+
+# Editor / SO
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+*.log
+npm-debug.log*

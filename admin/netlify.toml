@@ -1,0 +1,23 @@
+# Configuración de despliegue en Netlify para el panel de administración.
+# La base apunta a esta carpeta (admin/) por si el sitio se conecta al monorepo.
+[build]
+  base = "admin"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA: todas las rutas se sirven desde index.html (React Router).
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Cabeceras de seguridad razonables.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
