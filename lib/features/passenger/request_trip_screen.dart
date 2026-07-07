@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../../core/config/app_config.dart';
+import '../../core/constants/chilean_cities.dart';
 import '../../core/router/routes.dart';
+import '../../core/services/geo_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/formatters.dart';
-import '../../core/utils/validators.dart';
 import '../../data/providers.dart';
 import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/app_text_field.dart';
 import '../../shared/widgets/city_picker.dart';
+import '../../shared/widgets/map/location_picker_screen.dart';
+import '../../shared/widgets/map/route_map.dart';
 import '../../shared/widgets/primary_button.dart';
 import '../../shared/widgets/surface_card.dart';
 import '../trips/trip_controller.dart';
@@ -25,11 +29,11 @@ class RequestTripScreen extends ConsumerStatefulWidget {
 
 class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _origin = TextEditingController();
-  final _destination = TextEditingController();
   final _note = TextEditingController();
 
   String? _city;
+  GeoPlace? _origin;
+  GeoPlace? _destination;
   int _fare = 2500;
   int _passengers = 1;
   bool _submitting = false;
@@ -42,8 +46,6 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
 
   @override
   void dispose() {
-    _origin.dispose();
-    _destination.dispose();
     _note.dispose();
     super.dispose();
   }
@@ -54,18 +56,56 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
     });
   }
 
+  LatLng get _cityCenter {
+    final c = cityByName(_city);
+    return LatLng(c.lat, c.lng);
+  }
+
+  Future<void> _pickOrigin() async {
+    final place = await LocationPickerScreen.show(
+      context,
+      title: 'punto de partida',
+      accentColor: AppColors.brand,
+      initialCenter: _origin?.latLng ?? _cityCenter,
+      initialPlace: _origin,
+      confirmLabel: 'Confirmar origen',
+    );
+    if (place != null) setState(() => _origin = place);
+  }
+
+  Future<void> _pickDestination() async {
+    final place = await LocationPickerScreen.show(
+      context,
+      title: 'destino',
+      accentColor: AppColors.danger,
+      initialCenter: _destination?.latLng ?? _origin?.latLng ?? _cityCenter,
+      initialPlace: _destination,
+      confirmLabel: 'Confirmar destino',
+    );
+    if (place != null) setState(() => _destination = place);
+  }
+
   Future<void> _publish() async {
     if (!_formKey.currentState!.validate()) return;
     if (_city == null) {
       AppFeedback.error(context, 'Selecciona la ciudad del viaje');
       return;
     }
+    if (_origin == null || _destination == null) {
+      AppFeedback.error(context, 'Marca el origen y el destino en el mapa');
+      return;
+    }
     setState(() => _submitting = true);
     try {
       final trip = await ref.read(tripActionsProvider).createTrip(
             city: _city!,
-            originAddress: _origin.text.trim(),
-            destinationAddress: _destination.text.trim(),
+            originAddress: _origin!.shortName ?? _origin!.address,
+            destinationAddress:
+                _destination!.shortName ?? _destination!.address,
+            originLat: _origin!.lat,
+            originLng: _origin!.lng,
+            destinationLat: _destination!.lat,
+            destinationLng: _destination!.lng,
             offeredFare: _fare,
             note: _note.text.trim().isEmpty ? null : _note.text.trim(),
             passengers: _passengers,
@@ -101,36 +141,40 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            AppTextField(
-                              label: 'Punto de partida',
-                              hint: 'Ej: Metro Los Héroes',
-                              controller: _origin,
-                              icon: Icons.trip_origin_rounded,
-                              textCapitalization: TextCapitalization.sentences,
-                              textInputAction: TextInputAction.next,
-                              validator: (v) =>
-                                  Validators.required(v, field: 'El origen'),
-                            ),
-                            const SizedBox(height: 16),
-                            AppTextField(
-                              label: 'Destino',
-                              hint: 'Ej: Costanera Center',
-                              controller: _destination,
-                              icon: Icons.location_on_rounded,
-                              textCapitalization: TextCapitalization.sentences,
-                              textInputAction: TextInputAction.next,
-                              validator: (v) => Validators.required(v,
-                                  field: 'El destino'),
-                            ),
-                            const SizedBox(height: 16),
                             CitySelectorField(
                               label: 'Ciudad',
                               value: _city,
                               onChanged: (v) => setState(() => _city = v),
                             ),
+                            const SizedBox(height: 18),
+                            _LocationField(
+                              label: 'Punto de partida',
+                              hint: 'Toca para elegir en el mapa',
+                              icon: Icons.trip_origin_rounded,
+                              iconColor: AppColors.brand,
+                              place: _origin,
+                              onTap: _pickOrigin,
+                            ),
+                            const SizedBox(height: 12),
+                            _LocationField(
+                              label: 'Destino',
+                              hint: 'Toca para elegir en el mapa',
+                              icon: Icons.location_on_rounded,
+                              iconColor: AppColors.danger,
+                              place: _destination,
+                              onTap: _pickDestination,
+                            ),
                           ],
                         ),
                       ),
+                      if (_origin != null && _destination != null) ...[
+                        const SizedBox(height: 16),
+                        RouteMap(
+                          origin: _origin!.latLng,
+                          destination: _destination!.latLng,
+                          onTap: _pickDestination,
+                        ),
+                      ],
                       const SizedBox(height: 20),
                       Text('Tu oferta',
                           style: Theme.of(context).textTheme.titleLarge),
@@ -200,6 +244,104 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Campo tipo selector que abre el mapa para elegir una ubicación.
+class _LocationField extends StatelessWidget {
+  const _LocationField({
+    required this.label,
+    required this.hint,
+    required this.icon,
+    required this.iconColor,
+    required this.place,
+    required this.onTap,
+  });
+
+  final String label;
+  final String hint;
+  final IconData icon;
+  final Color iconColor;
+  final GeoPlace? place;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final selected = place != null;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                color: context.palette.textSecondary,
+                fontWeight: FontWeight.w600,
+              ),
+        ),
+        const SizedBox(height: 8),
+        Material(
+          color: context.palette.surfaceAlt,
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: iconColor.withValues(alpha: 0.14),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(icon, size: 18, color: iconColor),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          selected
+                              ? (place!.shortName ??
+                                  place!.address.split(',').first)
+                              : hint,
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                color: selected
+                                    ? null
+                                    : context.palette.textMuted,
+                                fontWeight:
+                                    selected ? FontWeight.w600 : FontWeight.w400,
+                              ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (selected)
+                          Text(
+                            place!.address,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(color: context.palette.textSecondary),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    selected ? Icons.edit_location_alt_rounded : Icons.map_rounded,
+                    size: 20,
+                    color: context.palette.textMuted,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -12,6 +12,10 @@ class Trip {
     required this.offeredFare,
     required this.status,
     required this.createdAt,
+    this.originLat,
+    this.originLng,
+    this.destinationLat,
+    this.destinationLng,
     this.note,
     this.passengers = 1,
     this.driverId,
@@ -32,6 +36,13 @@ class Trip {
   final int offeredFare;
   final TripStatus status;
   final DateTime createdAt;
+
+  /// Coordenadas opcionales de origen/destino (para mostrar mapa y ruta).
+  final double? originLat;
+  final double? originLng;
+  final double? destinationLat;
+  final double? destinationLng;
+
   final String? note;
   final int passengers;
   final String? driverId;
@@ -46,6 +57,15 @@ class Trip {
   final bool driverRated;
 
   int get displayFare => finalFare ?? offeredFare;
+
+  /// Verdadero si el viaje tiene coordenadas de origen y destino para mostrar
+  /// el mapa de la ruta.
+  bool get hasRoute =>
+      originLat != null &&
+      originLng != null &&
+      destinationLat != null &&
+      destinationLng != null;
+
   bool get isActive =>
       status == TripStatus.accepted || status == TripStatus.inProgress;
   bool get isOpen => status == TripStatus.requested;
@@ -70,6 +90,10 @@ class Trip {
       offeredFare: offeredFare,
       status: status ?? this.status,
       createdAt: createdAt,
+      originLat: originLat,
+      originLng: originLng,
+      destinationLat: destinationLat,
+      destinationLng: destinationLng,
       note: note,
       passengers: passengers,
       driverId: driverId ?? this.driverId,
@@ -94,6 +118,10 @@ class Trip {
       status: TripStatus.fromString(map['status'] as String?),
       createdAt: DateTime.tryParse(map['created_at']?.toString() ?? '') ??
           DateTime.fromMillisecondsSinceEpoch(0),
+      originLat: (map['origin_lat'] as num?)?.toDouble(),
+      originLng: (map['origin_lng'] as num?)?.toDouble(),
+      destinationLat: (map['destination_lat'] as num?)?.toDouble(),
+      destinationLng: (map['destination_lng'] as num?)?.toDouble(),
       note: map['note'] as String?,
       passengers: (map['passengers'] as num?)?.toInt() ?? 1,
       driverId: map['driver_id'] as String?,
@@ -106,7 +134,11 @@ class Trip {
         'passenger_id': passengerId,
         'city': city,
         'origin_address': originAddress,
+        'origin_lat': originLat,
+        'origin_lng': originLng,
         'destination_address': destinationAddress,
+        'destination_lat': destinationLat,
+        'destination_lng': destinationLng,
         'offered_fare': offeredFare,
         'note': note,
         'passengers': passengers,

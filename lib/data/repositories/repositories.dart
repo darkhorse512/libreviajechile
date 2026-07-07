@@ -87,6 +87,10 @@ abstract class TripRepository {
     required String originAddress,
     required String destinationAddress,
     required int offeredFare,
+    double? originLat,
+    double? originLng,
+    double? destinationLat,
+    double? destinationLng,
     String? note,
     int passengers,
   });

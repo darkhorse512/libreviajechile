@@ -131,6 +131,10 @@ class DemoTripRepository implements TripRepository {
     required String originAddress,
     required String destinationAddress,
     required int offeredFare,
+    double? originLat,
+    double? originLng,
+    double? destinationLat,
+    double? destinationLng,
     String? note,
     int passengers = 1,
   }) {
@@ -143,6 +147,10 @@ class DemoTripRepository implements TripRepository {
       offeredFare: offeredFare,
       status: TripStatus.requested,
       createdAt: DateTime.now(),
+      originLat: originLat,
+      originLng: originLng,
+      destinationLat: destinationLat,
+      destinationLng: destinationLng,
       note: note,
       passengers: passengers,
     );

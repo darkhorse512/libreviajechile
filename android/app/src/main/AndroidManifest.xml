@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Necesario para Supabase (auth, base de datos, realtime). -->
+    <!-- Necesario para Supabase (auth, base de datos, realtime) y mapas OSM. -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Ubicación GPS opcional para elegir origen/destino en el mapa. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <application
         android:label="Libre Viaje Chile"
         android:name="${applicationName}"

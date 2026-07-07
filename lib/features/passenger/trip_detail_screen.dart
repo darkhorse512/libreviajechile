@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
@@ -11,6 +12,7 @@ import '../../data/models/trip.dart';
 import '../../data/providers.dart';
 import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/empty_state.dart';
+import '../../shared/widgets/map/route_map.dart';
 import '../../shared/widgets/primary_button.dart';
 import '../../shared/widgets/surface_card.dart';
 import '../../shared/widgets/user_avatar.dart';
@@ -130,6 +132,18 @@ class _TripBody extends ConsumerWidget {
       children: [
         _StatusBanner(trip: trip),
         const SizedBox(height: 16),
+        if (trip.hasRoute) ...[
+          RouteMap(
+            origin: LatLng(trip.originLat!, trip.originLng!),
+            destination: LatLng(trip.destinationLat!, trip.destinationLng!),
+            onTap: () => RouteMapScreen.show(
+              context,
+              origin: LatLng(trip.originLat!, trip.originLng!),
+              destination: LatLng(trip.destinationLat!, trip.destinationLng!),
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
         SurfaceCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

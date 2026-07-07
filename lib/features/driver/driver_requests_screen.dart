@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/formatters.dart';
 import '../../data/models/app_user.dart';
+import '../../data/models/enums.dart';
+import '../../data/models/offer.dart';
 import '../../data/models/trip.dart';
 import '../../data/providers.dart';
+import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/empty_state.dart';
+import '../../shared/widgets/map/route_map.dart';
 import '../../shared/widgets/surface_card.dart';
 import '../../shared/widgets/theme_toggle_button.dart';
 import '../../shared/widgets/user_avatar.dart';
+import '../trips/trip_controller.dart';
 import '../trips/widgets/trip_widgets.dart';
 import 'offer_sheet.dart';
 
@@ -167,15 +173,22 @@ class _RequestsFeed extends ConsumerWidget {
             message: 'Cuando un pasajero cercano solicite un viaje, aparecerá aquí al instante.',
           );
         }
+        // Ofertas pendientes del conductor, indexadas por viaje.
+        final myOffers = {
+          for (final o in ref.watch(driverOffersProvider(user.id)).valueOrNull ??
+              const <Offer>[])
+            if (o.status == OfferStatus.pending) o.tripId: o,
+        };
         return ListView.separated(
           padding: const EdgeInsets.fromLTRB(
               AppSpacing.xl, 0, AppSpacing.xl, AppSpacing.xl),
           itemCount: trips.length,
           separatorBuilder: (_, __) => const SizedBox(height: 12),
-          itemBuilder: (_, i) => _RequestCard(trip: trips[i], driver: user)
-              .animate()
-              .fadeIn(duration: 300.ms)
-              .slideY(begin: 0.08),
+          itemBuilder: (_, i) =>
+              _RequestCard(trip: trips[i], myOffer: myOffers[trips[i].id])
+                  .animate()
+                  .fadeIn(duration: 300.ms)
+                  .slideY(begin: 0.08),
         );
       },
     );
@@ -183,16 +196,22 @@ class _RequestsFeed extends ConsumerWidget {
 }
 
 class _RequestCard extends ConsumerWidget {
-  const _RequestCard({required this.trip, required this.driver});
+  const _RequestCard({required this.trip, this.myOffer});
   final Trip trip;
-  final AppUser driver;
+  final Offer? myOffer;
+
+  Future<void> _withdraw(BuildContext context, WidgetRef ref) async {
+    await ref.read(tripActionsProvider).withdrawOffer(myOffer!.id);
+    if (context.mounted) AppFeedback.info(context, 'Oferta retirada');
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final passenger = trip.passenger;
+    final offered = myOffer != null;
     return SurfaceCard(
       elevated: true,
-      onTap: () => showOfferSheet(context, trip: trip),
+      onTap: offered ? null : () => showOfferSheet(context, trip: trip),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -228,6 +247,15 @@ class _RequestCard extends ConsumerWidget {
             destination: trip.destinationAddress,
             compact: true,
           ),
+          if (trip.hasRoute) ...[
+            const SizedBox(height: 12),
+            RouteMap(
+              origin: LatLng(trip.originLat!, trip.originLng!),
+              destination: LatLng(trip.destinationLat!, trip.destinationLng!),
+              height: 140,
+              onTap: offered ? null : () => showOfferSheet(context, trip: trip),
+            ),
+          ],
           if (trip.note != null && trip.note!.isNotEmpty) ...[
             const SizedBox(height: 10),
             Row(
@@ -266,19 +294,42 @@ class _RequestCard extends ConsumerWidget {
                           fontWeight: FontWeight.w800,
                         )),
                 const Spacer(),
-                Row(
-                  children: [
-                    Text('Responder',
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                              color: AppColors.brand,
-                            )),
-                    const Icon(Icons.arrow_forward_rounded,
-                        size: 18, color: AppColors.brand),
-                  ],
-                ),
+                if (!offered)
+                  Row(
+                    children: [
+                      Text('Responder',
+                          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                color: AppColors.brand,
+                              )),
+                      const Icon(Icons.arrow_forward_rounded,
+                          size: 18, color: AppColors.brand),
+                    ],
+                  ),
               ],
             ),
           ),
+          if (offered) ...[
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: InfoPill(
+                    label:
+                        'Ofertaste ${Formatters.clp(myOffer!.amount)} · pendiente',
+                    icon: Icons.hourglass_top_rounded,
+                    color: AppColors.accent,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                TextButton.icon(
+                  onPressed: () => _withdraw(context, ref),
+                  icon: const Icon(Icons.undo_rounded, size: 16),
+                  label: const Text('Retirar'),
+                  style: TextButton.styleFrom(foregroundColor: AppColors.danger),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );

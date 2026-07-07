@@ -6,6 +6,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_controller.dart';
 import '../../data/models/enums.dart';
 import '../../data/providers.dart';
+import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/surface_card.dart';
 import '../../shared/widgets/user_avatar.dart';
 import 'edit_profile_screen.dart';
@@ -192,12 +193,12 @@ class ProfileScreen extends ConsumerWidget {
               _MenuTile(
                 icon: Icons.help_outline_rounded,
                 label: 'Ayuda y soporte',
-                onTap: () {},
+                onTap: () => AppFeedback.info(context, 'Disponible próximamente'),
               ),
               _MenuTile(
                 icon: Icons.shield_outlined,
                 label: 'Privacidad y términos',
-                onTap: () {},
+                onTap: () => AppFeedback.info(context, 'Disponible próximamente'),
               ),
               _MenuTile(
                 icon: Icons.logout_rounded,
