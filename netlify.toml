@@ -1,7 +1,8 @@
-# Configuración usada cuando Netlify ya está posicionado en admin/ (por ejemplo
-# si defines "Base directory = admin" en la UI). NO lleva `base` para no
-# apuntar a sí mismo. La configuración raíz (../netlify.toml) es la principal.
+# Configuración de Netlify para el monorepo.
+# El sitio (panel de administración) vive en la carpeta admin/.
+# Netlify entra a `base`, ejecuta el build ahí y publica `base/publish`.
 [build]
+  base = "admin"
   command = "npm run build"
   publish = "dist"
 
