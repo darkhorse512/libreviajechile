@@ -46,16 +46,23 @@ class SupabaseAuthRepository implements AuthRepository {
         return null;
       }
       Vehicle? vehicle;
+      Map<String, dynamic>? driver;
       if (UserRole.fromString(profile['role'] as String?) == UserRole.driver) {
-        final v = await _client
+        driver = await _client
             .from('driver_details')
             .select()
             .eq('id', authUser.id)
             .maybeSingle();
-        if (v != null) vehicle = Vehicle.fromMap(v);
+        if (driver != null) vehicle = Vehicle.fromMap(driver);
       }
       final merged = {
         ...profile,
+        // Los campos de conductor (estado en línea / verificación) viven en
+        // driver_details; se fusionan aquí para que AppUser los refleje.
+        if (driver != null) ...{
+          'is_online': driver['is_online'],
+          'is_verified': driver['is_verified'],
+        },
         'email': authUser.email,
       };
       _cached = AppUser.fromMap(merged, vehicle: vehicle);
@@ -85,8 +92,8 @@ class SupabaseAuthRepository implements AuthRepository {
     required String fullName,
     required String email,
     required String phone,
-    required String city,
     required String password,
+    String? city,
   }) {
     return _register(
       role: UserRole.passenger,
@@ -123,8 +130,8 @@ class SupabaseAuthRepository implements AuthRepository {
     required String fullName,
     required String email,
     required String phone,
-    required String city,
     required String password,
+    String? city,
     Vehicle? vehicle,
   }) async {
     try {
@@ -222,6 +229,10 @@ class SupabaseAuthRepository implements AuthRepository {
     await _client
         .from('driver_details')
         .update({'is_online': online}).eq('id', driverId);
+    // Mantén el usuario cacheado en sincronía con el cambio.
+    if (_cached != null && _cached!.id == driverId) {
+      _cached = _cached!.copyWith(isOnline: online);
+    }
   }
 
   String _translate(String message) {

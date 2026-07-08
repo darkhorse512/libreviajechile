@@ -28,12 +28,14 @@ abstract class AuthRepository {
 
   Future<AppUser> signIn({required String email, required String password});
 
+  /// Registra un pasajero. La ciudad es opcional: el pasajero puede pedir
+  /// viajes en cualquier ciudad y la elige al momento de solicitar el viaje.
   Future<RegisterResult> registerPassenger({
     required String fullName,
     required String email,
     required String phone,
-    required String city,
     required String password,
+    String? city,
   });
 
   Future<RegisterResult> registerDriver({

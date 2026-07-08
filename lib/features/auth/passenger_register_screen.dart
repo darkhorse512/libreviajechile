@@ -8,7 +8,6 @@ import '../../core/theme/app_theme.dart';
 import '../../core/utils/validators.dart';
 import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/app_text_field.dart';
-import '../../shared/widgets/city_picker.dart';
 import '../../shared/widgets/error_banner.dart';
 import '../../shared/widgets/primary_button.dart';
 import 'auth_controller.dart';
@@ -29,7 +28,6 @@ class _PassengerRegisterScreenState
   final _email = TextEditingController();
   final _phone = TextEditingController();
   final _password = TextEditingController();
-  String? _city;
   bool _accepted = false;
 
   @override
@@ -43,10 +41,6 @@ class _PassengerRegisterScreenState
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_city == null) {
-      AppFeedback.error(context, 'Selecciona tu ciudad');
-      return;
-    }
     if (!_accepted) {
       AppFeedback.error(context, 'Debes aceptar los términos y condiciones');
       return;
@@ -57,7 +51,6 @@ class _PassengerRegisterScreenState
               fullName: _name.text.trim(),
               email: _email.text.trim(),
               phone: _phone.text.trim(),
-              city: _city!,
               password: _password.text,
             );
     if (result != null && result.needsVerification && mounted) {
@@ -86,7 +79,8 @@ class _PassengerRegisterScreenState
                   icon: Icons.airline_seat_recline_normal_rounded,
                   color: AppColors.brand,
                   title: 'Crea tu cuenta de pasajero',
-                  subtitle: 'Solo necesitamos unos datos para empezar.',
+                  subtitle:
+                      'Pide viajes en cualquier ciudad de Chile. Eliges el lugar al solicitar cada viaje.',
                 ),
                 const SizedBox(height: 28),
                 AppTextField(
@@ -117,11 +111,6 @@ class _PassengerRegisterScreenState
                   keyboardType: TextInputType.phone,
                   textInputAction: TextInputAction.next,
                   validator: Validators.phone,
-                ),
-                const SizedBox(height: 18),
-                CitySelectorField(
-                  value: _city,
-                  onChanged: (v) => setState(() => _city = v),
                 ),
                 const SizedBox(height: 18),
                 AppTextField(

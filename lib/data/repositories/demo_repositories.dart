@@ -30,8 +30,8 @@ class DemoAuthRepository implements AuthRepository {
     required String fullName,
     required String email,
     required String phone,
-    required String city,
     required String password,
+    String? city,
   }) async {
     final user = AppUser(
       id: _id(),

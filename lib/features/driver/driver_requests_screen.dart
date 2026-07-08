@@ -24,8 +24,27 @@ import 'offer_sheet.dart';
 class DriverRequestsScreen extends ConsumerWidget {
   const DriverRequestsScreen({super.key});
 
-  Future<void> _toggleOnline(WidgetRef ref, AppUser user, bool value) async {
-    await ref.read(authRepositoryProvider).setOnline(user.id, value);
+  Future<void> _setOnline(
+      BuildContext context, WidgetRef ref, AppUser user, bool value) async {
+    final notifier = ref.read(currentUserProvider.notifier);
+    // Actualización optimista: la UI refleja el cambio al instante.
+    notifier.update(user.copyWith(isOnline: value));
+    try {
+      await ref.read(authRepositoryProvider).setOnline(user.id, value);
+      if (context.mounted) {
+        value
+            ? AppFeedback.success(
+                context, 'Estás en línea. Empezarás a recibir solicitudes.')
+            : AppFeedback.info(context, 'Te desconectaste.');
+      }
+    } catch (_) {
+      // Revierte si falla y avisa al usuario.
+      notifier.update(user.copyWith(isOnline: !value));
+      if (context.mounted) {
+        AppFeedback.error(
+            context, 'No pudimos actualizar tu estado. Revisa tu conexión.');
+      }
+    }
   }
 
   @override
@@ -63,7 +82,7 @@ class DriverRequestsScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(AppSpacing.xl),
           child: _OnlineToggle(
             online: user.isOnline,
-            onChanged: (v) => _toggleOnline(ref, user, v),
+            onChanged: (v) => _setOnline(context, ref, user, v),
           ),
         ),
         Expanded(
@@ -84,7 +103,9 @@ class _OnlineToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = online ? AppColors.success : context.palette.textMuted;
-    return AnimatedContainer(
+    return GestureDetector(
+      onTap: () => onChanged(!online),
+      child: AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -123,7 +144,7 @@ class _OnlineToggle extends StatelessWidget {
                 Text(
                   online
                       ? 'Recibiendo solicitudes cercanas'
-                      : 'Conéctate para recibir viajes',
+                      : 'Ponte en línea para recibir solicitudes',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: context.palette.textSecondary,
                       ),
@@ -131,8 +152,10 @@ class _OnlineToggle extends StatelessWidget {
               ],
             ),
           ),
-          Switch(value: online, onChanged: onChanged),
+          // El tap se maneja en toda la tarjeta; el switch es indicador visual.
+          IgnorePointer(child: Switch(value: online, onChanged: onChanged)),
         ],
+      ),
       ),
     );
   }

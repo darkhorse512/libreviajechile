@@ -47,8 +47,8 @@ class AuthFormController extends StateNotifier<AuthFormState> {
     required String fullName,
     required String email,
     required String phone,
-    required String city,
     required String password,
+    String? city,
   }) =>
       _run(() => _repo.registerPassenger(
             fullName: fullName,
