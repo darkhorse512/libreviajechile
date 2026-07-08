@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/config/app_config.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_controller.dart';
@@ -211,7 +212,7 @@ class ProfileScreen extends ConsumerWidget {
         ),
         const SizedBox(height: 24),
         Center(
-          child: Text('Libre Viaje Chile · v0.1.0',
+          child: Text('Libre Viaje Chile · v${AppConfig.appVersion}',
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: context.palette.textMuted,
                   )),

@@ -3,6 +3,10 @@ abstract class AppConfig {
   static const String appName = 'Libre Viaje Chile';
   static const String tagline = 'Viaja libre. Llega lejos.';
 
+  /// Versión visible de la app (debe coincidir con `version:` en pubspec.yaml).
+  /// Sirve para confirmar de un vistazo qué build está instalado.
+  static const String appVersion = '0.2.0 (build 2)';
+
   /// Tarifa mínima que un pasajero puede ofrecer (CLP).
   static const int minFareClp = 1500;
 
