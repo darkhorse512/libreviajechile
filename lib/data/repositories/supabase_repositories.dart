@@ -3,6 +3,7 @@ import 'dart:async';
 // Ocultamos la AuthException de gotrue para usar la nuestra (repositories.dart).
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 
+import '../../core/constants/chilean_cities.dart';
 import '../models/app_user.dart';
 import '../models/enums.dart';
 import '../models/offer.dart';
@@ -300,14 +301,23 @@ class SupabaseTripRepository implements TripRepository {
   }
 
   @override
-  Stream<List<Trip>> watchOpenTrips(String city) {
+  Stream<List<Trip>> watchOpenTrips(DriverArea area) {
     return _client
         .from('trips')
         .stream(primaryKey: ['id'])
         .eq('status', 'requested')
         .order('created_at')
         .asyncMap((rows) => _hydrateTrips(
-              rows.where((r) => r['city'] == city).toList(),
+              rows
+                  .where((r) => tripInDriverArea(
+                        tripLat: (r['origin_lat'] as num?)?.toDouble(),
+                        tripLng: (r['origin_lng'] as num?)?.toDouble(),
+                        tripCity: (r['city'] as String?) ?? '',
+                        refLat: area.lat,
+                        refLng: area.lng,
+                        refCity: area.city,
+                      ))
+                  .toList(),
             ));
   }
 

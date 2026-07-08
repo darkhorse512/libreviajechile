@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 /// Ciudades/comunas principales de Chile para el selector de ciudad del MVP.
 /// Ordenadas de norte a sur por región.
 class ChileanCity {
@@ -67,4 +69,55 @@ ChileanCity cityByName(String? name) {
     if (c.name == name) return c;
   }
   return kChileanCities[13];
+}
+
+/// Región asociada a una ciudad (o null si no está en la lista).
+String? regionByCity(String? name) {
+  if (name == null) return null;
+  for (final c in kChileanCities) {
+    if (c.name == name) return c.region;
+  }
+  return null;
+}
+
+String _normCity(String? s) => (s ?? '').trim().toLowerCase();
+
+/// Distancia aproximada en kilómetros entre dos coordenadas (fórmula de
+/// Haversine). Suficiente para decidir si un viaje está "cerca" del conductor.
+double distanceKm(double lat1, double lng1, double lat2, double lng2) {
+  const earthRadiusKm = 6371.0;
+  double toRad(double d) => d * math.pi / 180.0;
+  final dLat = toRad(lat2 - lat1);
+  final dLng = toRad(lng2 - lng1);
+  final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+      math.cos(toRad(lat1)) *
+          math.cos(toRad(lat2)) *
+          math.sin(dLng / 2) *
+          math.sin(dLng / 2);
+  return earthRadiusKm * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+}
+
+/// Decide si un viaje debe aparecer en el feed de un conductor.
+///
+/// Prioriza la **cercanía geográfica** (usando el origen del viaje y el punto
+/// de referencia del conductor). Si el viaje no tiene coordenadas (datos
+/// antiguos), cae a coincidencia por **región** y, en último caso, por nombre
+/// de ciudad. Esto evita que un pasajero y un conductor de la misma zona no se
+/// encuentren solo por haber elegido comunas distintas.
+bool tripInDriverArea({
+  double? tripLat,
+  double? tripLng,
+  required String tripCity,
+  required double refLat,
+  required double refLng,
+  String? refCity,
+  double radiusKm = 60,
+}) {
+  if (tripLat != null && tripLng != null) {
+    return distanceKm(refLat, refLng, tripLat, tripLng) <= radiusKm;
+  }
+  final r1 = regionByCity(tripCity);
+  final r2 = regionByCity(refCity);
+  if (r1 != null && r2 != null) return r1 == r2;
+  return _normCity(tripCity) == _normCity(refCity);
 }

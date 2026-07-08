@@ -101,7 +101,7 @@ class DemoTripRepository implements TripRepository {
   String _id(String p) => '$p-${DateTime.now().microsecondsSinceEpoch}-${_seq++}';
 
   @override
-  Stream<List<Trip>> watchOpenTrips(String city) => _db.openTrips(city);
+  Stream<List<Trip>> watchOpenTrips(DriverArea area) => _db.openTrips(area);
 
   @override
   Stream<List<Trip>> watchPassengerTrips(String passengerId) =>

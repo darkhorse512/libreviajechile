@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../core/constants/chilean_cities.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/formatters.dart';
@@ -11,6 +12,7 @@ import '../../data/models/enums.dart';
 import '../../data/models/offer.dart';
 import '../../data/models/trip.dart';
 import '../../data/providers.dart';
+import '../../data/repositories/repositories.dart';
 import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/map/route_map.dart';
@@ -181,7 +183,10 @@ class _RequestsFeed extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tripsAsync = ref.watch(openTripsProvider(user.city ?? ''));
+    final city = cityByName(user.city);
+    final area =
+        DriverArea(city: user.city, lat: city.lat, lng: city.lng);
+    final tripsAsync = ref.watch(openTripsProvider(area));
     return tripsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (_, __) => const EmptyState(

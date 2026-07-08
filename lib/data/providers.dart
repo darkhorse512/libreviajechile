@@ -42,8 +42,9 @@ final currentUserProvider =
 
 // ----- Streams de dominio parametrizados -----
 
-final openTripsProvider = StreamProvider.family<List<Trip>, String>((ref, city) {
-  return ref.watch(tripRepositoryProvider).watchOpenTrips(city);
+final openTripsProvider =
+    StreamProvider.family<List<Trip>, DriverArea>((ref, area) {
+  return ref.watch(tripRepositoryProvider).watchOpenTrips(area);
 });
 
 final passengerTripsProvider =

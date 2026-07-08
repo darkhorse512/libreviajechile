@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import '../../core/constants/chilean_cities.dart';
 import '../models/app_user.dart';
 import '../models/enums.dart';
 import '../models/offer.dart';
@@ -186,9 +187,18 @@ class DemoBackend {
     );
   }
 
-  Stream<List<Trip>> openTrips(String city) {
+  Stream<List<Trip>> openTrips(DriverArea area) {
     List<Trip> compute() => trips
-        .where((t) => t.city == city && t.status == TripStatus.requested)
+        .where((t) =>
+            t.status == TripStatus.requested &&
+            tripInDriverArea(
+              tripLat: t.originLat,
+              tripLng: t.originLng,
+              tripCity: t.city,
+              refLat: area.lat,
+              refLng: area.lng,
+              refCity: area.city,
+            ))
         .map(_hydrate)
         .toList()
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));

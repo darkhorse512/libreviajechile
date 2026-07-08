@@ -60,10 +60,29 @@ abstract class AuthRepository {
   Future<void> setOnline(String driverId, bool online);
 }
 
+/// Punto de referencia de un conductor para buscar viajes cercanos: su ciudad
+/// (para respaldo por región) y las coordenadas del centro de esa ciudad.
+class DriverArea {
+  const DriverArea({this.city, required this.lat, required this.lng});
+  final String? city;
+  final double lat;
+  final double lng;
+
+  @override
+  bool operator ==(Object other) =>
+      other is DriverArea &&
+      other.city == city &&
+      other.lat == lat &&
+      other.lng == lng;
+
+  @override
+  int get hashCode => Object.hash(city, lat, lng);
+}
+
 /// Contrato de viajes, ofertas y calificaciones.
 abstract class TripRepository {
-  /// Viajes abiertos en una ciudad (feed del conductor).
-  Stream<List<Trip>> watchOpenTrips(String city);
+  /// Viajes abiertos cercanos al conductor (feed del conductor).
+  Stream<List<Trip>> watchOpenTrips(DriverArea area);
 
   /// Viajes creados por un pasajero.
   Stream<List<Trip>> watchPassengerTrips(String passengerId);
