@@ -1,7 +1,8 @@
-# Configuración de despliegue en Netlify para el panel de administración.
-# La base apunta a esta carpeta (admin/) por si el sitio se conecta al monorepo.
+# Despliegue en Netlify del panel de administración.
+# El contenido de esta carpeta se publica como un sitio cuya RAÍZ es aquí
+# (repo "libreviaje-admin"), por eso NO se define `base`. Definir base = "admin"
+# rompe el build: Netlify buscaría una subcarpeta admin/ que no existe.
 [build]
-  base = "admin"
   command = "npm run build"
   publish = "dist"
 
