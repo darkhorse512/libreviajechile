@@ -10,4 +10,10 @@ abstract class Env {
       supabaseUrl.isNotEmpty &&
       supabaseAnonKey.isNotEmpty &&
       !supabaseUrl.contains('YOUR-PROJECT');
+
+  /// Activa las notificaciones push. Se pone en `true` solo después de
+  /// configurar Firebase (ver PUSH_SETUP.md). Por defecto está desactivado
+  /// para que la app compile y funcione sin Firebase.
+  static bool get pushEnabled =>
+      dotenv.get('PUSH_ENABLED', fallback: 'false').toLowerCase() == 'true';
 }

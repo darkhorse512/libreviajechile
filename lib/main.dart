@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app.dart';
 import 'core/config/env.dart';
+import 'core/services/push_service.dart';
 import 'core/theme/theme_controller.dart';
 
 Future<void> main() async {
@@ -29,6 +30,9 @@ Future<void> main() async {
       // anon key clásica (JWT). Ambas son válidas como clave pública.
       publishableKey: Env.supabaseAnonKey,
     );
+
+    // Notificaciones push (no-op salvo que PUSH_ENABLED=true).
+    await PushService.initialize();
   }
 
   final prefs = await SharedPreferences.getInstance();

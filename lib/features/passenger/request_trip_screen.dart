@@ -7,6 +7,7 @@ import '../../core/config/app_config.dart';
 import '../../core/constants/chilean_cities.dart';
 import '../../core/router/routes.dart';
 import '../../core/services/geo_service.dart';
+import '../../core/services/location_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/formatters.dart';
@@ -37,11 +38,40 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
   int _fare = 2500;
   int _passengers = 1;
   bool _submitting = false;
+  bool _locatingOrigin = false;
 
   @override
   void initState() {
     super.initState();
     _city = ref.read(currentUserProvider)?.city;
+    // Al abrir la pantalla intentamos ubicar automáticamente el punto de
+    // partida con el GPS, como en cualquier app de transporte.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _detectCurrentLocation());
+  }
+
+  Future<void> _detectCurrentLocation() async {
+    setState(() => _locatingOrigin = true);
+    final pos = await LocationService.current();
+    if (!mounted) {
+      return;
+    }
+    if (pos == null) {
+      setState(() => _locatingOrigin = false);
+      return;
+    }
+    final place = await ref.read(geoServiceProvider).reverse(pos);
+    if (!mounted) return;
+    setState(() {
+      _origin = place ??
+          GeoPlace(
+            lat: pos.latitude,
+            lng: pos.longitude,
+            address: 'Mi ubicación actual',
+          );
+      // Autoselecciona la ciudad más cercana si el pasajero no eligió una.
+      _city ??= nearestCity(pos.latitude, pos.longitude).name;
+      _locatingOrigin = false;
+    });
   }
 
   @override
@@ -153,6 +183,8 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
                               icon: Icons.trip_origin_rounded,
                               iconColor: AppColors.brand,
                               place: _origin,
+                              loading: _locatingOrigin,
+                              loadingText: 'Detectando tu ubicación…',
                               onTap: _pickOrigin,
                             ),
                             const SizedBox(height: 12),
@@ -257,6 +289,8 @@ class _LocationField extends StatelessWidget {
     required this.iconColor,
     required this.place,
     required this.onTap,
+    this.loading = false,
+    this.loadingText = 'Cargando…',
   });
 
   final String label;
@@ -265,10 +299,13 @@ class _LocationField extends StatelessWidget {
   final Color iconColor;
   final GeoPlace? place;
   final VoidCallback onTap;
+  final bool loading;
+  final String loadingText;
 
   @override
   Widget build(BuildContext context) {
     final selected = place != null;
+    final showLoading = loading && !selected;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -304,10 +341,12 @@ class _LocationField extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          selected
-                              ? (place!.shortName ??
-                                  place!.address.split(',').first)
-                              : hint,
+                          showLoading
+                              ? loadingText
+                              : selected
+                                  ? (place!.shortName ??
+                                      place!.address.split(',').first)
+                                  : hint,
                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                 color: selected
                                     ? null
@@ -331,11 +370,20 @@ class _LocationField extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Icon(
-                    selected ? Icons.edit_location_alt_rounded : Icons.map_rounded,
-                    size: 20,
-                    color: context.palette.textMuted,
-                  ),
+                  if (showLoading)
+                    const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2.2),
+                    )
+                  else
+                    Icon(
+                      selected
+                          ? Icons.edit_location_alt_rounded
+                          : Icons.map_rounded,
+                      size: 20,
+                      color: context.palette.textMuted,
+                    ),
                 ],
               ),
             ),

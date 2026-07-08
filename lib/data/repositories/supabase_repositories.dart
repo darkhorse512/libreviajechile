@@ -300,91 +300,182 @@ class SupabaseTripRepository implements TripRepository {
     return result;
   }
 
+  /// Stream resiliente para datos "en vivo".
+  ///
+  /// Combina tres fuentes para que la app funcione siempre:
+  ///  1. Un **fetch inicial** inmediato → la UI nunca se queda cargando.
+  ///  2. **Realtime** de Supabase → actualizaciones instantáneas (si está
+  ///     habilitado en el proyecto).
+  ///  3. Un **sondeo periódico** de respaldo → garantiza que los cambios
+  ///     lleguen en pocos segundos aunque Realtime no esté configurado.
+  Stream<T> _live<T>({
+    required Future<T> Function() fetch,
+    required String table,
+    Duration poll = const Duration(seconds: 5),
+  }) {
+    late final StreamController<T> controller;
+    Timer? timer;
+    RealtimeChannel? channel;
+    var closed = false;
+    var hasData = false;
+    var inFlight = false;
+
+    Future<void> emit() async {
+      if (closed || inFlight) return;
+      inFlight = true;
+      try {
+        final data = await fetch();
+        if (!closed) {
+          controller.add(data);
+          hasData = true;
+        }
+      } catch (e, st) {
+        // Solo propaga el error si aún no hay datos; si ya mostramos algo,
+        // conservamos el último estado bueno y reintentamos en el próximo ciclo.
+        if (!closed && !hasData) controller.addError(e, st);
+      } finally {
+        inFlight = false;
+      }
+    }
+
+    controller = StreamController<T>(
+      onListen: () {
+        emit(); // 1) fetch inicial
+        timer = Timer.periodic(poll, (_) => emit()); // 3) respaldo
+        // 2) realtime → refetch al detectar cualquier cambio en la tabla.
+        channel = _client
+            .channel('rt:$table:${identityHashCode(controller)}')
+            .onPostgresChanges(
+              event: PostgresChangeEvent.all,
+              schema: 'public',
+              table: table,
+              callback: (_) => emit(),
+            )
+            .subscribe();
+      },
+      onCancel: () async {
+        closed = true;
+        timer?.cancel();
+        final ch = channel;
+        if (ch != null) await _client.removeChannel(ch);
+      },
+    );
+    return controller.stream;
+  }
+
   @override
   Stream<List<Trip>> watchOpenTrips(DriverArea area) {
-    return _client
-        .from('trips')
-        .stream(primaryKey: ['id'])
-        .eq('status', 'requested')
-        .order('created_at')
-        .asyncMap((rows) => _hydrateTrips(
-              rows
-                  .where((r) => tripInDriverArea(
-                        tripLat: (r['origin_lat'] as num?)?.toDouble(),
-                        tripLng: (r['origin_lng'] as num?)?.toDouble(),
-                        tripCity: (r['city'] as String?) ?? '',
-                        refLat: area.lat,
-                        refLng: area.lng,
-                        refCity: area.city,
-                      ))
-                  .toList(),
-            ));
+    return _live<List<Trip>>(
+      table: 'trips',
+      fetch: () async {
+        final rows = await _client
+            .from('trips')
+            .select()
+            .eq('status', 'requested')
+            .order('created_at');
+        final nearby = rows
+            .where((r) => tripInDriverArea(
+                  tripLat: (r['origin_lat'] as num?)?.toDouble(),
+                  tripLng: (r['origin_lng'] as num?)?.toDouble(),
+                  tripCity: (r['city'] as String?) ?? '',
+                  refLat: area.lat,
+                  refLng: area.lng,
+                  refCity: area.city,
+                ))
+            .toList();
+        return _hydrateTrips(nearby);
+      },
+    );
   }
 
   @override
   Stream<List<Trip>> watchPassengerTrips(String passengerId) {
-    return _client
-        .from('trips')
-        .stream(primaryKey: ['id'])
-        .eq('passenger_id', passengerId)
-        .order('created_at', ascending: false)
-        .asyncMap(_hydrateTrips);
+    return _live<List<Trip>>(
+      table: 'trips',
+      fetch: () async {
+        final rows = await _client
+            .from('trips')
+            .select()
+            .eq('passenger_id', passengerId)
+            .order('created_at', ascending: false);
+        return _hydrateTrips(rows);
+      },
+    );
   }
 
   @override
   Stream<List<Trip>> watchDriverTrips(String driverId) {
-    return _client
-        .from('trips')
-        .stream(primaryKey: ['id'])
-        .eq('driver_id', driverId)
-        .order('created_at', ascending: false)
-        .asyncMap(_hydrateTrips);
+    return _live<List<Trip>>(
+      table: 'trips',
+      fetch: () async {
+        final rows = await _client
+            .from('trips')
+            .select()
+            .eq('driver_id', driverId)
+            .order('created_at', ascending: false);
+        return _hydrateTrips(rows);
+      },
+    );
   }
 
   @override
   Stream<Trip?> watchTrip(String tripId) {
-    return _client
-        .from('trips')
-        .stream(primaryKey: ['id'])
-        .eq('id', tripId)
-        .asyncMap((rows) async {
-      if (rows.isEmpty) return null;
-      final list = await _hydrateTrips(rows);
-      return list.first;
-    });
+    return _live<Trip?>(
+      table: 'trips',
+      poll: const Duration(seconds: 4),
+      fetch: () async {
+        final row = await _client
+            .from('trips')
+            .select()
+            .eq('id', tripId)
+            .maybeSingle();
+        if (row == null) return null;
+        final list = await _hydrateTrips([row]);
+        return list.isEmpty ? null : list.first;
+      },
+    );
   }
 
   @override
   Stream<List<Offer>> watchOffers(String tripId) {
-    return _client
-        .from('offers')
-        .stream(primaryKey: ['id'])
-        .eq('trip_id', tripId)
-        .order('amount')
-        .asyncMap((rows) async {
-      final result = <Offer>[];
-      final users = <String, AppUser?>{};
-      for (final row in rows) {
-        final offer = Offer.fromMap(row);
-        if (offer.status == OfferStatus.rejected ||
-            offer.status == OfferStatus.withdrawn) {
-          continue;
+    return _live<List<Offer>>(
+      table: 'offers',
+      poll: const Duration(seconds: 4),
+      fetch: () async {
+        final rows = await _client
+            .from('offers')
+            .select()
+            .eq('trip_id', tripId)
+            .order('amount');
+        final result = <Offer>[];
+        final users = <String, AppUser?>{};
+        for (final row in rows) {
+          final offer = Offer.fromMap(row);
+          if (offer.status == OfferStatus.rejected ||
+              offer.status == OfferStatus.withdrawn) {
+            continue;
+          }
+          users[offer.driverId] ??= await _fetchUser(offer.driverId);
+          result.add(offer.copyWith(driver: users[offer.driverId]));
         }
-        users[offer.driverId] ??= await _fetchUser(offer.driverId);
-        result.add(offer.copyWith(driver: users[offer.driverId]));
-      }
-      return result;
-    });
+        return result;
+      },
+    );
   }
 
   @override
   Stream<List<Offer>> watchDriverOffers(String driverId) {
-    return _client
-        .from('offers')
-        .stream(primaryKey: ['id'])
-        .eq('driver_id', driverId)
-        .order('created_at', ascending: false)
-        .map((rows) => rows.map(Offer.fromMap).toList());
+    return _live<List<Offer>>(
+      table: 'offers',
+      fetch: () async {
+        final rows = await _client
+            .from('offers')
+            .select()
+            .eq('driver_id', driverId)
+            .order('created_at', ascending: false);
+        return rows.map(Offer.fromMap).toList();
+      },
+    );
   }
 
   @override

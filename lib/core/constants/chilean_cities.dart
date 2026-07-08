@@ -71,6 +71,21 @@ ChileanCity cityByName(String? name) {
   return kChileanCities[13];
 }
 
+/// Ciudad de la lista más cercana a unas coordenadas. Útil para autoseleccionar
+/// la ciudad del viaje a partir de la ubicación GPS del pasajero.
+ChileanCity nearestCity(double lat, double lng) {
+  var best = kChileanCities.first;
+  var bestDist = double.infinity;
+  for (final c in kChileanCities) {
+    final d = distanceKm(lat, lng, c.lat, c.lng);
+    if (d < bestDist) {
+      bestDist = d;
+      best = c;
+    }
+  }
+  return best;
+}
+
 /// Región asociada a una ciudad (o null si no está en la lista).
 String? regionByCity(String? name) {
   if (name == null) return null;

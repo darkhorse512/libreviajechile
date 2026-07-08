@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
@@ -186,6 +187,23 @@ class _RequestsFeed extends ConsumerWidget {
     final city = cityByName(user.city);
     final area =
         DriverArea(city: user.city, lat: city.lat, lng: city.lng);
+
+    // Avisa (vibración + banner) cuando llega una solicitud nueva mientras el
+    // conductor está en línea, a modo de "notificación" dentro de la app.
+    ref.listen(openTripsProvider(area), (prev, next) {
+      final prevIds =
+          prev?.valueOrNull?.map((t) => t.id).toSet() ?? <String>{};
+      final incoming = next.valueOrNull ?? const <Trip>[];
+      final hasNew =
+          prev?.valueOrNull != null && incoming.any((t) => !prevIds.contains(t.id));
+      if (hasNew) {
+        HapticFeedback.mediumImpact();
+        if (context.mounted) {
+          AppFeedback.success(context, '¡Nueva solicitud de viaje cerca de ti!');
+        }
+      }
+    });
+
     final tripsAsync = ref.watch(openTripsProvider(area));
     return tripsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
