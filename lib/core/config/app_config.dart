@@ -5,7 +5,7 @@ abstract class AppConfig {
 
   /// Versión visible de la app (debe coincidir con `version:` en pubspec.yaml).
   /// Sirve para confirmar de un vistazo qué build está instalado.
-  static const String appVersion = '0.2.0 (build 2)';
+  static const String appVersion = '0.4.0 (build 4)';
 
   /// Tarifa mínima que un pasajero puede ofrecer (CLP).
   static const int minFareClp = 1500;

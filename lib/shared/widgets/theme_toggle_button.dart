@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/i18n/i18n.dart';
 import '../../core/theme/theme_controller.dart';
 
 /// Botón para alternar tema claro/oscuro, disponible en las barras superiores.
@@ -12,7 +13,7 @@ class ThemeToggleButton extends ConsumerWidget {
     final brightness = Theme.of(context).brightness;
     final isDark = brightness == Brightness.dark;
     return IconButton(
-      tooltip: isDark ? 'Modo claro' : 'Modo oscuro',
+      tooltip: isDark ? context.tr('Modo claro') : context.tr('Modo oscuro'),
       onPressed: () =>
           ref.read(themeControllerProvider.notifier).toggle(brightness),
       icon: AnimatedSwitcher(

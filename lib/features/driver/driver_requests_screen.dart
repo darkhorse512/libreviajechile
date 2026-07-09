@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../core/constants/chilean_cities.dart';
+import '../../core/i18n/i18n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/formatters.dart';
@@ -36,16 +37,16 @@ class DriverRequestsScreen extends ConsumerWidget {
       await ref.read(authRepositoryProvider).setOnline(user.id, value);
       if (context.mounted) {
         value
-            ? AppFeedback.success(
-                context, 'Estás en línea. Empezarás a recibir solicitudes.')
-            : AppFeedback.info(context, 'Te desconectaste.');
+            ? AppFeedback.success(context,
+                context.tr('Estás en línea. Empezarás a recibir solicitudes.'))
+            : AppFeedback.info(context, context.tr('Te desconectaste.'));
       }
     } catch (_) {
       // Revierte si falla y avisa al usuario.
       notifier.update(user.copyWith(isOnline: !value));
       if (context.mounted) {
-        AppFeedback.error(
-            context, 'No pudimos actualizar tu estado. Revisa tu conexión.');
+        AppFeedback.error(context,
+            context.tr('No pudimos actualizar tu estado. Revisa tu conexión.'));
       }
     }
   }
@@ -68,7 +69,9 @@ class DriverRequestsScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Hola, ${user.fullName.split(' ').first}',
+                    Text(
+                        context.trp('Hola, {name}',
+                            {'name': user.fullName.split(' ').first}),
                         style: Theme.of(context).textTheme.titleLarge),
                     Text(user.city ?? 'Chile',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -142,12 +145,15 @@ class _OnlineToggle extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(online ? 'Estás en línea' : 'Estás desconectado',
+                Text(
+                    online
+                        ? context.tr('Estás en línea')
+                        : context.tr('Estás desconectado'),
                     style: Theme.of(context).textTheme.titleMedium),
                 Text(
                   online
-                      ? 'Recibiendo solicitudes cercanas'
-                      : 'Ponte en línea para recibir solicitudes',
+                      ? context.tr('Recibiendo solicitudes cercanas')
+                      : context.tr('Ponte en línea para recibir solicitudes'),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: context.palette.textSecondary,
                       ),
@@ -169,11 +175,11 @@ class _OfflineState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const EmptyState(
+    return EmptyState(
       icon: Icons.toggle_off_rounded,
-      title: 'Estás desconectado',
-      message:
-          'Activa el interruptor para empezar a recibir solicitudes de viaje en tu ciudad.',
+      title: context.tr('Estás desconectado'),
+      message: context.tr(
+          'Activa el interruptor para empezar a recibir solicitudes de viaje en tu ciudad.'),
     );
   }
 }
@@ -199,7 +205,8 @@ class _RequestsFeed extends ConsumerWidget {
       if (hasNew) {
         HapticFeedback.mediumImpact();
         if (context.mounted) {
-          AppFeedback.success(context, '¡Nueva solicitud de viaje cerca de ti!');
+          AppFeedback.success(
+              context, context.tr('¡Nueva solicitud de viaje cerca de ti!'));
         }
       }
     });
@@ -207,16 +214,17 @@ class _RequestsFeed extends ConsumerWidget {
     final tripsAsync = ref.watch(openTripsProvider(area));
     return tripsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (_, __) => const EmptyState(
+      error: (_, __) => EmptyState(
         icon: Icons.error_outline_rounded,
-        title: 'No pudimos cargar las solicitudes',
+        title: context.tr('No pudimos cargar las solicitudes'),
       ),
       data: (trips) {
         if (trips.isEmpty) {
-          return const EmptyState(
+          return EmptyState(
             icon: Icons.inbox_rounded,
-            title: 'Sin solicitudes por ahora',
-            message: 'Cuando un pasajero cercano solicite un viaje, aparecerá aquí al instante.',
+            title: context.tr('Sin solicitudes por ahora'),
+            message: context.tr(
+                'Cuando un pasajero cercano solicite un viaje, aparecerá aquí al instante.'),
           );
         }
         // Ofertas pendientes del conductor, indexadas por viaje.
@@ -248,7 +256,7 @@ class _RequestCard extends ConsumerWidget {
 
   Future<void> _withdraw(BuildContext context, WidgetRef ref) async {
     await ref.read(tripActionsProvider).withdrawOffer(myOffer!.id);
-    if (context.mounted) AppFeedback.info(context, 'Oferta retirada');
+    if (context.mounted) AppFeedback.info(context, context.tr('Oferta retirada'));
   }
 
   @override
@@ -264,7 +272,7 @@ class _RequestCard extends ConsumerWidget {
           Row(
             children: [
               UserAvatar(
-                  name: passenger?.fullName ?? 'Pasajero',
+                  name: passenger?.fullName ?? context.tr('Pasajero'),
                   imageUrl: passenger?.avatarUrl,
                   size: 42),
               const SizedBox(width: 10),
@@ -272,7 +280,7 @@ class _RequestCard extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(passenger?.fullName ?? 'Pasajero',
+                    Text(passenger?.fullName ?? context.tr('Pasajero'),
                         style: Theme.of(context).textTheme.titleSmall,
                         overflow: TextOverflow.ellipsis),
                     if (passenger != null && passenger.hasRatings)
@@ -329,7 +337,7 @@ class _RequestCard extends ConsumerWidget {
             ),
             child: Row(
               children: [
-                Text('Ofrece',
+                Text(context.tr('Ofrece'),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: context.palette.textSecondary,
                         )),
@@ -343,7 +351,7 @@ class _RequestCard extends ConsumerWidget {
                 if (!offered)
                   Row(
                     children: [
-                      Text('Responder',
+                      Text(context.tr('Responder'),
                           style: Theme.of(context).textTheme.labelLarge?.copyWith(
                                 color: AppColors.brand,
                               )),
@@ -361,7 +369,7 @@ class _RequestCard extends ConsumerWidget {
                 Expanded(
                   child: InfoPill(
                     label:
-                        'Ofertaste ${Formatters.clp(myOffer!.amount)} · pendiente',
+                        '${context.tr('Ofertaste')} ${Formatters.clp(myOffer!.amount)} · ${context.tr('pendiente')}',
                     icon: Icons.hourglass_top_rounded,
                     color: AppColors.accent,
                   ),
@@ -370,7 +378,7 @@ class _RequestCard extends ConsumerWidget {
                 TextButton.icon(
                   onPressed: () => _withdraw(context, ref),
                   icon: const Icon(Icons.undo_rounded, size: 16),
-                  label: const Text('Retirar'),
+                  label: Text(context.tr('Retirar')),
                   style: TextButton.styleFrom(foregroundColor: AppColors.danger),
                 ),
               ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/i18n/i18n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/validators.dart';
@@ -55,7 +56,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     if (_city == null) {
-      AppFeedback.error(context, 'Selecciona tu ciudad');
+      AppFeedback.error(context, context.tr('Selecciona tu ciudad'));
       return;
     }
     setState(() {
@@ -86,13 +87,13 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       final saved = await ref.read(authRepositoryProvider).updateProfile(updated);
       ref.read(currentUserProvider.notifier).update(saved);
       if (mounted) {
-        AppFeedback.success(context, 'Perfil actualizado');
+        AppFeedback.success(context, context.tr('Perfil actualizado'));
         Navigator.pop(context);
       }
     } catch (_) {
       if (mounted) {
         setState(() {
-          _error = 'No se pudo guardar. Intenta nuevamente.';
+          _error = context.tr('No se pudo guardar. Intenta nuevamente.');
           _saving = false;
         });
       }
@@ -102,7 +103,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Editar perfil')),
+      appBar: AppBar(title: Text(context.tr('Editar perfil'))),
       body: SafeArea(
         top: false,
         child: Column(
@@ -116,11 +117,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Datos personales',
+                      Text(context.tr('Datos personales'),
                           style: Theme.of(context).textTheme.titleLarge),
                       const SizedBox(height: 16),
                       AppTextField(
-                        label: 'Nombre completo',
+                        label: context.tr('Nombre completo'),
                         controller: _name,
                         icon: Icons.person_outline_rounded,
                         textCapitalization: TextCapitalization.words,
@@ -128,7 +129,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       ),
                       const SizedBox(height: 16),
                       AppTextField(
-                        label: 'Teléfono',
+                        label: context.tr('Teléfono'),
                         controller: _phone,
                         icon: Icons.phone_outlined,
                         keyboardType: TextInputType.phone,
@@ -141,28 +142,28 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       ),
                       if (_isDriver) ...[
                         const SizedBox(height: 28),
-                        Text('Vehículo',
+                        Text(context.tr('Vehículo'),
                             style: Theme.of(context).textTheme.titleLarge),
                         const SizedBox(height: 16),
                         Row(
                           children: [
                             Expanded(
                               child: AppTextField(
-                                label: 'Marca',
+                                label: context.tr('Marca'),
                                 controller: _make,
                                 textCapitalization: TextCapitalization.words,
-                                validator: (v) =>
-                                    Validators.required(v, field: 'La marca'),
+                                validator: (v) => Validators.required(v,
+                                    field: context.tr('La marca')),
                               ),
                             ),
                             const SizedBox(width: 14),
                             Expanded(
                               child: AppTextField(
-                                label: 'Modelo',
+                                label: context.tr('Modelo'),
                                 controller: _model,
                                 textCapitalization: TextCapitalization.words,
-                                validator: (v) =>
-                                    Validators.required(v, field: 'El modelo'),
+                                validator: (v) => Validators.required(v,
+                                    field: context.tr('El modelo')),
                               ),
                             ),
                           ],
@@ -172,7 +173,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           children: [
                             Expanded(
                               child: AppTextField(
-                                label: 'Año',
+                                label: context.tr('Año'),
                                 controller: _year,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [
@@ -185,18 +186,18 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                             const SizedBox(width: 14),
                             Expanded(
                               child: AppTextField(
-                                label: 'Color',
+                                label: context.tr('Color'),
                                 controller: _color,
                                 textCapitalization: TextCapitalization.words,
-                                validator: (v) =>
-                                    Validators.required(v, field: 'El color'),
+                                validator: (v) => Validators.required(v,
+                                    field: context.tr('El color')),
                               ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 16),
                         AppTextField(
-                          label: 'Patente',
+                          label: context.tr('Patente'),
                           controller: _plate,
                           icon: Icons.pin_outlined,
                           textCapitalization: TextCapitalization.characters,
@@ -207,7 +208,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           validator: Validators.plate,
                         ),
                         const SizedBox(height: 18),
-                        Text('Capacidad de pasajeros',
+                        Text(context.tr('Capacidad de pasajeros'),
                             style: Theme.of(context).textTheme.labelLarge?.copyWith(
                                   color: context.palette.textSecondary,
                                 )),
@@ -245,7 +246,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 border: Border(top: BorderSide(color: context.palette.border)),
               ),
               child: PrimaryButton(
-                label: 'Guardar cambios',
+                label: context.tr('Guardar cambios'),
                 icon: Icons.check_rounded,
                 loading: _saving,
                 onPressed: _save,

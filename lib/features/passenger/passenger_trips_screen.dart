@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/i18n/i18n.dart';
 import '../../core/router/routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
@@ -31,25 +32,25 @@ class PassengerTripsScreen extends ConsumerWidget {
               AppSpacing.xl, AppSpacing.lg, AppSpacing.xl, AppSpacing.sm),
           child: Align(
             alignment: Alignment.centerLeft,
-            child: Text('Mis viajes',
+            child: Text(context.tr('Mis viajes'),
                 style: Theme.of(context).textTheme.headlineSmall),
           ),
         ),
         Expanded(
           child: tripsAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (_, __) => const EmptyState(
+            error: (_, __) => EmptyState(
               icon: Icons.error_outline_rounded,
-              title: 'No pudimos cargar tus viajes',
+              title: context.tr('No pudimos cargar tus viajes'),
             ),
             data: (trips) {
               if (trips.isEmpty) {
                 return EmptyState(
                   icon: Icons.route_rounded,
-                  title: 'Aún no tienes viajes',
-                  message: 'Cuando solicites un viaje aparecerá aquí.',
+                  title: context.tr('Aún no tienes viajes'),
+                  message: context.tr('Cuando solicites un viaje aparecerá aquí.'),
                   action: PrimaryButton(
-                    label: 'Solicitar viaje',
+                    label: context.tr('Solicitar viaje'),
                     expand: false,
                     onPressed: () => context.push(Routes.requestTrip),
                   ),
@@ -102,7 +103,8 @@ class _TripTile extends StatelessWidget {
             children: [
               if (trip.isOpen && trip.offersCount > 0)
                 InfoPill(
-                  label: '${trip.offersCount} ofertas',
+                  label: context
+                      .trp('{n} ofertas', {'n': '${trip.offersCount}'}),
                   icon: Icons.local_offer_rounded,
                   color: AppColors.price,
                 )

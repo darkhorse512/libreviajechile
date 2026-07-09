@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 
+import '../i18n/i18n.dart';
+
 /// Un lugar geolocalizado: coordenadas + una dirección legible.
 class GeoPlace {
   const GeoPlace({
@@ -138,7 +140,7 @@ class GeoService {
         return GeoPlace(
           lat: point.latitude,
           lng: point.longitude,
-          address: 'Ubicación seleccionada',
+          address: trg('Ubicación seleccionada'),
         );
       }
       return _placeFromNominatim(data);
@@ -146,7 +148,7 @@ class GeoService {
       return GeoPlace(
         lat: point.latitude,
         lng: point.longitude,
-        address: 'Ubicación seleccionada',
+        address: trg('Ubicación seleccionada'),
       );
     }
   }

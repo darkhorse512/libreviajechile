@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../core/i18n/i18n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/contact.dart';
@@ -30,18 +31,23 @@ class TripDetailScreen extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Confirmar conductor'),
+        title: Text(context.tr('Confirmar conductor')),
         content: Text(
-          'Aceptarás a ${offer.driver?.fullName ?? 'este conductor'} por ${Formatters.clp(offer.amount)}. '
-          'Se rechazarán las demás ofertas.',
+          context.trp(
+            'Aceptarás a {name} por {amount}. Se rechazarán las demás ofertas.',
+            {
+              'name': offer.driver?.fullName ?? context.tr('este conductor'),
+              'amount': Formatters.clp(offer.amount),
+            },
+          ),
         ),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancelar')),
+              child: Text(context.tr('Cancelar'))),
           FilledButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Confirmar')),
+              child: Text(context.tr('Confirmar'))),
         ],
       ),
     );
@@ -49,11 +55,12 @@ class TripDetailScreen extends ConsumerWidget {
     try {
       await ref.read(tripActionsProvider).acceptOffer(tripId, offer.id);
       if (context.mounted) {
-        AppFeedback.success(context, '¡Conductor confirmado! Buen viaje 🚗');
+        AppFeedback.success(
+            context, context.tr('¡Conductor confirmado! Buen viaje 🚗'));
       }
     } catch (_) {
       if (context.mounted) {
-        AppFeedback.error(context, 'No se pudo aceptar la oferta');
+        AppFeedback.error(context, context.tr('No se pudo aceptar la oferta'));
       }
     }
   }
@@ -62,23 +69,24 @@ class TripDetailScreen extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Cancelar viaje'),
-        content: const Text('¿Seguro que quieres cancelar esta solicitud?'),
+        title: Text(context.tr('Cancelar viaje')),
+        content:
+            Text(context.tr('¿Seguro que quieres cancelar esta solicitud?')),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('No')),
+              child: Text(context.tr('No'))),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Sí, cancelar'),
+            child: Text(context.tr('Sí, cancelar')),
           ),
         ],
       ),
     );
     if (confirmed != true) return;
     await ref.read(tripActionsProvider).cancelTrip(tripId);
-    if (context.mounted) AppFeedback.info(context, 'Viaje cancelado');
+    if (context.mounted) AppFeedback.info(context, context.tr('Viaje cancelado'));
   }
 
   @override
@@ -87,27 +95,27 @@ class TripDetailScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tu viaje'),
+        title: Text(context.tr('Tu viaje')),
         actions: [
           if (tripAsync.valueOrNull?.isOpen ?? false)
             IconButton(
               icon: const Icon(Icons.close_rounded),
-              tooltip: 'Cancelar viaje',
+              tooltip: context.tr('Cancelar viaje'),
               onPressed: () => _cancel(context, ref),
             ),
         ],
       ),
       body: tripAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => const EmptyState(
+        error: (_, __) => EmptyState(
           icon: Icons.error_outline_rounded,
-          title: 'No pudimos cargar el viaje',
+          title: context.tr('No pudimos cargar el viaje'),
         ),
         data: (trip) {
           if (trip == null) {
-            return const EmptyState(
+            return EmptyState(
               icon: Icons.search_off_rounded,
-              title: 'Viaje no encontrado',
+              title: context.tr('Viaje no encontrado'),
             );
           }
           return _TripBody(
@@ -164,7 +172,7 @@ class _TripBody extends ConsumerWidget {
                   const SizedBox(width: 8),
                   InfoPill(
                     label:
-                        '${trip.passengers} ${trip.passengers == 1 ? 'pasajero' : 'pasajeros'}',
+                        '${trip.passengers} ${trip.passengers == 1 ? context.tr('pasajero') : context.tr('pasajeros')}',
                     icon: Icons.people_alt_rounded,
                     color: context.palette.textSecondary,
                     background: context.palette.surfaceAlt,
@@ -172,7 +180,9 @@ class _TripBody extends ConsumerWidget {
                   const Spacer(),
                   FareTag(
                       amount: trip.displayFare,
-                      label: trip.finalFare != null ? 'Acordado' : 'Tu oferta'),
+                      label: trip.finalFare != null
+                          ? context.tr('Acordado')
+                          : context.tr('Tu oferta')),
                 ],
               ),
               if (trip.note != null && trip.note!.isNotEmpty) ...[
@@ -203,10 +213,10 @@ class _TripBody extends ConsumerWidget {
         if (trip.isActive) _AssignedSection(trip: trip),
         if (trip.status == TripStatus.completed) _CompletedSection(trip: trip),
         if (trip.status == TripStatus.cancelled)
-          const EmptyState(
+          EmptyState(
             icon: Icons.cancel_rounded,
-            title: 'Viaje cancelado',
-            message: 'Esta solicitud fue cancelada.',
+            title: context.tr('Viaje cancelado'),
+            message: context.tr('Esta solicitud fue cancelada.'),
           ),
       ],
     );
@@ -221,12 +231,13 @@ class _StatusBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = tripStatusColor(trip.status);
     final message = switch (trip.status) {
-      TripStatus.requested =>
-        'Estamos avisando a los conductores cercanos. Las ofertas aparecerán aquí.',
-      TripStatus.accepted => 'Tu conductor va en camino al punto de partida.',
-      TripStatus.inProgress => 'Disfruta tu viaje. Llegarás pronto.',
-      TripStatus.completed => 'Viaje finalizado. ¡Gracias por viajar!',
-      TripStatus.cancelled => 'Este viaje fue cancelado.',
+      TripStatus.requested => context.tr(
+          'Estamos avisando a los conductores cercanos. Las ofertas aparecerán aquí.'),
+      TripStatus.accepted =>
+        context.tr('Tu conductor va en camino al punto de partida.'),
+      TripStatus.inProgress => context.tr('Disfruta tu viaje. Llegarás pronto.'),
+      TripStatus.completed => context.tr('Viaje finalizado. ¡Gracias por viajar!'),
+      TripStatus.cancelled => context.tr('Este viaje fue cancelado.'),
     };
     return Container(
       padding: const EdgeInsets.all(16),
@@ -250,7 +261,7 @@ class _StatusBanner extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(trip.status.label,
+                Text(context.tr(trip.status.label),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: color,
                         )),
@@ -280,7 +291,7 @@ class _OffersSection extends ConsumerWidget {
       children: [
         Row(
           children: [
-            Text('Ofertas recibidas',
+            Text(context.tr('Ofertas recibidas'),
                 style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(width: 8),
             offersAsync.maybeWhen(
@@ -298,7 +309,8 @@ class _OffersSection extends ConsumerWidget {
                 padding: EdgeInsets.all(24),
                 child: CircularProgressIndicator()),
           ),
-          error: (_, __) => const Text('No se pudieron cargar las ofertas'),
+          error: (_, __) =>
+              Text(context.tr('No se pudieron cargar las ofertas')),
           data: (offers) {
             if (offers.isEmpty) {
               return SurfaceCard(
@@ -312,7 +324,7 @@ class _OffersSection extends ConsumerWidget {
                     const SizedBox(width: 14),
                     Expanded(
                       child: Text(
-                        'Esperando ofertas de conductores…',
+                        context.tr('Esperando ofertas de conductores…'),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: context.palette.textSecondary,
                             ),
@@ -364,7 +376,7 @@ class _OfferCard extends StatelessWidget {
           Row(
             children: [
               UserAvatar(
-                  name: driver?.fullName ?? 'Conductor',
+                  name: driver?.fullName ?? context.tr('Conductor'),
                   imageUrl: driver?.avatarUrl,
                   size: 48),
               const SizedBox(width: 12),
@@ -375,7 +387,7 @@ class _OfferCard extends StatelessWidget {
                     Row(
                       children: [
                         Flexible(
-                          child: Text(driver?.fullName ?? 'Conductor',
+                          child: Text(driver?.fullName ?? context.tr('Conductor'),
                               style: Theme.of(context).textTheme.titleMedium,
                               overflow: TextOverflow.ellipsis),
                         ),
@@ -411,7 +423,7 @@ class _OfferCard extends StatelessWidget {
                           ),
                     )
                   else
-                    Text('Aceptó tu precio',
+                    Text(context.tr('Aceptó tu precio'),
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                               color: AppColors.success,
                               fontWeight: FontWeight.w700,
@@ -438,7 +450,9 @@ class _OfferCard extends StatelessWidget {
                       Icon(Icons.schedule_rounded,
                           size: 14, color: context.palette.textMuted),
                       const SizedBox(width: 4),
-                      Text('${offer.etaMinutes} min',
+                      Text(
+                          context.trp(
+                              '{n} min', {'n': '${offer.etaMinutes}'}),
                           style: Theme.of(context).textTheme.labelMedium),
                     ],
                   ),
@@ -463,7 +477,7 @@ class _OfferCard extends StatelessWidget {
           ],
           const SizedBox(height: 14),
           PrimaryButton(
-            label: 'Aceptar por ${Formatters.clp(offer.amount)}',
+            label: '${context.tr('Aceptar por')} ${Formatters.clp(offer.amount)}',
             icon: Icons.check_rounded,
             onPressed: onAccept,
           ),
@@ -483,7 +497,8 @@ class _AssignedSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Tu conductor', style: Theme.of(context).textTheme.titleLarge),
+        Text(context.tr('Tu conductor'),
+            style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 12),
         if (driver != null) DriverInfoCard(driver: driver),
         const SizedBox(height: 12),
@@ -493,7 +508,7 @@ class _AssignedSection extends StatelessWidget {
               child: OutlinedButton.icon(
                 onPressed: () => Contact.call(context, driver?.phone),
                 icon: const Icon(Icons.call_rounded, size: 18),
-                label: const Text('Llamar'),
+                label: Text(context.tr('Llamar')),
                 style: OutlinedButton.styleFrom(
                     minimumSize: const Size.fromHeight(52)),
               ),
@@ -502,7 +517,8 @@ class _AssignedSection extends StatelessWidget {
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: () => Contact.whatsapp(context, driver?.phone,
-                    message: 'Hola! Soy tu pasajero de Libre Viaje Chile.'),
+                    message:
+                        context.tr('Hola! Soy tu pasajero de Libre Viaje Chile.')),
                 icon: const Icon(Icons.chat_rounded, size: 18),
                 label: const Text('WhatsApp'),
                 style: OutlinedButton.styleFrom(
@@ -530,10 +546,10 @@ class _CompletedSection extends ConsumerWidget {
               const Icon(Icons.check_circle_rounded,
                   color: AppColors.success, size: 48),
               const SizedBox(height: 12),
-              Text('Viaje completado',
+              Text(context.tr('Viaje completado'),
                   style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 4),
-              Text('Pagaste ${Formatters.clp(trip.displayFare)}',
+              Text('${context.tr('Pagaste')} ${Formatters.clp(trip.displayFare)}',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: context.palette.textSecondary,
                       )),
@@ -543,19 +559,19 @@ class _CompletedSection extends ConsumerWidget {
         const SizedBox(height: 16),
         if (!trip.passengerRated && trip.driver != null)
           PrimaryButton(
-            label: 'Calificar a tu conductor',
+            label: context.tr('Calificar a tu conductor'),
             icon: Icons.star_rounded,
             onPressed: () => showRateSheet(
               context,
               tripId: trip.id,
               personName: trip.driver!.fullName,
               personAvatar: trip.driver!.avatarUrl,
-              roleLabel: 'conductor',
+              roleLabel: context.tr('conductor'),
             ),
           )
         else
-          const InfoPill(
-            label: '¡Gracias por tu calificación!',
+          InfoPill(
+            label: context.tr('¡Gracias por tu calificación!'),
             icon: Icons.check_rounded,
             color: AppColors.success,
           ),

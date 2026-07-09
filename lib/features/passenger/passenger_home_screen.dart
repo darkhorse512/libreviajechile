@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/config/app_config.dart';
+import '../../core/i18n/i18n.dart';
 import '../../core/router/routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
@@ -43,7 +44,7 @@ class PassengerHomeScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Hola,',
+                      Text(context.tr('Hola,'),
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 color: context.palette.textSecondary,
                               )),
@@ -68,7 +69,7 @@ class PassengerHomeScreen extends ConsumerWidget {
           ),
         ),
         if (active != null && active.isNotEmpty) ...[
-          const _SectionTitle('Viaje en curso'),
+          _SectionTitle(context.tr('Viaje en curso')),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(
@@ -77,7 +78,7 @@ class PassengerHomeScreen extends ConsumerWidget {
             ),
           ),
         ],
-        const _SectionTitle('¿Cómo funciona?'),
+        _SectionTitle(context.tr('¿Cómo funciona?')),
         const SliverToBoxAdapter(
           child: Padding(
             padding: EdgeInsets.fromLTRB(
@@ -125,7 +126,7 @@ class _HeroCard extends StatelessWidget {
               const Icon(Icons.near_me_rounded, color: Colors.white, size: 30),
               const SizedBox(height: 16),
               Text(
-                '¿A dónde\nvamos hoy?',
+                context.tr('¿A dónde\nvamos hoy?'),
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: Colors.white,
                       height: 1.1,
@@ -133,7 +134,8 @@ class _HeroCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Propón tu precio y recibe ofertas de conductores cercanos.',
+                context.tr(
+                    'Propón tu precio y recibe ofertas de conductores cercanos.'),
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium
@@ -151,7 +153,7 @@ class _HeroCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Solicitar un viaje',
+                      context.tr('Solicitar un viaje'),
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
                             color: AppColors.brand,
                             fontSize: 16,
@@ -189,7 +191,8 @@ class _ActiveTripCard extends StatelessWidget {
               const Spacer(),
               if (trip.isOpen && trip.offersCount > 0)
                 InfoPill(
-                  label: '${trip.offersCount} ofertas',
+                  label: context
+                      .trp('{n} ofertas', {'n': '${trip.offersCount}'}),
                   icon: Icons.local_offer_rounded,
                   color: AppColors.price,
                 ),
@@ -207,7 +210,7 @@ class _ActiveTripCard extends StatelessWidget {
               Icon(Icons.payments_outlined,
                   size: 18, color: context.palette.textSecondary),
               const SizedBox(width: 8),
-              Text('Tu oferta',
+              Text(context.tr('Tu oferta'),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: context.palette.textSecondary,
                       )),
@@ -233,12 +236,23 @@ class _HowItWorks extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final steps = [
-      (Icons.edit_location_alt_rounded, 'Indica tu viaje',
-          'Origen, destino y el precio que quieres pagar (mínimo ${Formatters.clp(AppConfig.minFareClp)}).'),
-      (Icons.local_offer_rounded, 'Recibe ofertas',
-          'Los conductores aceptan tu precio o te envían una contraoferta.'),
-      (Icons.verified_rounded, 'Elige y viaja',
-          'Compara calificaciones y vehículos, y confirma tu conductor ideal.'),
+      (
+        Icons.edit_location_alt_rounded,
+        context.tr('Indica tu viaje'),
+        context.trp(
+            'Origen, destino y el precio que quieres pagar (mínimo {min}).',
+            {'min': Formatters.clp(AppConfig.minFareClp)})
+      ),
+      (
+        Icons.local_offer_rounded,
+        context.tr('Recibe ofertas'),
+        context.tr('Los conductores aceptan tu precio o te envían una contraoferta.')
+      ),
+      (
+        Icons.verified_rounded,
+        context.tr('Elige y viaja'),
+        context.tr('Compara calificaciones y vehículos, y confirma tu conductor ideal.')
+      ),
     ];
     return SurfaceCard(
       child: Column(

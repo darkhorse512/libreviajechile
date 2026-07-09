@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/config/app_config.dart';
+import '../../core/i18n/app_language.dart';
+import '../../core/i18n/i18n.dart';
+import '../../core/i18n/locale_controller.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_controller.dart';
+import '../../shared/widgets/language_picker.dart';
 import '../../data/models/enums.dart';
 import '../../data/providers.dart';
 import '../../shared/widgets/app_feedback.dart';
@@ -19,16 +23,16 @@ class ProfileScreen extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Cerrar sesión'),
-        content: const Text('¿Quieres cerrar tu sesión?'),
+        title: Text(context.tr('Cerrar sesión')),
+        content: Text(context.tr('¿Quieres cerrar tu sesión?')),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancelar')),
+              child: Text(context.tr('Cancelar'))),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Cerrar sesión'),
+            child: Text(context.tr('Cerrar sesión')),
           ),
         ],
       ),
@@ -46,12 +50,17 @@ class ProfileScreen extends ConsumerWidget {
     }
     final themeMode = ref.watch(themeControllerProvider);
     final isDriver = user.role == UserRole.driver;
+    ref.watch(localeControllerProvider); // reconstruye al cambiar idioma
+    final language = ref.read(localeControllerProvider.notifier).selected;
+    final languageLabel =
+        language?.nativeName ?? context.tr('Automático (dispositivo)');
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(
           AppSpacing.xl, AppSpacing.lg, AppSpacing.xl, AppSpacing.xl),
       children: [
-        Text('Perfil', style: Theme.of(context).textTheme.headlineSmall),
+        Text(context.tr('Perfil'),
+            style: Theme.of(context).textTheme.headlineSmall),
         const SizedBox(height: 16),
         SurfaceCard(
           elevated: true,
@@ -68,7 +77,7 @@ class ProfileScreen extends ConsumerWidget {
                       )),
               const SizedBox(height: 10),
               InfoPill(
-                label: user.role.label,
+                label: context.tr(user.role.label),
                 icon: isDriver
                     ? Icons.directions_car_rounded
                     : Icons.person_rounded,
@@ -81,21 +90,21 @@ class ProfileScreen extends ConsumerWidget {
                     value: user.hasRatings
                         ? user.ratingAvg.toStringAsFixed(1)
                         : '—',
-                    label: 'Calificación',
+                    label: context.tr('Calificación'),
                     icon: Icons.star_rounded,
                     color: AppColors.star,
                   ),
                   _divider(context),
                   _Stat(
                     value: '${user.tripsCount}',
-                    label: 'Viajes',
+                    label: context.tr('Viajes'),
                     icon: Icons.route_rounded,
                     color: AppColors.brand,
                   ),
                   _divider(context),
                   _Stat(
                     value: '${user.ratingCount}',
-                    label: 'Reseñas',
+                    label: context.tr('Reseñas'),
                     icon: Icons.reviews_rounded,
                     color: AppColors.accent,
                   ),
@@ -106,7 +115,7 @@ class ProfileScreen extends ConsumerWidget {
         ),
         if (isDriver && user.vehicle != null) ...[
           const SizedBox(height: 20),
-          const _SectionLabel('Mi vehículo'),
+          _SectionLabel(context.tr('Mi vehículo')),
           SurfaceCard(
             child: Row(
               children: [
@@ -141,7 +150,7 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ],
         const SizedBox(height: 20),
-        const _SectionLabel('Apariencia'),
+        _SectionLabel(context.tr('Apariencia')),
         SurfaceCard(
           padding: const EdgeInsets.all(6),
           child: Column(
@@ -150,7 +159,7 @@ class ProfileScreen extends ConsumerWidget {
                 mode: ThemeMode.system,
                 current: themeMode,
                 icon: Icons.brightness_auto_rounded,
-                label: 'Automático (sistema)',
+                label: context.tr('Automático (sistema)'),
                 onTap: () => ref
                     .read(themeControllerProvider.notifier)
                     .set(ThemeMode.system),
@@ -159,7 +168,7 @@ class ProfileScreen extends ConsumerWidget {
                 mode: ThemeMode.light,
                 current: themeMode,
                 icon: Icons.light_mode_rounded,
-                label: 'Claro',
+                label: context.tr('Claro'),
                 onTap: () => ref
                     .read(themeControllerProvider.notifier)
                     .set(ThemeMode.light),
@@ -168,7 +177,7 @@ class ProfileScreen extends ConsumerWidget {
                 mode: ThemeMode.dark,
                 current: themeMode,
                 icon: Icons.dark_mode_rounded,
-                label: 'Oscuro',
+                label: context.tr('Oscuro'),
                 onTap: () => ref
                     .read(themeControllerProvider.notifier)
                     .set(ThemeMode.dark),
@@ -177,14 +186,34 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 20),
-        const _SectionLabel('Cuenta'),
+        _SectionLabel(context.tr('Idioma')),
+        SurfaceCard(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: ListTile(
+            onTap: () => showLanguagePicker(context),
+            leading: Text(
+              language?.flag ?? '🌐',
+              style: const TextStyle(fontSize: 24),
+            ),
+            title: Text(context.tr('Idioma'),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge
+                    ?.copyWith(fontWeight: FontWeight.w600)),
+            subtitle: Text(languageLabel),
+            trailing: Icon(Icons.chevron_right_rounded,
+                color: context.palette.textMuted),
+          ),
+        ),
+        const SizedBox(height: 20),
+        _SectionLabel(context.tr('Cuenta')),
         SurfaceCard(
           padding: const EdgeInsets.symmetric(vertical: 4),
           child: Column(
             children: [
               _MenuTile(
                 icon: Icons.edit_outlined,
-                label: 'Editar perfil',
+                label: context.tr('Editar perfil'),
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -193,17 +222,19 @@ class ProfileScreen extends ConsumerWidget {
               ),
               _MenuTile(
                 icon: Icons.help_outline_rounded,
-                label: 'Ayuda y soporte',
-                onTap: () => AppFeedback.info(context, 'Disponible próximamente'),
+                label: context.tr('Ayuda y soporte'),
+                onTap: () =>
+                    AppFeedback.info(context, context.tr('Disponible próximamente')),
               ),
               _MenuTile(
                 icon: Icons.shield_outlined,
-                label: 'Privacidad y términos',
-                onTap: () => AppFeedback.info(context, 'Disponible próximamente'),
+                label: context.tr('Privacidad y términos'),
+                onTap: () =>
+                    AppFeedback.info(context, context.tr('Disponible próximamente')),
               ),
               _MenuTile(
                 icon: Icons.logout_rounded,
-                label: 'Cerrar sesión',
+                label: context.tr('Cerrar sesión'),
                 color: AppColors.danger,
                 onTap: () => _signOut(context, ref),
               ),

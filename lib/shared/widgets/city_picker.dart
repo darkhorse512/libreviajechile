@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/constants/chilean_cities.dart';
+import '../../core/i18n/i18n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 
@@ -58,15 +59,15 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Selecciona tu ciudad',
+                    Text(context.tr('Selecciona tu ciudad'),
                         style: Theme.of(context).textTheme.titleLarge),
                     const SizedBox(height: 12),
                     TextField(
                       autofocus: false,
                       onChanged: (v) => setState(() => _query = v),
-                      decoration: const InputDecoration(
-                        hintText: 'Buscar ciudad o región…',
-                        prefixIcon: Icon(Icons.search_rounded, size: 20),
+                      decoration: InputDecoration(
+                        hintText: context.tr('Buscar ciudad o región…'),
+                        prefixIcon: const Icon(Icons.search_rounded, size: 20),
                       ),
                     ),
                   ],
@@ -124,7 +125,7 @@ class CitySelectorField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          label,
+          context.tr(label),
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
                 color: context.palette.textSecondary,
                 fontWeight: FontWeight.w600,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/i18n/i18n.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../data/models/enums.dart';
@@ -30,7 +31,10 @@ class TripStatusPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = tripStatusColor(status);
-    return InfoPill(label: status.label, icon: tripStatusIcon(status), color: color);
+    return InfoPill(
+        label: context.tr(status.label),
+        icon: tripStatusIcon(status),
+        color: color);
   }
 }
 
@@ -83,9 +87,10 @@ class TripRoute extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _line(context, 'ORIGEN', origin, titleStyle, palette),
+              _line(context, context.tr('ORIGEN'), origin, titleStyle, palette),
               SizedBox(height: compact ? 12 : 20),
-              _line(context, 'DESTINO', destination, titleStyle, palette),
+              _line(context, context.tr('DESTINO'), destination, titleStyle,
+                  palette),
             ],
           ),
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/i18n/i18n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/models/vehicle.dart';
@@ -22,7 +23,7 @@ class DemoQuickAccess extends ConsumerWidget {
           password: 'demo1234',
         );
     if (result == null && context.mounted) {
-      AppFeedback.error(context, 'No se pudo iniciar la demo');
+      AppFeedback.error(context, context.tr('No se pudo iniciar la demo'));
     }
   }
 
@@ -43,7 +44,7 @@ class DemoQuickAccess extends ConsumerWidget {
           ),
         );
     if (result == null && context.mounted) {
-      AppFeedback.error(context, 'No se pudo iniciar la demo');
+      AppFeedback.error(context, context.tr('No se pudo iniciar la demo'));
     }
   }
 
@@ -64,13 +65,14 @@ class DemoQuickAccess extends ConsumerWidget {
               const Icon(Icons.science_rounded,
                   size: 18, color: AppColors.price),
               const SizedBox(width: 8),
-              Text('Explorar sin registro',
+              Text(context.tr('Explorar sin registro'),
                   style: Theme.of(context).textTheme.titleMedium),
             ],
           ),
           const SizedBox(height: 4),
           Text(
-            'Modo demostración con datos de prueba. Ideal para revisar la interfaz.',
+            context.tr(
+                'Modo demostración con datos de prueba. Ideal para revisar la interfaz.'),
             style: Theme.of(context)
                 .textTheme
                 .bodySmall
@@ -83,7 +85,7 @@ class DemoQuickAccess extends ConsumerWidget {
                 child: OutlinedButton.icon(
                   onPressed: () => _enterAsPassenger(context, ref),
                   icon: const Icon(Icons.person_rounded, size: 18),
-                  label: const Text('Pasajero'),
+                  label: Text(context.tr('Pasajero')),
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size.fromHeight(48),
                   ),
@@ -94,7 +96,7 @@ class DemoQuickAccess extends ConsumerWidget {
                 child: OutlinedButton.icon(
                   onPressed: () => _enterAsDriver(context, ref),
                   icon: const Icon(Icons.directions_car_rounded, size: 18),
-                  label: const Text('Conductor'),
+                  label: Text(context.tr('Conductor')),
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size.fromHeight(48),
                   ),

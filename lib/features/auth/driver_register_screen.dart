@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/i18n/i18n.dart';
 import '../../core/router/routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
@@ -66,7 +67,7 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
   void _continue() {
     if (!_step1Key.currentState!.validate()) return;
     if (_city == null) {
-      AppFeedback.error(context, 'Selecciona tu ciudad');
+      AppFeedback.error(context, context.tr('Selecciona tu ciudad'));
       return;
     }
     FocusScope.of(context).unfocus();
@@ -76,7 +77,8 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
   Future<void> _submit() async {
     if (!_step2Key.currentState!.validate()) return;
     if (!_accepted) {
-      AppFeedback.error(context, 'Debes aceptar los términos y condiciones');
+      AppFeedback.error(
+          context, context.tr('Debes aceptar los términos y condiciones'));
       return;
     }
     FocusScope.of(context).unfocus();
@@ -117,7 +119,7 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
             }
           },
         ),
-        title: Text('Paso ${_step + 1} de 2'),
+        title: Text(context.trp('Paso {n} de 2', {'n': '${_step + 1}'})),
       ),
       body: SafeArea(
         top: false,
@@ -136,12 +138,12 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
               padding: const EdgeInsets.all(AppSpacing.xl),
               child: _step == 0
                   ? PrimaryButton(
-                      label: 'Continuar',
+                      label: context.tr('Continuar'),
                       icon: Icons.arrow_forward_rounded,
                       onPressed: _continue,
                     )
                   : PrimaryButton(
-                      label: 'Crear cuenta de conductor',
+                      label: context.tr('Crear cuenta de conductor'),
                       loading: state.loading,
                       onPressed: _submit,
                     ),
@@ -161,16 +163,17 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const AuthHeader(
+            AuthHeader(
               icon: Icons.badge_outlined,
               color: AppColors.accent,
-              title: 'Tus datos personales',
-              subtitle: 'Con esto los pasajeros sabrán quién los llevará.',
+              title: context.tr('Tus datos personales'),
+              subtitle:
+                  context.tr('Con esto los pasajeros sabrán quién los llevará.'),
             ),
             const SizedBox(height: 28),
             AppTextField(
-              label: 'Nombre completo',
-              hint: 'Ej: Cristóbal Rojas',
+              label: context.tr('Nombre completo'),
+              hint: context.tr('Ej: Cristóbal Rojas'),
               controller: _name,
               icon: Icons.person_outline_rounded,
               textCapitalization: TextCapitalization.words,
@@ -179,7 +182,7 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
             ),
             const SizedBox(height: 18),
             AppTextField(
-              label: 'Correo electrónico',
+              label: context.tr('Correo electrónico'),
               hint: 'tucorreo@ejemplo.cl',
               controller: _email,
               icon: Icons.mail_outline_rounded,
@@ -189,7 +192,7 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
             ),
             const SizedBox(height: 18),
             AppTextField(
-              label: 'Teléfono',
+              label: context.tr('Teléfono'),
               hint: '+56 9 1234 5678',
               controller: _phone,
               icon: Icons.phone_outlined,
@@ -199,14 +202,14 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
             ),
             const SizedBox(height: 18),
             CitySelectorField(
-              label: 'Ciudad donde conduces',
+              label: context.tr('Ciudad donde conduces'),
               value: _city,
               onChanged: (v) => setState(() => _city = v),
             ),
             const SizedBox(height: 18),
             AppTextField(
-              label: 'Contraseña',
-              hint: 'Mínimo 6 caracteres',
+              label: context.tr('Contraseña'),
+              hint: context.tr('Mínimo 6 caracteres'),
               controller: _password,
               icon: Icons.lock_outline_rounded,
               obscure: true,
@@ -229,35 +232,38 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const AuthHeader(
+            AuthHeader(
               icon: Icons.directions_car_filled_rounded,
               color: AppColors.accent,
-              title: 'Datos de tu vehículo',
-              subtitle: 'Esta información se mostrará a los pasajeros.',
+              title: context.tr('Datos de tu vehículo'),
+              subtitle:
+                  context.tr('Esta información se mostrará a los pasajeros.'),
             ),
             const SizedBox(height: 28),
             Row(
               children: [
                 Expanded(
                   child: AppTextField(
-                    label: 'Marca',
+                    label: context.tr('Marca'),
                     hint: 'Toyota',
                     controller: _make,
                     icon: Icons.branding_watermark_outlined,
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
-                    validator: (v) => Validators.required(v, field: 'La marca'),
+                    validator: (v) =>
+                        Validators.required(v, field: context.tr('La marca')),
                   ),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: AppTextField(
-                    label: 'Modelo',
+                    label: context.tr('Modelo'),
                     hint: 'Yaris',
                     controller: _model,
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
-                    validator: (v) => Validators.required(v, field: 'El modelo'),
+                    validator: (v) =>
+                        Validators.required(v, field: context.tr('El modelo')),
                   ),
                 ),
               ],
@@ -267,7 +273,7 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
               children: [
                 Expanded(
                   child: AppTextField(
-                    label: 'Año',
+                    label: context.tr('Año'),
                     hint: '2021',
                     controller: _year,
                     icon: Icons.calendar_today_outlined,
@@ -283,19 +289,20 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
                 const SizedBox(width: 14),
                 Expanded(
                   child: AppTextField(
-                    label: 'Color',
-                    hint: 'Blanco',
+                    label: context.tr('Color'),
+                    hint: context.tr('Blanco'),
                     controller: _color,
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
-                    validator: (v) => Validators.required(v, field: 'El color'),
+                    validator: (v) =>
+                        Validators.required(v, field: context.tr('El color')),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 18),
             AppTextField(
-              label: 'Patente',
+              label: context.tr('Patente'),
               hint: 'BBBB12',
               controller: _plate,
               icon: Icons.pin_outlined,
@@ -307,7 +314,7 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
               validator: Validators.plate,
             ),
             const SizedBox(height: 22),
-            Text('Capacidad de pasajeros',
+            Text(context.tr('Capacidad de pasajeros'),
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
                       color: context.palette.textSecondary,
                     )),
@@ -398,14 +405,16 @@ class _TermsRow extends StatelessWidget {
               child: Text.rich(
                 TextSpan(
                   style: Theme.of(context).textTheme.bodySmall,
-                  children: const [
-                    TextSpan(text: 'Confirmo que mis datos son verídicos y acepto los '),
+                  children: [
                     TextSpan(
-                      text: 'Términos del Conductor',
-                      style: TextStyle(
+                        text: context.tr(
+                            'Confirmo que mis datos son verídicos y acepto los ')),
+                    TextSpan(
+                      text: context.tr('Términos del Conductor'),
+                      style: const TextStyle(
                           color: AppColors.accent, fontWeight: FontWeight.w700),
                     ),
-                    TextSpan(text: '.'),
+                    const TextSpan(text: '.'),
                   ],
                 ),
               ),

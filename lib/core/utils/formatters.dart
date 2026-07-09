@@ -1,5 +1,7 @@
 import 'package:intl/intl.dart';
 
+import '../i18n/i18n.dart';
+
 /// Formateadores para la localización chilena (CLP, fechas, etc.).
 abstract class Formatters {
   static final NumberFormat _clp =
@@ -15,12 +17,14 @@ abstract class Formatters {
   /// "hace 3 min", "hace 2 h", "ayer"
   static String relative(DateTime time) {
     final diff = DateTime.now().difference(time);
-    if (diff.inSeconds < 60) return 'recién';
-    if (diff.inMinutes < 60) return 'hace ${diff.inMinutes} min';
-    if (diff.inHours < 24) return 'hace ${diff.inHours} h';
-    if (diff.inDays == 1) return 'ayer';
-    if (diff.inDays < 7) return 'hace ${diff.inDays} días';
-    return DateFormat('d MMM', 'es').format(time);
+    if (diff.inSeconds < 60) return trg('recién');
+    if (diff.inMinutes < 60) {
+      return trgp('hace {n} min', {'n': '${diff.inMinutes}'});
+    }
+    if (diff.inHours < 24) return trgp('hace {n} h', {'n': '${diff.inHours}'});
+    if (diff.inDays == 1) return trg('ayer');
+    if (diff.inDays < 7) return trgp('hace {n} días', {'n': '${diff.inDays}'});
+    return DateFormat('d MMM', gLanguageCode).format(time);
   }
 
   static String date(DateTime time) => DateFormat('d MMM y', 'es').format(time);

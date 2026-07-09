@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/i18n/i18n.dart';
 import '../../core/router/routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
@@ -65,18 +66,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: 8),
                   const AppLogoMark(size: 64),
                   const SizedBox(height: 24),
-                  Text('Hola de nuevo 👋',
+                  Text(context.tr('Hola de nuevo 👋'),
                       style: Theme.of(context).textTheme.headlineMedium),
                   const SizedBox(height: 8),
                   Text(
-                    'Ingresa para continuar tu viaje.',
+                    context.tr('Ingresa para continuar tu viaje.'),
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: context.palette.textSecondary,
                         ),
                   ),
                   const SizedBox(height: 32),
                   AppTextField(
-                    label: 'Correo electrónico',
+                    label: context.tr('Correo electrónico'),
                     hint: 'tucorreo@ejemplo.cl',
                     controller: _email,
                     icon: Icons.mail_outline_rounded,
@@ -86,7 +87,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   const SizedBox(height: 18),
                   AppTextField(
-                    label: 'Contraseña',
+                    label: context.tr('Contraseña'),
                     hint: '••••••••',
                     controller: _password,
                     icon: Icons.lock_outline_rounded,
@@ -100,7 +101,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ],
                   const SizedBox(height: 28),
                   PrimaryButton(
-                    label: 'Ingresar',
+                    label: context.tr('Ingresar'),
                     loading: state.loading,
                     onPressed: _submit,
                   ),
@@ -109,11 +110,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     child: Wrap(
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        Text('¿No tienes cuenta?',
+                        Text(context.tr('¿No tienes cuenta?'),
                             style: Theme.of(context).textTheme.bodyMedium),
                         TextButton(
                           onPressed: () => context.go(Routes.roleSelection),
-                          child: const Text('Regístrate'),
+                          child: Text(context.tr('Regístrate')),
                         ),
                       ],
                     ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/i18n/i18n.dart';
 import '../../core/onboarding_controller.dart';
 import '../../core/router/routes.dart';
 import '../../core/theme/app_colors.dart';
@@ -82,7 +83,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: TextButton(
                   onPressed: _finish,
-                  child: const Text('Saltar'),
+                  child: Text(context.tr('Saltar')),
                 ),
               ),
             ),
@@ -99,7 +100,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               padding: const EdgeInsets.fromLTRB(
                   AppSpacing.xl, AppSpacing.xl, AppSpacing.xl, AppSpacing.lg),
               child: PrimaryButton(
-                label: _isLast ? 'Comenzar' : 'Siguiente',
+                label: _isLast ? context.tr('Comenzar') : context.tr('Siguiente'),
                 icon: _isLast ? Icons.rocket_launch_rounded : null,
                 onPressed: _next,
               ),
@@ -136,13 +137,13 @@ class _SlideView extends StatelessWidget {
           ),
           const SizedBox(height: 48),
           Text(
-            slide.title,
+            context.tr(slide.title),
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: 16),
           Text(
-            slide.body,
+            context.tr(slide.body),
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: context.palette.textSecondary,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/i18n/i18n.dart';
 import '../../core/router/routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
@@ -22,12 +23,13 @@ class RoleSelectionScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '¿Cómo quieres usar\nLibre Viaje Chile?',
+                context.tr('¿Cómo quieres usar\nLibre Viaje Chile?'),
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               const SizedBox(height: 8),
               Text(
-                'Elige tu perfil para crear tu cuenta. Podrás cambiarlo más adelante.',
+                context.tr(
+                    'Elige tu perfil para crear tu cuenta. Podrás cambiarlo más adelante.'),
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: context.palette.textSecondary,
                     ),
@@ -36,13 +38,13 @@ class RoleSelectionScreen extends StatelessWidget {
               _RoleCard(
                 icon: Icons.airline_seat_recline_normal_rounded,
                 color: AppColors.brand,
-                title: 'Soy Pasajero',
-                subtitle:
-                    'Solicita viajes, propone tu precio y elige al conductor ideal.',
-                bullets: const [
-                  'Ofrece el precio que quieras pagar',
-                  'Recibe ofertas y contraofertas',
-                  'Califica cada viaje',
+                title: context.tr('Soy Pasajero'),
+                subtitle: context.tr(
+                    'Solicita viajes, propone tu precio y elige al conductor ideal.'),
+                bullets: [
+                  context.tr('Ofrece el precio que quieras pagar'),
+                  context.tr('Recibe ofertas y contraofertas'),
+                  context.tr('Califica cada viaje'),
                 ],
                 onTap: () => context.push(Routes.registerPassenger),
               ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.15),
@@ -50,13 +52,13 @@ class RoleSelectionScreen extends StatelessWidget {
               _RoleCard(
                 icon: Icons.directions_car_filled_rounded,
                 color: AppColors.accent,
-                title: 'Soy Conductor',
-                subtitle:
-                    'Recibe solicitudes cercanas y genera ingresos sin comisiones.',
-                bullets: const [
-                  'Sin comisiones (0%)',
-                  'Acepta o envía tu contraoferta',
-                  'Tú decides cuándo conectarte',
+                title: context.tr('Soy Conductor'),
+                subtitle: context.tr(
+                    'Recibe solicitudes cercanas y genera ingresos sin comisiones.'),
+                bullets: [
+                  context.tr('Sin comisiones (0%)'),
+                  context.tr('Acepta o envía tu contraoferta'),
+                  context.tr('Tú decides cuándo conectarte'),
                 ],
                 onTap: () => context.push(Routes.registerDriver),
               ).animate().fadeIn(delay: 120.ms, duration: 400.ms).slideY(begin: 0.15),
@@ -64,7 +66,7 @@ class RoleSelectionScreen extends StatelessWidget {
               Center(
                 child: TextButton(
                   onPressed: () => context.go(Routes.login),
-                  child: const Text('Ya tengo una cuenta · Ingresar'),
+                  child: Text(context.tr('Ya tengo una cuenta · Ingresar')),
                 ),
               ),
             ],

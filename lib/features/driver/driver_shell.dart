@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'driver_requests_screen.dart';
 import 'driver_trips_screen.dart';
+import '../../core/i18n/i18n.dart';
 import '../profile/profile_screen.dart';
 
 /// Contenedor principal del conductor con navegación inferior.
@@ -33,21 +34,21 @@ class _DriverShellState extends ConsumerState<DriverShell> {
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),
         height: 68,
-        destinations: const [
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.notifications_none_rounded),
-            selectedIcon: Icon(Icons.notifications_rounded),
-            label: 'Solicitudes',
+            icon: const Icon(Icons.notifications_none_rounded),
+            selectedIcon: const Icon(Icons.notifications_rounded),
+            label: context.tr('Solicitudes'),
           ),
           NavigationDestination(
-            icon: Icon(Icons.route_outlined),
-            selectedIcon: Icon(Icons.route_rounded),
-            label: 'Mis viajes',
+            icon: const Icon(Icons.route_outlined),
+            selectedIcon: const Icon(Icons.route_rounded),
+            label: context.tr('Mis viajes'),
           ),
           NavigationDestination(
-            icon: Icon(Icons.person_outline_rounded),
-            selectedIcon: Icon(Icons.person_rounded),
-            label: 'Perfil',
+            icon: const Icon(Icons.person_outline_rounded),
+            selectedIcon: const Icon(Icons.person_rounded),
+            label: context.tr('Perfil'),
           ),
         ],
       ),

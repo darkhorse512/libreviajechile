@@ -5,6 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../../core/i18n/i18n.dart';
 import '../../../core/services/geo_service.dart';
 import '../../../core/services/location_service.dart';
 import '../../../core/theme/app_colors.dart';
@@ -117,7 +118,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
           GeoPlace(
             lat: point.latitude,
             lng: point.longitude,
-            address: 'Ubicación seleccionada',
+            address: context.tr('Ubicación seleccionada'),
           );
       _reverseLoading = false;
     });
@@ -158,8 +159,9 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
     setState(() => _locating = false);
     if (pos == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No pudimos obtener tu ubicación. Revisa los permisos.'),
+        SnackBar(
+          content: Text(context
+              .tr('No pudimos obtener tu ubicación. Revisa los permisos.')),
         ),
       );
       return;
@@ -224,6 +226,9 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
                 onChanged: _onSearchChanged,
                 onSelect: _selectResult,
                 onBack: () => Navigator.of(context).maybePop(),
+                // Al elegir por primera vez, abrimos con el teclado listo para
+                // escribir. Al reeditar un punto ya elegido, no molestamos.
+                autofocus: widget.initialPlace == null,
               ),
             ),
 
@@ -303,6 +308,7 @@ class _SearchPanel extends StatelessWidget {
     required this.onChanged,
     required this.onSelect,
     required this.onBack,
+    this.autofocus = false,
   });
 
   final TextEditingController controller;
@@ -313,6 +319,7 @@ class _SearchPanel extends StatelessWidget {
   final ValueChanged<String> onChanged;
   final ValueChanged<GeoPlace> onSelect;
   final VoidCallback onBack;
+  final bool autofocus;
 
   @override
   Widget build(BuildContext context) {
@@ -334,12 +341,13 @@ class _SearchPanel extends StatelessWidget {
                   child: TextField(
                     controller: controller,
                     focusNode: focusNode,
+                    autofocus: autofocus,
                     onChanged: onChanged,
                     textInputAction: TextInputAction.search,
                     decoration: InputDecoration(
                       isDense: true,
                       border: InputBorder.none,
-                      hintText: 'Buscar $title…',
+                      hintText: context.tr('Busca una dirección, calle o lugar…'),
                     ),
                   ),
                 ),
@@ -461,7 +469,7 @@ class _ConfirmCard extends StatelessWidget {
                 child: loading
                     ? Padding(
                         padding: const EdgeInsets.symmetric(vertical: 6),
-                        child: Text('Buscando dirección…',
+                        child: Text(context.tr('Buscando dirección…'),
                             style: Theme.of(context).textTheme.bodyMedium),
                       )
                     : Column(
@@ -470,7 +478,7 @@ class _ConfirmCard extends StatelessWidget {
                           Text(
                             place?.shortName ??
                                 place?.address.split(',').first ??
-                                'Mueve el mapa para elegir',
+                                context.tr('Mueve el mapa para elegir'),
                             style: Theme.of(context).textTheme.titleMedium,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -492,7 +500,7 @@ class _ConfirmCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           PrimaryButton(
-            label: confirmLabel,
+            label: context.tr(confirmLabel),
             icon: Icons.check_rounded,
             onPressed: onConfirm,
           ),

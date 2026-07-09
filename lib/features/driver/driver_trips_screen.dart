@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/i18n/i18n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/contact.dart';
@@ -35,16 +36,16 @@ class DriverTripsScreen extends ConsumerWidget {
               AppSpacing.xl, AppSpacing.lg, AppSpacing.xl, AppSpacing.sm),
           child: Align(
             alignment: Alignment.centerLeft,
-            child: Text('Mis viajes',
+            child: Text(context.tr('Mis viajes'),
                 style: Theme.of(context).textTheme.headlineSmall),
           ),
         ),
         Expanded(
           child: tripsAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (_, __) => const EmptyState(
+            error: (_, __) => EmptyState(
               icon: Icons.error_outline_rounded,
-              title: 'No pudimos cargar tus viajes',
+              title: context.tr('No pudimos cargar tus viajes'),
             ),
             data: (trips) {
               final active = trips.where((t) => t.isActive).toList();
@@ -54,11 +55,11 @@ class DriverTripsScreen extends ConsumerWidget {
                       t.status == TripStatus.cancelled)
                   .toList();
               if (trips.isEmpty) {
-                return const EmptyState(
+                return EmptyState(
                   icon: Icons.route_rounded,
-                  title: 'Aún no tienes viajes',
-                  message:
-                      'Acepta solicitudes desde la pestaña Solicitudes para comenzar.',
+                  title: context.tr('Aún no tienes viajes'),
+                  message: context.tr(
+                      'Acepta solicitudes desde la pestaña Solicitudes para comenzar.'),
                 );
               }
               return ListView(
@@ -66,7 +67,7 @@ class DriverTripsScreen extends ConsumerWidget {
                     AppSpacing.xl, 0, AppSpacing.xl, AppSpacing.xl),
                 children: [
                   if (active.isNotEmpty) ...[
-                    const _Label('En curso'),
+                    _Label(context.tr('En curso')),
                     for (final t in active) ...[
                       _ActiveDriverTrip(trip: t),
                       const SizedBox(height: 12),
@@ -74,7 +75,7 @@ class DriverTripsScreen extends ConsumerWidget {
                     const SizedBox(height: 8),
                   ],
                   if (history.isNotEmpty) ...[
-                    const _Label('Historial'),
+                    _Label(context.tr('Historial')),
                     for (final t in history) ...[
                       _HistoryTile(trip: t),
                       const SizedBox(height: 12),
@@ -102,7 +103,9 @@ class _ActiveDriverTrip extends ConsumerWidget {
     if (context.mounted) {
       AppFeedback.success(
         context,
-        next == TripStatus.inProgress ? 'Viaje iniciado' : 'Viaje finalizado',
+        next == TripStatus.inProgress
+            ? context.tr('Viaje iniciado')
+            : context.tr('Viaje finalizado'),
       );
     }
   }
@@ -130,22 +133,23 @@ class _ActiveDriverTrip extends ConsumerWidget {
           Row(
             children: [
               UserAvatar(
-                  name: passenger?.fullName ?? 'Pasajero',
+                  name: passenger?.fullName ?? context.tr('Pasajero'),
                   imageUrl: passenger?.avatarUrl,
                   size: 40),
               const SizedBox(width: 10),
               Expanded(
-                child: Text(passenger?.fullName ?? 'Pasajero',
+                child: Text(passenger?.fullName ?? context.tr('Pasajero'),
                     style: Theme.of(context).textTheme.titleSmall),
               ),
               IconButton(
                 tooltip: 'WhatsApp',
                 onPressed: () => Contact.whatsapp(context, passenger?.phone,
-                    message: 'Hola! Soy tu conductor de Libre Viaje Chile.'),
+                    message: context.tr(
+                        'Hola! Soy tu conductor de Libre Viaje Chile.')),
                 icon: const Icon(Icons.chat_rounded, color: AppColors.success),
               ),
               IconButton(
-                tooltip: 'Llamar',
+                tooltip: context.tr('Llamar'),
                 onPressed: () => Contact.call(context, passenger?.phone),
                 icon: const Icon(Icons.call_rounded, color: AppColors.accent),
               ),
@@ -160,8 +164,8 @@ class _ActiveDriverTrip extends ConsumerWidget {
           const SizedBox(height: 16),
           PrimaryButton(
             label: trip.status == TripStatus.accepted
-                ? 'Iniciar viaje'
-                : 'Finalizar viaje',
+                ? context.tr('Iniciar viaje')
+                : context.tr('Finalizar viaje'),
             icon: trip.status == TripStatus.accepted
                 ? Icons.play_arrow_rounded
                 : Icons.flag_rounded,
@@ -204,7 +208,7 @@ class _HistoryTile extends StatelessWidget {
           const Divider(height: 20),
           Row(
             children: [
-              Text(trip.passenger?.fullName ?? 'Pasajero',
+              Text(trip.passenger?.fullName ?? context.tr('Pasajero'),
                   style: Theme.of(context).textTheme.bodyMedium),
               const Spacer(),
               Text(Formatters.clp(trip.displayFare),
@@ -222,10 +226,10 @@ class _HistoryTile extends StatelessWidget {
                 tripId: trip.id,
                 personName: trip.passenger!.fullName,
                 personAvatar: trip.passenger!.avatarUrl,
-                roleLabel: 'pasajero',
+                roleLabel: context.tr('pasajero'),
               ),
               icon: const Icon(Icons.star_rounded, size: 18, color: AppColors.star),
-              label: const Text('Calificar pasajero'),
+              label: Text(context.tr('Calificar pasajero')),
               style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(48)),
             ),

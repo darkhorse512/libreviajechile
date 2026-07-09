@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/i18n/i18n.dart';
 import '../../core/router/routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
@@ -37,13 +38,14 @@ class WelcomeScreen extends ConsumerWidget {
                     .fadeIn(),
                 const SizedBox(height: 28),
                 Text(
-                  'Bienvenido a bordo',
+                  context.tr('Bienvenido a bordo'),
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.headlineMedium,
                 ).animate().fadeIn(delay: 150.ms).slideY(begin: 0.2),
                 const SizedBox(height: 12),
                 Text(
-                  'Tú pones el precio, tú eliges el viaje.\nMoverte por Chile nunca fue tan libre.',
+                  context.tr(
+                      'Tú pones el precio, tú eliges el viaje.\nMoverte por Chile nunca fue tan libre.'),
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: context.palette.textSecondary,
@@ -51,13 +53,13 @@ class WelcomeScreen extends ConsumerWidget {
                 ).animate().fadeIn(delay: 300.ms),
                 const Spacer(flex: 3),
                 PrimaryButton(
-                  label: 'Crear cuenta',
+                  label: context.tr('Crear cuenta'),
                   icon: Icons.person_add_alt_1_rounded,
                   onPressed: () => context.push(Routes.roleSelection),
                 ).animate().fadeIn(delay: 450.ms).slideY(begin: 0.3),
                 const SizedBox(height: 12),
                 SecondaryButton(
-                  label: 'Ya tengo cuenta',
+                  label: context.tr('Ya tengo cuenta'),
                   onPressed: () => context.push(Routes.login),
                 ).animate().fadeIn(delay: 550.ms),
                 if (isDemo) ...[
@@ -91,7 +93,7 @@ class _DemoBadge extends StatelessWidget {
           const SizedBox(width: 8),
           Flexible(
             child: Text(
-              'Modo demostración · datos de prueba',
+              context.tr('Modo demostración · datos de prueba'),
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     color: AppColors.price,
                     fontWeight: FontWeight.w700,

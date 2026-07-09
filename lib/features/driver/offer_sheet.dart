@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/config/app_config.dart';
+import '../../core/i18n/i18n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/formatters.dart';
@@ -68,12 +69,12 @@ class _OfferSheetState extends ConsumerState<_OfferSheet> {
             message: _message.text.trim().isEmpty ? null : _message.text.trim(),
           );
       if (mounted) {
-        AppFeedback.success(context, 'Oferta enviada al pasajero');
+        AppFeedback.success(context, context.tr('Oferta enviada al pasajero'));
         Navigator.pop(context);
       }
     } catch (_) {
       if (mounted) {
-        AppFeedback.error(context, 'No se pudo enviar la oferta');
+        AppFeedback.error(context, context.tr('No se pudo enviar la oferta'));
         setState(() => _sending = false);
       }
     }
@@ -105,7 +106,7 @@ class _OfferSheetState extends ConsumerState<_OfferSheet> {
               ),
             ),
             const SizedBox(height: 20),
-            Text('Responder solicitud',
+            Text(context.tr('Responder solicitud'),
                 style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 16),
             TripRoute(
@@ -117,7 +118,7 @@ class _OfferSheetState extends ConsumerState<_OfferSheet> {
             _ModeSwitch(counter: _counter, onChanged: _setMode, trip: trip),
             const SizedBox(height: 20),
             if (_counter) ...[
-              Text('Tu contraoferta',
+              Text(context.tr('Tu contraoferta'),
                   style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 10),
               Row(
@@ -139,7 +140,7 @@ class _OfferSheetState extends ConsumerState<_OfferSheet> {
               ),
               const SizedBox(height: 20),
             ],
-            Text('Tiempo estimado de llegada',
+            Text(context.tr('Tiempo estimado de llegada'),
                 style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 10),
             Wrap(
@@ -147,7 +148,7 @@ class _OfferSheetState extends ConsumerState<_OfferSheet> {
               children: [
                 for (final m in [3, 5, 8, 12, 15, 20])
                   ChoiceChip(
-                    label: Text('$m min'),
+                    label: Text(context.trp('{n} min', {'n': '$m'})),
                     selected: _eta == m,
                     onSelected: (_) => setState(() => _eta = m),
                     labelStyle: TextStyle(
@@ -159,8 +160,8 @@ class _OfferSheetState extends ConsumerState<_OfferSheet> {
             ),
             const SizedBox(height: 18),
             AppTextField(
-              label: 'Mensaje (opcional)',
-              hint: 'Ej: Voy en camino, patente blanca…',
+              label: context.tr('Mensaje (opcional)'),
+              hint: context.tr('Ej: Voy en camino, patente blanca…'),
               controller: _message,
               maxLength: 120,
               textCapitalization: TextCapitalization.sentences,
@@ -168,8 +169,8 @@ class _OfferSheetState extends ConsumerState<_OfferSheet> {
             const SizedBox(height: 20),
             PrimaryButton(
               label: _counter
-                  ? 'Enviar contraoferta · ${Formatters.clp(_amount)}'
-                  : 'Aceptar por ${Formatters.clp(_amount)}',
+                  ? '${context.tr('Enviar contraoferta')} · ${Formatters.clp(_amount)}'
+                  : '${context.tr('Aceptar por')} ${Formatters.clp(_amount)}',
               icon: _counter ? Icons.swap_horiz_rounded : Icons.check_rounded,
               loading: _sending,
               onPressed: _send,
@@ -219,7 +220,7 @@ class _ModeSwitch extends StatelessWidget {
           _tab(
             context,
             selected: !counter,
-            label: 'Aceptar',
+            label: context.tr('Aceptar'),
             sub: Formatters.clp(trip.offeredFare),
             color: AppColors.success,
             onTap: () => onChanged(false),
@@ -227,8 +228,8 @@ class _ModeSwitch extends StatelessWidget {
           _tab(
             context,
             selected: counter,
-            label: 'Contraofertar',
-            sub: 'Otro precio',
+            label: context.tr('Contraofertar'),
+            sub: context.tr('Otro precio'),
             color: AppColors.price,
             onTap: () => onChanged(true),
           ),

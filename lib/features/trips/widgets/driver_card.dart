@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/i18n/i18n.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/app_user.dart';
@@ -47,7 +48,9 @@ class DriverInfoCard extends StatelessWidget {
                         RatingStars(
                             rating: driver.ratingAvg, size: 15, showValue: true),
                         const SizedBox(width: 6),
-                        Text('· ${driver.tripsCount} viajes',
+                        Text(
+                            context.trp(
+                                '· {n} viajes', {'n': '${driver.tripsCount}'}),
                             style: Theme.of(context)
                                 .textTheme
                                 .bodySmall

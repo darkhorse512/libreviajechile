@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/i18n/i18n.dart';
 import '../../core/router/routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
@@ -42,7 +43,8 @@ class _PassengerRegisterScreenState
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (!_accepted) {
-      AppFeedback.error(context, 'Debes aceptar los términos y condiciones');
+      AppFeedback.error(
+          context, context.tr('Debes aceptar los términos y condiciones'));
       return;
     }
     FocusScope.of(context).unfocus();
@@ -75,17 +77,17 @@ class _PassengerRegisterScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AuthHeader(
+                AuthHeader(
                   icon: Icons.airline_seat_recline_normal_rounded,
                   color: AppColors.brand,
-                  title: 'Crea tu cuenta de pasajero',
-                  subtitle:
-                      'Pide viajes en cualquier ciudad de Chile. Eliges el lugar al solicitar cada viaje.',
+                  title: context.tr('Crea tu cuenta de pasajero'),
+                  subtitle: context.tr(
+                      'Pide viajes en cualquier ciudad de Chile. Eliges el lugar al solicitar cada viaje.'),
                 ),
                 const SizedBox(height: 28),
                 AppTextField(
-                  label: 'Nombre completo',
-                  hint: 'Ej: Camila Torres',
+                  label: context.tr('Nombre completo'),
+                  hint: context.tr('Ej: Camila Torres'),
                   controller: _name,
                   icon: Icons.person_outline_rounded,
                   textCapitalization: TextCapitalization.words,
@@ -94,7 +96,7 @@ class _PassengerRegisterScreenState
                 ),
                 const SizedBox(height: 18),
                 AppTextField(
-                  label: 'Correo electrónico',
+                  label: context.tr('Correo electrónico'),
                   hint: 'tucorreo@ejemplo.cl',
                   controller: _email,
                   icon: Icons.mail_outline_rounded,
@@ -104,7 +106,7 @@ class _PassengerRegisterScreenState
                 ),
                 const SizedBox(height: 18),
                 AppTextField(
-                  label: 'Teléfono',
+                  label: context.tr('Teléfono'),
                   hint: '+56 9 1234 5678',
                   controller: _phone,
                   icon: Icons.phone_outlined,
@@ -114,8 +116,8 @@ class _PassengerRegisterScreenState
                 ),
                 const SizedBox(height: 18),
                 AppTextField(
-                  label: 'Contraseña',
-                  hint: 'Mínimo 6 caracteres',
+                  label: context.tr('Contraseña'),
+                  hint: context.tr('Mínimo 6 caracteres'),
                   controller: _password,
                   icon: Icons.lock_outline_rounded,
                   obscure: true,
@@ -133,7 +135,7 @@ class _PassengerRegisterScreenState
                 ],
                 const SizedBox(height: 20),
                 PrimaryButton(
-                  label: 'Crear cuenta',
+                  label: context.tr('Crear cuenta'),
                   loading: state.loading,
                   onPressed: _submit,
                 ),
@@ -141,7 +143,7 @@ class _PassengerRegisterScreenState
                 Center(
                   child: TextButton(
                     onPressed: () => context.go(Routes.login),
-                    child: const Text('Ya tengo cuenta · Ingresar'),
+                    child: Text(context.tr('Ya tengo cuenta · Ingresar')),
                   ),
                 ),
               ],
@@ -181,14 +183,15 @@ class _TermsCheck extends StatelessWidget {
                 child: Text.rich(
                   TextSpan(
                     style: Theme.of(context).textTheme.bodySmall,
-                    children: const [
-                      TextSpan(text: 'Acepto los '),
+                    children: [
+                      TextSpan(text: context.tr('Acepto los ')),
                       TextSpan(
-                        text: 'Términos y Condiciones',
-                        style: TextStyle(
+                        text: context.tr('Términos y Condiciones'),
+                        style: const TextStyle(
                             color: AppColors.brand, fontWeight: FontWeight.w700),
                       ),
-                      TextSpan(text: ' y la Política de Privacidad.'),
+                      TextSpan(
+                          text: context.tr(' y la Política de Privacidad.')),
                     ],
                   ),
                 ),

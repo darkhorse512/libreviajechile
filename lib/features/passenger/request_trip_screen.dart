@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 
 import '../../core/config/app_config.dart';
 import '../../core/constants/chilean_cities.dart';
+import '../../core/i18n/i18n.dart';
 import '../../core/router/routes.dart';
 import '../../core/services/geo_service.dart';
 import '../../core/services/location_service.dart';
@@ -66,7 +67,7 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
           GeoPlace(
             lat: pos.latitude,
             lng: pos.longitude,
-            address: 'Mi ubicación actual',
+            address: context.tr('Mi ubicación actual'),
           );
       // Autoselecciona la ciudad más cercana si el pasajero no eligió una.
       _city ??= nearestCity(pos.latitude, pos.longitude).name;
@@ -94,11 +95,11 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
   Future<void> _pickOrigin() async {
     final place = await LocationPickerScreen.show(
       context,
-      title: 'punto de partida',
+      title: context.tr('punto de partida'),
       accentColor: AppColors.brand,
       initialCenter: _origin?.latLng ?? _cityCenter,
       initialPlace: _origin,
-      confirmLabel: 'Confirmar origen',
+      confirmLabel: context.tr('Confirmar origen'),
     );
     if (place != null) setState(() => _origin = place);
   }
@@ -106,11 +107,11 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
   Future<void> _pickDestination() async {
     final place = await LocationPickerScreen.show(
       context,
-      title: 'destino',
+      title: context.tr('destino'),
       accentColor: AppColors.danger,
       initialCenter: _destination?.latLng ?? _origin?.latLng ?? _cityCenter,
       initialPlace: _destination,
-      confirmLabel: 'Confirmar destino',
+      confirmLabel: context.tr('Confirmar destino'),
     );
     if (place != null) setState(() => _destination = place);
   }
@@ -118,11 +119,12 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
   Future<void> _publish() async {
     if (!_formKey.currentState!.validate()) return;
     if (_city == null) {
-      AppFeedback.error(context, 'Selecciona la ciudad del viaje');
+      AppFeedback.error(context, context.tr('Selecciona la ciudad del viaje'));
       return;
     }
     if (_origin == null || _destination == null) {
-      AppFeedback.error(context, 'Marca el origen y el destino en el mapa');
+      AppFeedback.error(
+          context, context.tr('Marca el origen y el destino en el mapa'));
       return;
     }
     setState(() => _submitting = true);
@@ -144,7 +146,7 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
       context.pushReplacement('${Routes.passengerTrip}/${trip.id}');
     } catch (_) {
       if (mounted) {
-        AppFeedback.error(context, 'No se pudo publicar el viaje');
+        AppFeedback.error(context, context.tr('No se pudo publicar el viaje'));
         setState(() => _submitting = false);
       }
     }
@@ -153,7 +155,7 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Solicitar viaje')),
+      appBar: AppBar(title: Text(context.tr('Solicitar viaje'))),
       body: SafeArea(
         top: false,
         child: Column(
@@ -172,25 +174,27 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             CitySelectorField(
-                              label: 'Ciudad',
+                              label: context.tr('Ciudad'),
                               value: _city,
                               onChanged: (v) => setState(() => _city = v),
                             ),
                             const SizedBox(height: 18),
                             _LocationField(
-                              label: 'Punto de partida',
-                              hint: 'Toca para elegir en el mapa',
+                              label: context.tr('Punto de partida'),
+                              hint: context
+                                  .tr('Busca una dirección o marca en el mapa'),
                               icon: Icons.trip_origin_rounded,
                               iconColor: AppColors.brand,
                               place: _origin,
                               loading: _locatingOrigin,
-                              loadingText: 'Detectando tu ubicación…',
+                              loadingText: context.tr('Detectando tu ubicación…'),
                               onTap: _pickOrigin,
                             ),
                             const SizedBox(height: 12),
                             _LocationField(
-                              label: 'Destino',
-                              hint: 'Toca para elegir en el mapa',
+                              label: context.tr('Destino'),
+                              hint: context
+                                  .tr('Busca una dirección o marca en el mapa'),
                               icon: Icons.location_on_rounded,
                               iconColor: AppColors.danger,
                               place: _destination,
@@ -208,11 +212,13 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
                         ),
                       ],
                       const SizedBox(height: 20),
-                      Text('Tu oferta',
+                      Text(context.tr('Tu oferta'),
                           style: Theme.of(context).textTheme.titleLarge),
                       const SizedBox(height: 4),
                       Text(
-                        'Propón cuánto quieres pagar. Mínimo ${Formatters.clp(AppConfig.minFareClp)}.',
+                        context.trp(
+                            'Propón cuánto quieres pagar. Mínimo {min}.',
+                            {'min': Formatters.clp(AppConfig.minFareClp)}),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: context.palette.textSecondary,
                             ),
@@ -225,7 +231,7 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
                         onQuick: (v) => setState(() => _fare = v),
                       ),
                       const SizedBox(height: 20),
-                      Text('Pasajeros',
+                      Text(context.tr('Pasajeros'),
                           style: Theme.of(context).textTheme.titleMedium),
                       const SizedBox(height: 10),
                       Wrap(
@@ -246,8 +252,8 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
                       ),
                       const SizedBox(height: 20),
                       AppTextField(
-                        label: 'Nota para el conductor (opcional)',
-                        hint: 'Ej: Llevo una maleta, voy con un niño…',
+                        label: context.tr('Nota para el conductor (opcional)'),
+                        hint: context.tr('Ej: Llevo una maleta, voy con un niño…'),
                         controller: _note,
                         icon: Icons.notes_rounded,
                         textCapitalization: TextCapitalization.sentences,
@@ -267,7 +273,7 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
                     top: BorderSide(color: context.palette.border)),
               ),
               child: PrimaryButton(
-                label: 'Publicar viaje · ${Formatters.clp(_fare)}',
+                label: '${context.tr('Publicar viaje')} · ${Formatters.clp(_fare)}',
                 icon: Icons.wifi_tethering_rounded,
                 loading: _submitting,
                 onPressed: _publish,

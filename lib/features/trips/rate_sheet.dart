@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/i18n/i18n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../shared/widgets/app_feedback.dart';
@@ -66,12 +67,12 @@ class _RateSheetState extends ConsumerState<_RateSheet> {
             comment: _comment.text.trim().isEmpty ? null : _comment.text.trim(),
           );
       if (mounted) {
-        AppFeedback.success(context, '¡Gracias por tu calificación!');
+        AppFeedback.success(context, context.tr('¡Gracias por tu calificación!'));
         Navigator.pop(context, true);
       }
     } catch (_) {
       if (mounted) {
-        AppFeedback.error(context, 'No se pudo guardar la calificación');
+        AppFeedback.error(context, context.tr('No se pudo guardar la calificación'));
         setState(() => _saving = false);
       }
     }
@@ -101,7 +102,7 @@ class _RateSheetState extends ConsumerState<_RateSheet> {
           UserAvatar(
               name: widget.personName, imageUrl: widget.personAvatar, size: 72),
           const SizedBox(height: 14),
-          Text('Califica a tu ${widget.roleLabel}',
+          Text(context.trp('Califica a tu {role}', {'role': widget.roleLabel}),
               style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 4),
           Text(widget.personName,
@@ -128,14 +129,14 @@ class _RateSheetState extends ConsumerState<_RateSheet> {
           ),
           const SizedBox(height: 16),
           AppTextField(
-            hint: 'Escribe un comentario (opcional)',
+            hint: context.tr('Escribe un comentario (opcional)'),
             controller: _comment,
             maxLength: 200,
             textCapitalization: TextCapitalization.sentences,
           ),
           const SizedBox(height: 20),
           PrimaryButton(
-            label: 'Enviar calificación',
+            label: context.tr('Enviar calificación'),
             loading: _saving,
             onPressed: _submit,
           ),

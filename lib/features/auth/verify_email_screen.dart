@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/config/app_config.dart';
+import '../../core/i18n/i18n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../shared/widgets/app_feedback.dart';
@@ -74,10 +75,10 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
         await ref.read(authFormControllerProvider.notifier).resendOtp(widget.email);
     if (!mounted) return;
     if (ok) {
-      AppFeedback.success(context, 'Te enviamos un nuevo código');
+      AppFeedback.success(context, context.tr('Te enviamos un nuevo código'));
       _startCooldown();
     } else {
-      AppFeedback.error(context, 'No se pudo reenviar el código');
+      AppFeedback.error(context, context.tr('No se pudo reenviar el código'));
     }
   }
 
@@ -105,7 +106,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
                     color: AppColors.brand, size: 34),
               ),
               const SizedBox(height: 20),
-              Text('Verifica tu correo',
+              Text(context.tr('Verifica tu correo'),
                   style: Theme.of(context).textTheme.headlineMedium),
               const SizedBox(height: 8),
               Text.rich(
@@ -114,9 +115,10 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
                         color: context.palette.textSecondary,
                       ),
                   children: [
-                    const TextSpan(
-                        text: 'Ingresa el código de ${AppConfig.otpLength} '
-                            'dígitos que enviamos a\n'),
+                    TextSpan(
+                        text: context.trp(
+                            'Ingresa el código de {n} dígitos que enviamos a\n',
+                            {'n': '${AppConfig.otpLength}'})),
                     TextSpan(
                       text: widget.email,
                       style: const TextStyle(
@@ -158,7 +160,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
               ],
               const SizedBox(height: 32),
               PrimaryButton(
-                label: 'Verificar y continuar',
+                label: context.tr('Verificar y continuar'),
                 loading: state.loading,
                 onPressed:
                     _code.text.length == AppConfig.otpLength ? _verify : null,
@@ -167,7 +169,8 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
               Center(
                 child: _cooldown > 0
                     ? Text(
-                        'Puedes reenviar el código en $_cooldown s',
+                        context.trp('Puedes reenviar el código en {n} s',
+                            {'n': '$_cooldown'}),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: context.palette.textMuted,
                             ),
@@ -175,7 +178,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
                     : TextButton.icon(
                         onPressed: _resend,
                         icon: const Icon(Icons.refresh_rounded, size: 18),
-                        label: const Text('Reenviar código'),
+                        label: Text(context.tr('Reenviar código')),
                       ),
               ),
             ],
