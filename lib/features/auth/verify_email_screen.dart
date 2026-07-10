@@ -9,6 +9,7 @@ import '../../core/i18n/i18n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../shared/widgets/app_feedback.dart';
+import '../../shared/widgets/app_top_controls.dart';
 import '../../shared/widgets/primary_button.dart';
 import 'auth_controller.dart';
 
@@ -86,7 +87,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(authFormControllerProvider);
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(actions: const [AppTopControls(), SizedBox(width: 4)]),
       body: SafeArea(
         top: false,
         child: SingleChildScrollView(

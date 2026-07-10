@@ -15,6 +15,7 @@ import '../../core/utils/formatters.dart';
 import '../../data/providers.dart';
 import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/app_text_field.dart';
+import '../../shared/widgets/app_top_controls.dart';
 import '../../shared/widgets/city_picker.dart';
 import '../../shared/widgets/map/location_picker_screen.dart';
 import '../../shared/widgets/map/route_map.dart';
@@ -155,7 +156,10 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(context.tr('Solicitar viaje'))),
+      appBar: AppBar(
+        title: Text(context.tr('Solicitar viaje')),
+        actions: const [AppTopControls(), SizedBox(width: 4)],
+      ),
       body: SafeArea(
         top: false,
         child: Column(

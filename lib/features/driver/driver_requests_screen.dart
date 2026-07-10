@@ -19,7 +19,6 @@ import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/map/route_map.dart';
 import '../../shared/widgets/surface_card.dart';
-import '../../shared/widgets/theme_toggle_button.dart';
 import '../../shared/widgets/user_avatar.dart';
 import '../trips/trip_controller.dart';
 import '../trips/widgets/trip_widgets.dart';
@@ -80,7 +79,8 @@ class DriverRequestsScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-              const ThemeToggleButton(),
+              // Espacio reservado para los controles flotantes (tema/idioma).
+              const SizedBox(width: 100),
             ],
           ),
         ),

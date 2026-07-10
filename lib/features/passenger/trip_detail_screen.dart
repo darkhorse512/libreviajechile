@@ -12,8 +12,10 @@ import '../../data/models/offer.dart';
 import '../../data/models/trip.dart';
 import '../../data/providers.dart';
 import '../../shared/widgets/app_feedback.dart';
+import '../../shared/widgets/app_top_controls.dart';
 import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/map/route_map.dart';
+import '../../shared/widgets/nav_app_picker.dart';
 import '../../shared/widgets/primary_button.dart';
 import '../../shared/widgets/surface_card.dart';
 import '../../shared/widgets/user_avatar.dart';
@@ -103,6 +105,8 @@ class TripDetailScreen extends ConsumerWidget {
               tooltip: context.tr('Cancelar viaje'),
               onPressed: () => _cancel(context, ref),
             ),
+          const AppTopControls(),
+          const SizedBox(width: 4),
         ],
       ),
       body: tripAsync.when(
@@ -527,6 +531,14 @@ class _AssignedSection extends StatelessWidget {
             ),
           ],
         ),
+        if (trip.hasRoute) ...[
+          const SizedBox(height: 12),
+          NavigateButton(
+            origin: LatLng(trip.originLat!, trip.originLng!),
+            destination: LatLng(trip.destinationLat!, trip.destinationLng!),
+            target: LatLng(trip.destinationLat!, trip.destinationLng!),
+          ),
+        ],
       ],
     );
   }

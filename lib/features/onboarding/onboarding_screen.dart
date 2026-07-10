@@ -7,6 +7,7 @@ import '../../core/onboarding_controller.dart';
 import '../../core/router/routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
+import '../../shared/widgets/app_top_controls.dart';
 import '../../shared/widgets/primary_button.dart';
 
 class _Slide {
@@ -77,14 +78,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: TextButton(
-                  onPressed: _finish,
-                  child: Text(context.tr('Saltar')),
-                ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: Row(
+                children: [
+                  const AppTopControls(),
+                  const Spacer(),
+                  TextButton(
+                    onPressed: _finish,
+                    child: Text(context.tr('Saltar')),
+                  ),
+                ],
               ),
             ),
             Expanded(

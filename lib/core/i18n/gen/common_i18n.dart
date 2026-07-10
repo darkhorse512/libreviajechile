@@ -50,6 +50,12 @@ const Map<String, String> commonEn = {
   'Idioma': 'Language',
   'Automático (dispositivo)': 'Automatic (device)',
   'Selecciona un idioma': 'Select a language',
+  // Navegación
+  'Navegar': 'Navigate',
+  'Abrir con': 'Open with',
+  'Ver la ruta en el mapa': 'View the route on the map',
+  'Navegación paso a paso': 'Turn-by-turn navigation',
+  'No se pudo abrir Waze': "Waze couldn't be opened",
   // Estados de viaje / rol
   'Buscando conductor': 'Finding a driver',
   'Conductor asignado': 'Driver assigned',
@@ -129,6 +135,12 @@ const Map<String, String> commonPt = {
   'Idioma': 'Idioma',
   'Automático (dispositivo)': 'Automático (dispositivo)',
   'Selecciona un idioma': 'Selecione um idioma',
+  // Navegación
+  'Navegar': 'Navegar',
+  'Abrir con': 'Abrir com',
+  'Ver la ruta en el mapa': 'Ver a rota no mapa',
+  'Navegación paso a paso': 'Navegação passo a passo',
+  'No se pudo abrir Waze': 'Não foi possível abrir o Waze',
   // Estados de viaje / rol
   'Buscando conductor': 'Procurando motorista',
   'Conductor asignado': 'Motorista designado',

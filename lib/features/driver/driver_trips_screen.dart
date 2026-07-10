@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../../core/i18n/i18n.dart';
 import '../../core/theme/app_colors.dart';
@@ -11,6 +12,7 @@ import '../../data/models/trip.dart';
 import '../../data/providers.dart';
 import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/empty_state.dart';
+import '../../shared/widgets/nav_app_picker.dart';
 import '../../shared/widgets/primary_button.dart';
 import '../../shared/widgets/surface_card.dart';
 import '../../shared/widgets/user_avatar.dart';
@@ -162,6 +164,18 @@ class _ActiveDriverTrip extends ConsumerWidget {
             compact: true,
           ),
           const SizedBox(height: 16),
+          if (trip.hasRoute) ...[
+            NavigateButton(
+              origin: LatLng(trip.originLat!, trip.originLng!),
+              destination: LatLng(trip.destinationLat!, trip.destinationLng!),
+              // Antes de iniciar: navega al punto de partida (recoger al
+              // pasajero). En viaje: navega al destino.
+              target: trip.status == TripStatus.accepted
+                  ? LatLng(trip.originLat!, trip.originLng!)
+                  : LatLng(trip.destinationLat!, trip.destinationLng!),
+            ),
+            const SizedBox(height: 10),
+          ],
           PrimaryButton(
             label: trip.status == TripStatus.accepted
                 ? context.tr('Iniciar viaje')

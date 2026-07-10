@@ -11,6 +11,7 @@ import '../../data/models/vehicle.dart';
 import '../../data/providers.dart';
 import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/app_text_field.dart';
+import '../../shared/widgets/app_top_controls.dart';
 import '../../shared/widgets/city_picker.dart';
 import '../../shared/widgets/error_banner.dart';
 import '../../shared/widgets/primary_button.dart';
@@ -103,7 +104,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(context.tr('Editar perfil'))),
+      appBar: AppBar(
+        title: Text(context.tr('Editar perfil')),
+        actions: const [AppTopControls(), SizedBox(width: 4)],
+      ),
       body: SafeArea(
         top: false,
         child: Column(

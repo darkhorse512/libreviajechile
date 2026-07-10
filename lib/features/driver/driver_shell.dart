@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'driver_requests_screen.dart';
 import 'driver_trips_screen.dart';
 import '../../core/i18n/i18n.dart';
+import '../../shared/widgets/app_top_controls.dart';
 import '../profile/profile_screen.dart';
 
 /// Contenedor principal del conductor con navegación inferior.
@@ -28,7 +29,16 @@ class _DriverShellState extends ConsumerState<DriverShell> {
     return Scaffold(
       body: SafeArea(
         bottom: false,
-        child: IndexedStack(index: _index, children: _tabs),
+        child: Stack(
+          children: [
+            IndexedStack(index: _index, children: _tabs),
+            const Positioned(
+              top: 4,
+              right: 8,
+              child: AppTopControls(floating: true),
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,

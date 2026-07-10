@@ -10,9 +10,9 @@ import '../../core/utils/validators.dart';
 import '../../data/providers.dart';
 import '../../shared/widgets/app_logo.dart';
 import '../../shared/widgets/app_text_field.dart';
+import '../../shared/widgets/app_top_controls.dart';
 import '../../shared/widgets/brand_background.dart';
 import '../../shared/widgets/primary_button.dart';
-import '../../shared/widgets/theme_toggle_button.dart';
 import 'auth_controller.dart';
 import 'demo_quick_access.dart';
 
@@ -50,7 +50,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isDemo = ref.watch(isDemoModeProvider);
 
     return Scaffold(
-      appBar: AppBar(actions: const [ThemeToggleButton(), SizedBox(width: 8)]),
+      appBar: AppBar(actions: const [AppTopControls(), SizedBox(width: 4)]),
       body: BrandBackground(
         intensity: 0.7,
         child: SafeArea(

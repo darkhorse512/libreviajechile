@@ -11,6 +11,7 @@ import '../../core/utils/validators.dart';
 import '../../data/models/vehicle.dart';
 import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/app_text_field.dart';
+import '../../shared/widgets/app_top_controls.dart';
 import '../../shared/widgets/city_picker.dart';
 import '../../shared/widgets/error_banner.dart';
 import '../../shared/widgets/primary_button.dart';
@@ -120,6 +121,7 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
           },
         ),
         title: Text(context.trp('Paso {n} de 2', {'n': '${_step + 1}'})),
+        actions: const [AppTopControls(), SizedBox(width: 4)],
       ),
       body: SafeArea(
         top: false,

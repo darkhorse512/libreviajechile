@@ -12,7 +12,6 @@ import '../../core/utils/formatters.dart';
 import '../../data/models/trip.dart';
 import '../../data/providers.dart';
 import '../../shared/widgets/surface_card.dart';
-import '../../shared/widgets/theme_toggle_button.dart';
 import '../../shared/widgets/user_avatar.dart';
 import '../trips/widgets/trip_widgets.dart';
 
@@ -55,7 +54,8 @@ class PassengerHomeScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-                const ThemeToggleButton(),
+                // Espacio reservado para los controles flotantes (tema/idioma).
+                const SizedBox(width: 100),
               ],
             ),
           ),

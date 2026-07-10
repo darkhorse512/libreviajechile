@@ -9,9 +9,9 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/providers.dart';
 import '../../shared/widgets/app_logo.dart';
+import '../../shared/widgets/app_top_controls.dart';
 import '../../shared/widgets/brand_background.dart';
 import '../../shared/widgets/primary_button.dart';
-import '../../shared/widgets/theme_toggle_button.dart';
 
 /// Pantalla de bienvenida: punto de entrada al flujo de autenticación.
 class WelcomeScreen extends ConsumerWidget {
@@ -29,7 +29,7 @@ class WelcomeScreen extends ConsumerWidget {
               children: [
                 const Align(
                   alignment: Alignment.centerRight,
-                  child: ThemeToggleButton(),
+                  child: AppTopControls(),
                 ),
                 const Spacer(flex: 2),
                 const AppLogoMark(size: 96)

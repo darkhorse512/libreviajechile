@@ -6,6 +6,7 @@ import '../../core/i18n/i18n.dart';
 import '../../core/router/routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
+import '../../shared/widgets/app_top_controls.dart';
 import '../../shared/widgets/surface_card.dart';
 
 /// Elección del rol: pasajero o conductor. Cada uno inicia su propio flujo.
@@ -15,7 +16,7 @@ class RoleSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(actions: const [AppTopControls(), SizedBox(width: 4)]),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.xl),
