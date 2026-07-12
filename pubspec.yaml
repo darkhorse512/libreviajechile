@@ -1,7 +1,7 @@
 name: libre_viaje_chile
 description: "Libre Viaje Chile — App de transporte de pasajeros con ofertas y contraofertas."
 publish_to: "none"
-version: 0.8.1+9
+version: 0.8.2+10
 
 environment:
   sdk: ">=3.6.0 <4.0.0"
@@ -67,6 +67,9 @@ flutter_launcher_icons:
   image_path: "assets/icon.png"
   remove_alpha_ios: true
   background_color_ios: "#0A0B0D"
+  # Usamos el diseño COMPLETO (cuadro oscuro + "ed") como capa frontal para que
+  # se vea íntegro en cualquier launcher, incluidos los que fuerzan su propia
+  # forma/plato (p. ej. MIUI/Xiaomi).
   adaptive_icon_background: "#12151B"
-  adaptive_icon_foreground: "assets/gen/icon_fg.png"
+  adaptive_icon_foreground: "assets/icon.png"
   min_sdk_android: 21
