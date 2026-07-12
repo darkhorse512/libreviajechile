@@ -24,7 +24,7 @@ class RoleSelectionScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                context.tr('¿Cómo quieres usar\nLibre Viaje Chile?'),
+                context.tr('¿Cómo quieres usar\nEligeDrive?'),
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               const SizedBox(height: 8),

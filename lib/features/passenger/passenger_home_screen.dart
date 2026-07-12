@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -14,6 +13,7 @@ import '../../data/providers.dart';
 import '../../shared/widgets/surface_card.dart';
 import '../../shared/widgets/user_avatar.dart';
 import '../trips/widgets/trip_widgets.dart';
+import 'widgets/home_live_map.dart';
 
 class PassengerHomeScreen extends ConsumerWidget {
   const PassengerHomeScreen({super.key});
@@ -25,151 +25,183 @@ class PassengerHomeScreen extends ConsumerWidget {
       return const Center(child: CircularProgressIndicator());
     }
     final tripsAsync = ref.watch(passengerTripsProvider(user.id));
-    final active = tripsAsync.valueOrNull
-        ?.where((t) => t.isOpen || t.isActive)
-        .toList();
+    final activeList =
+        tripsAsync.valueOrNull?.where((t) => t.isOpen || t.isActive).toList();
+    final active = (activeList != null && activeList.isNotEmpty)
+        ? activeList.first
+        : null;
 
-    return CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.xl, AppSpacing.md, AppSpacing.lg, 0),
-            child: Row(
-              children: [
-                UserAvatar(name: user.fullName, imageUrl: user.avatarUrl, size: 46),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(context.tr('Hola,'),
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: context.palette.textSecondary,
-                              )),
-                      Text(
-                        user.fullName.split(' ').first,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                    ],
-                  ),
-                ),
-                // Espacio reservado para los controles flotantes (tema/idioma).
-                const SizedBox(width: 100),
-              ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final mapHeight = constraints.maxHeight * 0.46;
+        return Stack(
+          children: [
+            // ---- Mapa de Google en vivo (hero) --------------------------
+            SizedBox(
+              height: mapHeight,
+              width: double.infinity,
+              child: const HomeLiveMap(),
             ),
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.xl),
-            child: _HeroCard(
-              onTap: () => context.push(Routes.requestTrip),
-            ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1),
-          ),
-        ),
-        if (active != null && active.isNotEmpty) ...[
-          _SectionTitle(context.tr('Viaje en curso')),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.xl, 0, AppSpacing.xl, AppSpacing.md),
-              child: _ActiveTripCard(trip: active.first),
+            // ---- Panel inferior (sobre el mapa) -------------------------
+            Positioned(
+              left: 0,
+              right: 0,
+              top: mapHeight - 26,
+              bottom: 0,
+              child: _HomePanel(active: active),
             ),
-          ),
-        ],
-        _SectionTitle(context.tr('¿Cómo funciona?')),
-        const SliverToBoxAdapter(
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-                AppSpacing.xl, 0, AppSpacing.xl, AppSpacing.md),
-            child: _HowItWorks(),
-          ),
-        ),
-        const SliverToBoxAdapter(child: SizedBox(height: 24)),
-      ],
+            // ---- Saludo flotante sobre el mapa --------------------------
+            Positioned(
+              top: 8,
+              left: AppSpacing.xl,
+              child: _GreetingChip(
+                name: user.fullName.split(' ').first,
+                avatarUrl: user.avatarUrl,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
 
-class _HeroCard extends StatelessWidget {
-  const _HeroCard({required this.onTap});
+class _GreetingChip extends StatelessWidget {
+  const _GreetingChip({required this.name, this.avatarUrl});
+  final String name;
+  final String? avatarUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(6, 6, 14, 6),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.94),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.12),
+            blurRadius: 10,
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          UserAvatar(name: name, imageUrl: avatarUrl, size: 30),
+          const SizedBox(width: 8),
+          Text('${context.tr('Hola,')} $name',
+              style: Theme.of(context)
+                  .textTheme
+                  .labelLarge
+                  ?.copyWith(fontWeight: FontWeight.w700)),
+        ],
+      ),
+    );
+  }
+}
+
+class _HomePanel extends StatelessWidget {
+  const _HomePanel({required this.active});
+  final Trip? active;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius:
+            const BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.18),
+            blurRadius: 20,
+            offset: const Offset(0, -6),
+          ),
+        ],
+      ),
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(
+            AppSpacing.xl, 12, AppSpacing.xl, AppSpacing.xl),
+        children: [
+          Center(
+            child: Container(
+              width: 42,
+              height: 4,
+              decoration: BoxDecoration(
+                color: context.palette.border,
+                borderRadius: BorderRadius.circular(100),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          _SearchCta(onTap: () => context.push(Routes.requestTrip)),
+          if (active != null) ...[
+            const SizedBox(height: 22),
+            _PanelTitle(context.tr('Viaje en curso')),
+            const SizedBox(height: 12),
+            _ActiveTripCard(trip: active!),
+          ],
+          const SizedBox(height: 22),
+          _PanelTitle(context.tr('¿Cómo funciona?')),
+          const SizedBox(height: 12),
+          const _HowItWorks(),
+        ],
+      ),
+    );
+  }
+}
+
+/// Barra de búsqueda tipo "¿A dónde vas?" (estilo inDrive) que abre el flujo
+/// de solicitud de viaje.
+class _SearchCta extends StatelessWidget {
+  const _SearchCta({required this.onTap});
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.transparent,
+      color: context.palette.surfaceAlt,
+      borderRadius: BorderRadius.circular(AppRadius.md),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-        child: Ink(
-          padding: const EdgeInsets.all(24),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [AppColors.brand, AppColors.brandLight],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(AppRadius.xl),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.brand.withValues(alpha: 0.4),
-                blurRadius: 28,
-                offset: const Offset(0, 14),
-              ),
-            ],
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            border: Border.all(color: AppColors.brand.withValues(alpha: 0.5)),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              const Icon(Icons.near_me_rounded, color: Colors.white, size: 30),
-              const SizedBox(height: 16),
-              Text(
-                context.tr('¿A dónde\nvamos hoy?'),
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Colors.white,
-                      height: 1.1,
-                    ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                context.tr(
-                    'Propón tu precio y recibe ofertas de conductores cercanos.'),
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: Colors.white.withValues(alpha: 0.9)),
-              ),
-              const SizedBox(height: 20),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(AppRadius.pill),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      context.tr('Solicitar un viaje'),
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                            color: AppColors.brand,
-                            fontSize: 16,
-                          ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Icon(Icons.arrow_forward_rounded,
-                        color: AppColors.brand, size: 20),
-                  ],
+              const Icon(Icons.search_rounded, color: AppColors.brand),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  context.tr('¿A dónde vas?'),
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600),
                 ),
               ),
+              Icon(Icons.arrow_forward_rounded,
+                  color: context.palette.textMuted, size: 20),
             ],
           ),
         ),
       ),
     );
+  }
+}
+
+class _PanelTitle extends StatelessWidget {
+  const _PanelTitle(this.title);
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(title, style: Theme.of(context).textTheme.titleLarge);
   }
 }
 
@@ -290,22 +322,6 @@ class _HowItWorks extends StatelessWidget {
             if (i < steps.length - 1) const Divider(height: 28),
           ],
         ],
-      ),
-    );
-  }
-}
-
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle(this.title);
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-            AppSpacing.xl, AppSpacing.sm, AppSpacing.xl, AppSpacing.md),
-        child: Text(title, style: Theme.of(context).textTheme.titleLarge),
       ),
     );
   }

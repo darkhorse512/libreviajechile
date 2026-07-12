@@ -7,9 +7,14 @@
     <!-- Notificaciones push (Android 13+). -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <application
-        android:label="Libre Viaje Chile"
+        android:label="EligeDrive"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- Google Maps SDK. IMPORTANTE: restringe esta clave en Google Cloud
+             (por package + SHA-1) para evitar uso no autorizado. -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCgi8eBbTQmApN9icBBy_GhGC6hrLdQ03g"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -1,56 +1,59 @@
 import 'package:flutter/material.dart';
 
-/// Paleta base de la marca "Libre Viaje Chile", derivada del logotipo oficial:
-/// verde vibrante + azul marino + azul (camino/pin).
+/// Paleta base de la marca "EligeDrive", derivada del logotipo oficial:
+/// verde lima eléctrico + negro + blanco (estilo nocturno).
 abstract class AppColors {
   AppColors._();
 
-  // ----- Marca (verde) -----
-  static const Color brand = Color(0xFF4FBE2A); // verde principal (accesible)
-  static const Color brandDark = Color(0xFF3C9A1E);
-  static const Color brandLight = Color(0xFF60CC30); // verde vivo del logo
-  static const Color brandSoft = Color(0xFFEAF8E1);
+  // ----- Marca (lima eléctrico del logo) -----
+  static const Color brand = Color(0xFFB6E61E); // lima principal
+  static const Color brandDark = Color(0xFF93C400);
+  static const Color brandLight = Color(0xFFCDF25A);
+  static const Color brandSoft = Color(0xFFEFF9CE); // tinte claro (tema claro)
+
+  // Texto/íconos que van SOBRE la marca lima (debe ser oscuro por contraste).
+  static const Color onBrand = Color(0xFF10130A);
 
   // Gradiente de marca (botones principales, hero, splash)
-  static const List<Color> brandGradient = [Color(0xFF63CE33), Color(0xFF3FA81C)];
+  static const List<Color> brandGradient = [Color(0xFFCBF43C), Color(0xFF9FD400)];
 
-  // Azul marino del logo (texto "libre", detalles oscuros)
-  static const Color navy = Color(0xFF002454);
-  static const Color navyLight = Color(0xFF123B72);
+  // Azul marino del logo (fondos de marca / detalles)
+  static const Color navy = Color(0xFF141E33);
+  static const Color navyLight = Color(0xFF1E2C49);
 
-  // ----- Secundario / acento (azul del camino y pin) -----
-  static const Color accent = Color(0xFF0060C4); // azul (identidad conductor / info)
-  static const Color accentDark = Color(0xFF004AA0);
-  static const Color accentSoft = Color(0xFFE3EEFB);
+  // ----- Secundario / acento (identidad conductor / info) -----
+  static const Color accent = Color(0xFF3B8BFF);
+  static const Color accentDark = Color(0xFF2E6FE0);
+  static const Color accentSoft = Color(0xFF16233B);
 
-  // ----- Estados positivos (verde) -----
-  static const Color success = Color(0xFF2FA84F);
-  static const Color successDark = Color(0xFF238C40);
+  // ----- Estados positivos -----
+  static const Color success = Color(0xFF34C759);
+  static const Color successDark = Color(0xFF248A3D);
 
   // ----- Semánticos -----
-  static const Color price = Color(0xFFF59E0B); // ámbar (precio / oferta)
-  static const Color danger = Color(0xFFE5484D);
-  static const Color warning = Color(0xFFF59E0B);
-  static const Color info = Color(0xFF0060C4);
-  static const Color star = Color(0xFFFBBF24);
+  static const Color price = Color(0xFFF5B301); // ámbar (precio / oferta)
+  static const Color danger = Color(0xFFFF5A5F);
+  static const Color warning = Color(0xFFF5B301);
+  static const Color info = Color(0xFF3B8BFF);
+  static const Color star = Color(0xFFB6E61E); // estrellas lima (estilo póster)
 
   // ----- Superficies claras -----
-  static const Color lightBackground = Color(0xFFF4F7F3);
+  static const Color lightBackground = Color(0xFFF5F7F2);
   static const Color lightSurface = Color(0xFFFFFFFF);
-  static const Color lightSurfaceAlt = Color(0xFFEEF2EC);
-  static const Color lightBorder = Color(0xFFE1E7DD);
-  static const Color lightTextPrimary = Color(0xFF0E1E14);
-  static const Color lightTextSecondary = Color(0xFF566159);
-  static const Color lightTextMuted = Color(0xFF8B968C);
+  static const Color lightSurfaceAlt = Color(0xFFEEF1E8);
+  static const Color lightBorder = Color(0xFFE2E6DA);
+  static const Color lightTextPrimary = Color(0xFF11140C);
+  static const Color lightTextSecondary = Color(0xFF585C50);
+  static const Color lightTextMuted = Color(0xFF8B9080);
 
-  // ----- Superficies oscuras -----
-  static const Color darkBackground = Color(0xFF0B1410);
-  static const Color darkSurface = Color(0xFF14201A);
-  static const Color darkSurfaceAlt = Color(0xFF1D2B23);
-  static const Color darkBorder = Color(0xFF2A3B31);
-  static const Color darkTextPrimary = Color(0xFFF1F6F1);
-  static const Color darkTextSecondary = Color(0xFFA6B2A8);
-  static const Color darkTextMuted = Color(0xFF6C7A6F);
+  // ----- Superficies oscuras (experiencia principal, estilo póster) -----
+  static const Color darkBackground = Color(0xFF0A0B0D);
+  static const Color darkSurface = Color(0xFF15171B);
+  static const Color darkSurfaceAlt = Color(0xFF1F2229);
+  static const Color darkBorder = Color(0xFF2B2F37);
+  static const Color darkTextPrimary = Color(0xFFF4F6F1);
+  static const Color darkTextSecondary = Color(0xFFAAB0A6);
+  static const Color darkTextMuted = Color(0xFF737970);
 }
 
 /// Colores/semánticas de marca que no caben en [ColorScheme].

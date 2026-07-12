@@ -248,7 +248,8 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
                               onSelected: (_) =>
                                   setState(() => _passengers = n),
                               labelStyle: TextStyle(
-                                color: _passengers == n ? Colors.white : null,
+                                color:
+                                    _passengers == n ? AppColors.onBrand : null,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),

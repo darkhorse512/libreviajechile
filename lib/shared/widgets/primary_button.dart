@@ -36,7 +36,7 @@ class PrimaryButton extends StatelessWidget {
               width: 22,
               child: CircularProgressIndicator(
                 strokeWidth: 2.4,
-                valueColor: AlwaysStoppedAnimation(Colors.white),
+                valueColor: AlwaysStoppedAnimation(AppColors.onBrand),
               ),
             )
           : Row(
@@ -45,14 +45,14 @@ class PrimaryButton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (icon != null) ...[
-                  Icon(icon, size: 20, color: Colors.white),
+                  Icon(icon, size: 20, color: AppColors.onBrand),
                   const SizedBox(width: 10),
                 ],
                 Flexible(
                   child: Text(
                     label,
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          color: Colors.white,
+                          color: AppColors.onBrand,
                           fontSize: 16,
                         ),
                   ),

@@ -2,6 +2,7 @@
 const Map<String, String> passengerEn = {
   // passenger_home_screen.dart
   'Hola,': 'Hi,',
+  '¿A dónde vas?': 'Where to?',
   'Viaje en curso': 'Trip in progress',
   '¿Cómo funciona?': 'How does it work?',
   '¿A dónde\nvamos hoy?': 'Where to\ntoday?',
@@ -72,8 +73,8 @@ const Map<String, String> passengerEn = {
   'Aceptar por': 'Accept for',
   'Tu conductor': 'Your driver',
   'Llamar': 'Call',
-  'Hola! Soy tu pasajero de Libre Viaje Chile.':
-      "Hi! I'm your passenger from Libre Viaje Chile.",
+  'Hola! Soy tu pasajero de EligeDrive.':
+      "Hi! I'm your passenger from EligeDrive.",
   'Viaje completado': 'Trip completed',
   'Pagaste': 'You paid',
   'Calificar a tu conductor': 'Rate your driver',
@@ -115,6 +116,7 @@ const Map<String, String> passengerEn = {
 const Map<String, String> passengerPt = {
   // passenger_home_screen.dart
   'Hola,': 'Olá,',
+  '¿A dónde vas?': 'Para onde?',
   'Viaje en curso': 'Viagem em andamento',
   '¿Cómo funciona?': 'Como funciona?',
   '¿A dónde\nvamos hoy?': 'Para onde\nvamos hoje?',
@@ -186,8 +188,8 @@ const Map<String, String> passengerPt = {
   'Aceptar por': 'Aceitar por',
   'Tu conductor': 'Seu motorista',
   'Llamar': 'Ligar',
-  'Hola! Soy tu pasajero de Libre Viaje Chile.':
-      'Olá! Sou seu passageiro do Libre Viaje Chile.',
+  'Hola! Soy tu pasajero de EligeDrive.':
+      'Olá! Sou seu passageiro do EligeDrive.',
   'Viaje completado': 'Viagem concluída',
   'Pagaste': 'Você pagou',
   'Calificar a tu conductor': 'Avaliar seu motorista',

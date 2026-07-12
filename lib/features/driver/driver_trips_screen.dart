@@ -147,7 +147,7 @@ class _ActiveDriverTrip extends ConsumerWidget {
                 tooltip: 'WhatsApp',
                 onPressed: () => Contact.whatsapp(context, passenger?.phone,
                     message: context.tr(
-                        'Hola! Soy tu conductor de Libre Viaje Chile.')),
+                        'Hola! Soy tu conductor de EligeDrive.')),
                 icon: const Icon(Icons.chat_rounded, color: AppColors.success),
               ),
               IconButton(

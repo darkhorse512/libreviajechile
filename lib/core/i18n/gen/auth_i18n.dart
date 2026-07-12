@@ -7,8 +7,8 @@ const Map<String, String> authEn = {
   'Crear cuenta': 'Create account',
   'Ya tengo cuenta': 'I already have an account',
   'Modo demostración · datos de prueba': 'Demo mode · test data',
-  '¿Cómo quieres usar\nLibre Viaje Chile?':
-      'How do you want to use\nLibre Viaje Chile?',
+  '¿Cómo quieres usar\nEligeDrive?':
+      'How do you want to use\nEligeDrive?',
   'Elige tu perfil para crear tu cuenta. Podrás cambiarlo más adelante.':
       'Choose your profile to create your account. You can change it later.',
   'Soy Pasajero': 'I\'m a Passenger',
@@ -91,8 +91,8 @@ const Map<String, String> authPt = {
   'Crear cuenta': 'Criar conta',
   'Ya tengo cuenta': 'Já tenho conta',
   'Modo demostración · datos de prueba': 'Modo demonstração · dados de teste',
-  '¿Cómo quieres usar\nLibre Viaje Chile?':
-      'Como você quer usar\nLibre Viaje Chile?',
+  '¿Cómo quieres usar\nEligeDrive?':
+      'Como você quer usar\nEligeDrive?',
   'Elige tu perfil para crear tu cuenta. Podrás cambiarlo más adelante.':
       'Escolha seu perfil para criar sua conta. Você poderá alterá-lo depois.',
   'Soy Pasajero': 'Sou Passageiro',

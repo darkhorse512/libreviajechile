@@ -152,7 +152,7 @@ class _OfferSheetState extends ConsumerState<_OfferSheet> {
                     selected: _eta == m,
                     onSelected: (_) => setState(() => _eta = m),
                     labelStyle: TextStyle(
-                      color: _eta == m ? Colors.white : null,
+                      color: _eta == m ? AppColors.onBrand : null,
                       fontWeight: FontWeight.w700,
                     ),
                   ),

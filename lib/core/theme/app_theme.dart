@@ -22,7 +22,7 @@ abstract class AppSpacing {
   static const double xxl = 32;
 }
 
-/// Construye los temas claro y oscuro de "Libre Viaje Chile".
+/// Construye los temas claro y oscuro de "EligeDrive".
 abstract class AppTheme {
   static ThemeData get light => _build(Brightness.light);
   static ThemeData get dark => _build(Brightness.dark);
@@ -33,9 +33,9 @@ abstract class AppTheme {
     final colorScheme = ColorScheme(
       brightness: brightness,
       primary: AppColors.brand,
-      onPrimary: Colors.white,
+      onPrimary: AppColors.onBrand,
       primaryContainer: isDark ? AppColors.brandDark : AppColors.brandSoft,
-      onPrimaryContainer: isDark ? Colors.white : AppColors.brandDark,
+      onPrimaryContainer: isDark ? AppColors.onBrand : AppColors.brandDark,
       secondary: AppColors.accent,
       onSecondary: Colors.white,
       secondaryContainer: isDark ? AppColors.accentDark : AppColors.accentSoft,
@@ -124,7 +124,7 @@ abstract class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.brand,
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.onBrand,
           disabledBackgroundColor: palette.border,
           elevation: 0,
           minimumSize: const Size.fromHeight(56),

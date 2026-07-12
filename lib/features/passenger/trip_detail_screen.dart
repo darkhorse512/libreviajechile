@@ -522,7 +522,7 @@ class _AssignedSection extends StatelessWidget {
               child: OutlinedButton.icon(
                 onPressed: () => Contact.whatsapp(context, driver?.phone,
                     message:
-                        context.tr('Hola! Soy tu pasajero de Libre Viaje Chile.')),
+                        context.tr('Hola! Soy tu pasajero de EligeDrive.')),
                 icon: const Icon(Icons.chat_rounded, size: 18),
                 label: const Text('WhatsApp'),
                 style: OutlinedButton.styleFrom(

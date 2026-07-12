@@ -18,10 +18,12 @@ class ThemeController extends StateNotifier<ThemeMode> {
     switch (prefs.getString(_key)) {
       case 'light':
         return ThemeMode.light;
-      case 'dark':
-        return ThemeMode.dark;
-      default:
+      case 'system':
         return ThemeMode.system;
+      case 'dark':
+      default:
+        // La marca EligeDrive es oscura por defecto (estilo nocturno).
+        return ThemeMode.dark;
     }
   }
 

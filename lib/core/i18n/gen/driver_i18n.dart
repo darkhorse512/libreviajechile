@@ -10,8 +10,8 @@ const Map<String, String> driverEn = {
   'Viaje iniciado': 'Trip started',
   'Viaje finalizado': 'Trip finished',
   'Pasajero': 'Passenger',
-  'Hola! Soy tu conductor de Libre Viaje Chile.':
-      "Hi! I'm your Libre Viaje Chile driver.",
+  'Hola! Soy tu conductor de EligeDrive.':
+      "Hi! I'm your EligeDrive driver.",
   'Llamar': 'Call',
   'Iniciar viaje': 'Start trip',
   'Finalizar viaje': 'Finish trip',
@@ -70,8 +70,8 @@ const Map<String, String> driverPt = {
   'Viaje iniciado': 'Viagem iniciada',
   'Viaje finalizado': 'Viagem finalizada',
   'Pasajero': 'Passageiro',
-  'Hola! Soy tu conductor de Libre Viaje Chile.':
-      'Olá! Sou seu motorista da Libre Viaje Chile.',
+  'Hola! Soy tu conductor de EligeDrive.':
+      'Olá! Sou seu motorista da EligeDrive.',
   'Llamar': 'Ligar',
   'Iniciar viaje': 'Iniciar viagem',
   'Finalizar viaje': 'Finalizar viagem',

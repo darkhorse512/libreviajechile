@@ -243,7 +243,7 @@ class ProfileScreen extends ConsumerWidget {
         ),
         const SizedBox(height: 24),
         Center(
-          child: Text('Libre Viaje Chile · v${AppConfig.appVersion}',
+          child: Text('EligeDrive · v${AppConfig.appVersion}',
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: context.palette.textMuted,
                   )),
