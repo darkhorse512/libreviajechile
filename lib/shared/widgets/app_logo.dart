@@ -11,30 +11,27 @@ class AppLogoMark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // La marca "ed" (assets/icon.png) tiene fondo transparente: se muestra
+    // completa (contain) sobre el fondo de la pantalla, con un leve resplandor.
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(size * 0.26),
         boxShadow: shadow
             ? [
                 BoxShadow(
-                  color: AppColors.brand.withValues(alpha: 0.35),
-                  blurRadius: size * 0.36,
-                  offset: Offset(0, size * 0.14),
+                  color: AppColors.brand.withValues(alpha: 0.28),
+                  blurRadius: size * 0.34,
                 ),
               ]
             : null,
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(size * 0.26),
-        child: Image.asset(
-          'assets/icon.png',
-          width: size,
-          height: size,
-          fit: BoxFit.cover,
-          filterQuality: FilterQuality.high,
-        ),
+      child: Image.asset(
+        'assets/icon.png',
+        width: size,
+        height: size,
+        fit: BoxFit.contain,
+        filterQuality: FilterQuality.high,
       ),
     );
   }
@@ -51,7 +48,7 @@ class AppWordmark extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Image.asset(
-      'assets/logo.png',
+      'assets/icon.png',
       height: height,
       fit: BoxFit.contain,
       filterQuality: FilterQuality.high,
