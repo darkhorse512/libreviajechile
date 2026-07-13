@@ -31,34 +31,34 @@ class PassengerHomeScreen extends ConsumerWidget {
         ? activeList.first
         : null;
 
+    // El mapa (platform view de Google Maps) y el panel NO se superponen:
+    // van en regiones separadas de un Column. Superponer contenido Flutter
+    // sobre el platform view (Impeller/Android) deja el panel en negro.
     return LayoutBuilder(
       builder: (context, constraints) {
-        final mapHeight = constraints.maxHeight * 0.46;
-        return Stack(
+        final mapHeight = constraints.maxHeight * 0.42;
+        return Column(
           children: [
             // ---- Mapa de Google en vivo (hero) --------------------------
             SizedBox(
               height: mapHeight,
               width: double.infinity,
-              child: const HomeLiveMap(),
-            ),
-            // ---- Panel inferior (sobre el mapa) -------------------------
-            Positioned(
-              left: 0,
-              right: 0,
-              top: mapHeight - 26,
-              bottom: 0,
-              child: _HomePanel(active: active),
-            ),
-            // ---- Saludo flotante sobre el mapa --------------------------
-            Positioned(
-              top: 8,
-              left: AppSpacing.xl,
-              child: _GreetingChip(
-                name: user.fullName.split(' ').first,
-                avatarUrl: user.avatarUrl,
+              child: Stack(
+                children: [
+                  const Positioned.fill(child: HomeLiveMap()),
+                  Positioned(
+                    top: 8,
+                    left: AppSpacing.xl,
+                    child: _GreetingChip(
+                      name: user.fullName.split(' ').first,
+                      avatarUrl: user.avatarUrl,
+                    ),
+                  ),
+                ],
               ),
             ),
+            // ---- Panel inferior (debajo del mapa, sin superposición) ----
+            Expanded(child: _HomePanel(active: active)),
           ],
         );
       },
