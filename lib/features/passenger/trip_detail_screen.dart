@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../core/config/app_config.dart';
 import '../../core/i18n/i18n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
@@ -213,6 +216,10 @@ class _TripBody extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 24),
+        if (trip.isOpen) ...[
+          _ExpiryCountdown(trip: trip),
+          const SizedBox(height: 16),
+        ],
         if (trip.isOpen) _OffersSection(trip: trip, onAccept: onAccept),
         if (trip.isActive) _AssignedSection(trip: trip),
         if (trip.status == TripStatus.completed) _CompletedSection(trip: trip),
@@ -223,6 +230,91 @@ class _TripBody extends ConsumerWidget {
             message: context.tr('Esta solicitud fue cancelada.'),
           ),
       ],
+    );
+  }
+}
+
+/// Cuenta regresiva de expiración: si la solicitud sigue abierta (sin oferta
+/// aceptada) al llegar a 0, se cancela automáticamente.
+class _ExpiryCountdown extends ConsumerStatefulWidget {
+  const _ExpiryCountdown({required this.trip});
+  final Trip trip;
+
+  @override
+  ConsumerState<_ExpiryCountdown> createState() => _ExpiryCountdownState();
+}
+
+class _ExpiryCountdownState extends ConsumerState<_ExpiryCountdown> {
+  Timer? _timer;
+  bool _expiring = false;
+
+  DateTime get _expiresAt => widget.trip.createdAt
+      .add(const Duration(minutes: AppConfig.tripExpiryMinutes));
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) => _tick());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _tick());
+  }
+
+  void _tick() {
+    if (!mounted) return;
+    if (_expiresAt.difference(DateTime.now()) <= Duration.zero) {
+      _expire();
+    } else {
+      setState(() {});
+    }
+  }
+
+  Future<void> _expire() async {
+    if (_expiring) return;
+    _expiring = true;
+    _timer?.cancel();
+    try {
+      // Sigue abierta y sin aceptar → se cancela automáticamente.
+      await ref.read(tripActionsProvider).cancelTrip(widget.trip.id);
+    } catch (_) {
+      _expiring = false;
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final remaining = _expiresAt.difference(DateTime.now());
+    if (remaining <= Duration.zero) return const SizedBox.shrink();
+    final mm = remaining.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final ss = remaining.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.warning.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: AppColors.warning.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.timer_outlined, color: AppColors.warning, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              context.trp(
+                'Tu solicitud se cancelará automáticamente en {time} si no aceptas una oferta.',
+                {'time': '$mm:$ss'},
+              ),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: context.palette.textSecondary,
+                  ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

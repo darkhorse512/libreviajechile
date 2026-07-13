@@ -3,6 +3,8 @@ const Map<String, String> passengerEn = {
   // passenger_home_screen.dart
   'Hola,': 'Hi,',
   '¿A dónde vas?': 'Where to?',
+  'Tu solicitud se cancelará automáticamente en {time} si no aceptas una oferta.':
+      "Your request will be cancelled automatically in {time} if you don't accept an offer.",
   'Viaje en curso': 'Trip in progress',
   '¿Cómo funciona?': 'How does it work?',
   '¿A dónde\nvamos hoy?': 'Where to\ntoday?',
@@ -117,6 +119,8 @@ const Map<String, String> passengerPt = {
   // passenger_home_screen.dart
   'Hola,': 'Olá,',
   '¿A dónde vas?': 'Para onde?',
+  'Tu solicitud se cancelará automáticamente en {time} si no aceptas una oferta.':
+      'Sua solicitação será cancelada automaticamente em {time} se você não aceitar uma oferta.',
   'Viaje en curso': 'Viagem em andamento',
   '¿Cómo funciona?': 'Como funciona?',
   '¿A dónde\nvamos hoy?': 'Para onde\nvamos hoje?',
