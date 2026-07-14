@@ -8,6 +8,7 @@ abstract class Routes {
   static const registerPassenger = '/registro/pasajero';
   static const registerDriver = '/registro/conductor';
   static const verifyEmail = '/verificar';
+  static const resetPassword = '/recuperar';
 
   // Pasajero
   static const passengerHome = '/pasajero';

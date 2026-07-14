@@ -86,7 +86,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       await ref.read(authRepositoryProvider).resetPassword(email: email);
       if (mounted) {
         AppFeedback.success(context,
-            context.tr('Te enviamos un correo para recuperar tu contraseña.'));
+            context.tr('Te enviamos un código para recuperar tu contraseña.'));
+        // Abre la pantalla para ingresar el código y la nueva contraseña.
+        context.push(
+            '${Routes.resetPassword}?email=${Uri.encodeComponent(email)}');
       }
     } catch (_) {
       if (mounted) {

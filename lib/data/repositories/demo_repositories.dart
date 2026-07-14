@@ -89,6 +89,15 @@ class DemoAuthRepository implements AuthRepository {
   Future<void> resetPassword({required String email}) async {}
 
   @override
+  Future<void> verifyRecoveryOtp({
+    required String email,
+    required String token,
+  }) async {}
+
+  @override
+  Future<void> updatePassword(String newPassword) async {}
+
+  @override
   Future<void> signOut() => _db.signOut();
 
   @override

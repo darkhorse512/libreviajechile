@@ -9,6 +9,7 @@ import '../../features/auth/passenger_register_screen.dart';
 import '../../features/auth/driver_register_screen.dart';
 import '../../features/auth/role_selection_screen.dart';
 import '../../features/auth/verify_email_screen.dart';
+import '../../features/auth/reset_password_screen.dart';
 import '../../features/auth/welcome_screen.dart';
 import '../../features/driver/driver_shell.dart';
 import '../../features/onboarding/onboarding_screen.dart';
@@ -32,6 +33,11 @@ class _RouterNotifier extends ChangeNotifier {
     final authAsync = _ref.read(authStateProvider);
     final onboarded = _ref.read(onboardingCompletedProvider);
     final loc = state.matchedLocation;
+
+    // La pantalla de recuperación se autogestiona: al verificar el código se
+    // abre una sesión temporal, pero el usuario debe permanecer aquí para
+    // definir la nueva contraseña. No redirigir mientras esté en ella.
+    if (loc == Routes.resetPassword) return null;
 
     // Aún resolviendo la sesión inicial → splash.
     if (authAsync.isLoading) {
@@ -110,6 +116,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.verifyEmail,
         builder: (_, state) => VerifyEmailScreen(
+          email: state.uri.queryParameters['email'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: Routes.resetPassword,
+        builder: (_, state) => ResetPasswordScreen(
           email: state.uri.queryParameters['email'] ?? '',
         ),
       ),

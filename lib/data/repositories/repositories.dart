@@ -54,8 +54,14 @@ abstract class AuthRepository {
   /// Reenvía el código de verificación al correo indicado.
   Future<void> resendOtp({required String email});
 
-  /// Envía un correo de recuperación de contraseña.
+  /// Envía un código de recuperación de contraseña al correo.
   Future<void> resetPassword({required String email});
+
+  /// Verifica el código de recuperación (abre una sesión temporal).
+  Future<void> verifyRecoveryOtp({required String email, required String token});
+
+  /// Cambia la contraseña del usuario autenticado (tras verificar el código).
+  Future<void> updatePassword(String newPassword);
 
   Future<void> signOut();
 

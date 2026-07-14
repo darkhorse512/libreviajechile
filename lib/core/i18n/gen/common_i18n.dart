@@ -100,6 +100,17 @@ const Map<String, String> commonEn = {
       'We sent you an email to reset your password.',
   'No se pudo enviar el correo de recuperación.':
       "We couldn't send the recovery email.",
+  'Te enviamos un código para recuperar tu contraseña.':
+      'We sent you a code to reset your password.',
+  'Recupera tu contraseña': 'Reset your password',
+  'Nueva contraseña': 'New password',
+  'Crea una contraseña nueva para tu cuenta.':
+      'Create a new password for your account.',
+  'Repite la contraseña': 'Repeat the password',
+  'Las contraseñas no coinciden': "Passwords don't match",
+  'Guardar contraseña': 'Save password',
+  'Tu contraseña se actualizó correctamente.':
+      'Your password was updated successfully.',
   // Calificaciones
   'Mis calificaciones': 'My ratings',
   'No pudimos cargar tus calificaciones': "We couldn't load your ratings",
@@ -227,6 +238,17 @@ const Map<String, String> commonPt = {
       'Enviamos um e-mail para recuperar sua senha.',
   'No se pudo enviar el correo de recuperación.':
       'Não foi possível enviar o e-mail de recuperação.',
+  'Te enviamos un código para recuperar tu contraseña.':
+      'Enviamos um código para recuperar sua senha.',
+  'Recupera tu contraseña': 'Recupere sua senha',
+  'Nueva contraseña': 'Nova senha',
+  'Crea una contraseña nueva para tu cuenta.':
+      'Crie uma nova senha para sua conta.',
+  'Repite la contraseña': 'Repita a senha',
+  'Las contraseñas no coinciden': 'As senhas não coincidem',
+  'Guardar contraseña': 'Salvar senha',
+  'Tu contraseña se actualizó correctamente.':
+      'Sua senha foi atualizada com sucesso.',
   // Calificaciones
   'Mis calificaciones': 'Minhas avaliações',
   'No pudimos cargar tus calificaciones':

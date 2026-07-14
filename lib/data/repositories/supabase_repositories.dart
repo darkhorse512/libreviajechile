@@ -216,6 +216,38 @@ class SupabaseAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> verifyRecoveryOtp({
+    required String email,
+    required String token,
+  }) async {
+    try {
+      await _auth.verifyOTP(
+        type: OtpType.recovery,
+        email: email.trim(),
+        token: token.trim(),
+      );
+    } on AuthApiException catch (e) {
+      final m = e.message.toLowerCase();
+      if (m.contains('expired')) {
+        throw AuthException('El código expiró. Solicita uno nuevo.');
+      }
+      if (m.contains('invalid') || m.contains('token')) {
+        throw AuthException('Código incorrecto. Revísalo e inténtalo de nuevo.');
+      }
+      throw AuthException(_translate(e.message));
+    }
+  }
+
+  @override
+  Future<void> updatePassword(String newPassword) async {
+    try {
+      await _auth.updateUser(UserAttributes(password: newPassword));
+    } on AuthApiException catch (e) {
+      throw AuthException(_translate(e.message));
+    }
+  }
+
+  @override
   Future<void> signOut() => _auth.signOut();
 
   @override
