@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'driver_requests_screen.dart';
 import 'driver_trips_screen.dart';
 import '../../core/i18n/i18n.dart';
+import '../notifications/notification_listeners.dart';
 import '../../shared/widgets/app_top_controls.dart';
 import '../profile/profile_screen.dart';
 
@@ -26,7 +27,8 @@ class _DriverShellState extends ConsumerState<DriverShell> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return DriverNotifications(
+      child: Scaffold(
       body: SafeArea(
         bottom: false,
         child: Stack(
@@ -61,6 +63,7 @@ class _DriverShellState extends ConsumerState<DriverShell> {
             label: context.tr('Perfil'),
           ),
         ],
+      ),
       ),
     );
   }

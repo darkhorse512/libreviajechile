@@ -1,6 +1,7 @@
 import '../models/app_user.dart';
 import '../models/enums.dart';
 import '../models/offer.dart';
+import '../models/rating.dart';
 import '../models/trip.dart';
 import '../models/vehicle.dart';
 import 'demo_backend.dart';
@@ -83,6 +84,9 @@ class DemoAuthRepository implements AuthRepository {
 
   @override
   Future<void> resendOtp({required String email}) async {}
+
+  @override
+  Future<void> resetPassword({required String email}) async {}
 
   @override
   Future<void> signOut() => _db.signOut();
@@ -189,6 +193,16 @@ class DemoTripRepository implements TripRepository {
       _db.updateStatus(tripId, status);
 
   @override
+  Future<void> setDriverOnWay(String tripId) => _db.setDriverOnWay(tripId);
+
+  @override
+  Future<void> setDriverArrived(String tripId) => _db.setDriverArrived(tripId);
+
+  @override
+  Future<void> updateDriverLocation(String tripId, double lat, double lng) =>
+      _db.updateDriverLocation(tripId, lat, lng);
+
+  @override
   Future<void> cancelTrip(String tripId) => _db.cancelTrip(tripId);
 
   @override
@@ -199,4 +213,7 @@ class DemoTripRepository implements TripRepository {
     String? comment,
   }) =>
       _db.rate(tripId, raterId, stars);
+
+  @override
+  Future<List<Rating>> userRatings(String userId) async => const [];
 }

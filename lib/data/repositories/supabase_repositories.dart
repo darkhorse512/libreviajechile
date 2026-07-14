@@ -7,6 +7,7 @@ import '../../core/constants/chilean_cities.dart';
 import '../models/app_user.dart';
 import '../models/enums.dart';
 import '../models/offer.dart';
+import '../models/rating.dart';
 import '../models/trip.dart';
 import '../models/vehicle.dart';
 import 'repositories.dart';
@@ -200,6 +201,15 @@ class SupabaseAuthRepository implements AuthRepository {
   Future<void> resendOtp({required String email}) async {
     try {
       await _auth.resend(type: OtpType.signup, email: email);
+    } on AuthApiException catch (e) {
+      throw AuthException(_translate(e.message));
+    }
+  }
+
+  @override
+  Future<void> resetPassword({required String email}) async {
+    try {
+      await _auth.resetPasswordForEmail(email.trim());
     } on AuthApiException catch (e) {
       throw AuthException(_translate(e.message));
     }
@@ -565,6 +575,27 @@ class SupabaseTripRepository implements TripRepository {
   }
 
   @override
+  Future<void> setDriverOnWay(String tripId) async {
+    await _client
+        .from('trips')
+        .update({'driver_on_way': true}).eq('id', tripId);
+  }
+
+  @override
+  Future<void> setDriverArrived(String tripId) async {
+    await _client.from('trips').update({
+      'driver_arrived_at': DateTime.now().toUtc().toIso8601String(),
+    }).eq('id', tripId);
+  }
+
+  @override
+  Future<void> updateDriverLocation(String tripId, double lat, double lng) async {
+    await _client
+        .from('trips')
+        .update({'driver_lat': lat, 'driver_lng': lng}).eq('id', tripId);
+  }
+
+  @override
   Future<void> cancelTrip(String tripId) =>
       updateTripStatus(tripId, TripStatus.cancelled);
 
@@ -581,5 +612,22 @@ class SupabaseTripRepository implements TripRepository {
       'stars': stars,
       'comment': comment,
     });
+  }
+
+  @override
+  Future<List<Rating>> userRatings(String userId) async {
+    final rows = await _client
+        .from('ratings')
+        .select('*, rater:profiles!rater_id(*)')
+        .eq('ratee_id', userId)
+        .order('created_at', ascending: false);
+    final list = <Rating>[];
+    for (final row in (rows as List)) {
+      final map = row as Map<String, dynamic>;
+      final r = map['rater'];
+      final rater = r is Map<String, dynamic> ? AppUser.fromMap(r) : null;
+      list.add(Rating.fromMap(map, rater: rater));
+    }
+    return list;
   }
 }

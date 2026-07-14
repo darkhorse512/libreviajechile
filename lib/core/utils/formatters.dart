@@ -4,15 +4,13 @@ import '../i18n/i18n.dart';
 
 /// Formateadores para la localización chilena (CLP, fechas, etc.).
 abstract class Formatters {
-  static final NumberFormat _clp =
-      NumberFormat.currency(locale: 'es_CL', symbol: r'$', decimalDigits: 0);
+  static final NumberFormat _plain = NumberFormat.decimalPattern('es_CL');
 
-  /// 15000 -> "$15.000"
-  static String clp(num value) => _clp.format(value);
+  /// 15000 -> "$15.000" (en Chile el signo peso va ANTES, sin espacio).
+  static String clp(num value) => '\$${_plain.format(value)}';
 
   /// 15000 -> "15.000" (sin símbolo)
-  static String clpPlain(num value) =>
-      NumberFormat.decimalPattern('es_CL').format(value);
+  static String clpPlain(num value) => _plain.format(value);
 
   /// "hace 3 min", "hace 2 h", "ayer"
   static String relative(DateTime time) {

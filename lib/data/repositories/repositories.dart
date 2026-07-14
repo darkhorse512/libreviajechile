@@ -1,6 +1,7 @@
 import '../models/app_user.dart';
 import '../models/enums.dart';
 import '../models/offer.dart';
+import '../models/rating.dart';
 import '../models/trip.dart';
 import '../models/vehicle.dart';
 
@@ -52,6 +53,9 @@ abstract class AuthRepository {
 
   /// Reenvía el código de verificación al correo indicado.
   Future<void> resendOtp({required String email});
+
+  /// Envía un correo de recuperación de contraseña.
+  Future<void> resetPassword({required String email});
 
   Future<void> signOut();
 
@@ -129,6 +133,15 @@ abstract class TripRepository {
 
   Future<void> updateTripStatus(String tripId, TripStatus status);
 
+  /// El conductor marca que va en camino a recoger al pasajero.
+  Future<void> setDriverOnWay(String tripId);
+
+  /// El conductor marca que llegó al punto de partida.
+  Future<void> setDriverArrived(String tripId);
+
+  /// Actualiza la ubicación en vivo del conductor durante el viaje.
+  Future<void> updateDriverLocation(String tripId, double lat, double lng);
+
   Future<void> cancelTrip(String tripId);
 
   Future<void> rate({
@@ -137,4 +150,7 @@ abstract class TripRepository {
     required int stars,
     String? comment,
   });
+
+  /// Calificaciones recibidas por un usuario (historial de reseñas).
+  Future<List<Rating>> userRatings(String userId);
 }

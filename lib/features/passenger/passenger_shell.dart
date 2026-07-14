@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/i18n/i18n.dart';
+import '../notifications/notification_listeners.dart';
 import '../../shared/widgets/app_top_controls.dart';
 import 'passenger_home_screen.dart';
 import 'passenger_trips_screen.dart';
@@ -26,7 +27,8 @@ class _PassengerShellState extends ConsumerState<PassengerShell> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PassengerNotifications(
+      child: Scaffold(
       body: SafeArea(
         bottom: false,
         child: Stack(
@@ -61,6 +63,7 @@ class _PassengerShellState extends ConsumerState<PassengerShell> {
             label: context.tr('Perfil'),
           ),
         ],
+      ),
       ),
     );
   }

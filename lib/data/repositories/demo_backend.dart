@@ -307,6 +307,27 @@ class DemoBackend {
     _pingTrips();
   }
 
+  Future<void> setDriverOnWay(String tripId) async {
+    final i = trips.indexWhere((t) => t.id == tripId);
+    if (i < 0) return;
+    trips[i] = trips[i].copyWith(driverOnWay: true);
+    _pingTrips();
+  }
+
+  Future<void> setDriverArrived(String tripId) async {
+    final i = trips.indexWhere((t) => t.id == tripId);
+    if (i < 0) return;
+    trips[i] = trips[i].copyWith(driverArrivedAt: DateTime.now());
+    _pingTrips();
+  }
+
+  Future<void> updateDriverLocation(String tripId, double lat, double lng) async {
+    final i = trips.indexWhere((t) => t.id == tripId);
+    if (i < 0) return;
+    trips[i] = trips[i].copyWith(driverLat: lat, driverLng: lng);
+    _pingTrips();
+  }
+
   Future<void> cancelTrip(String tripId) => updateStatus(tripId, TripStatus.cancelled);
 
   Future<void> rate(String tripId, String raterId, int stars) async {

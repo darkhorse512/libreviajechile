@@ -15,6 +15,7 @@ import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/surface_card.dart';
 import '../../shared/widgets/user_avatar.dart';
 import 'edit_profile_screen.dart';
+import 'ratings_screen.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -218,6 +219,14 @@ class ProfileScreen extends ConsumerWidget {
                   context,
                   MaterialPageRoute(
                       builder: (_) => EditProfileScreen(user: user)),
+                ),
+              ),
+              _MenuTile(
+                icon: Icons.star_outline_rounded,
+                label: context.tr('Mis calificaciones'),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const RatingsScreen()),
                 ),
               ),
               _MenuTile(

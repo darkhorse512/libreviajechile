@@ -26,6 +26,10 @@ class Trip {
     this.offersCount = 0,
     this.passengerRated = false,
     this.driverRated = false,
+    this.driverOnWay = false,
+    this.driverArrivedAt,
+    this.driverLat,
+    this.driverLng,
   });
 
   final String id;
@@ -56,7 +60,15 @@ class Trip {
   final bool passengerRated;
   final bool driverRated;
 
+  // Seguimiento del viaje en curso.
+  final bool driverOnWay; // el conductor va en camino a recoger
+  final DateTime? driverArrivedAt; // el conductor llegó al punto de partida
+  final double? driverLat; // ubicación en vivo del conductor
+  final double? driverLng;
+
   int get displayFare => finalFare ?? offeredFare;
+
+  bool get driverHasLocation => driverLat != null && driverLng != null;
 
   /// Verdadero si el viaje tiene coordenadas de origen y destino para mostrar
   /// el mapa de la ruta.
@@ -80,6 +92,10 @@ class Trip {
     int? offersCount,
     bool? passengerRated,
     bool? driverRated,
+    bool? driverOnWay,
+    DateTime? driverArrivedAt,
+    double? driverLat,
+    double? driverLng,
   }) {
     return Trip(
       id: id,
@@ -104,6 +120,10 @@ class Trip {
       offersCount: offersCount ?? this.offersCount,
       passengerRated: passengerRated ?? this.passengerRated,
       driverRated: driverRated ?? this.driverRated,
+      driverOnWay: driverOnWay ?? this.driverOnWay,
+      driverArrivedAt: driverArrivedAt ?? this.driverArrivedAt,
+      driverLat: driverLat ?? this.driverLat,
+      driverLng: driverLng ?? this.driverLng,
     );
   }
 
@@ -127,6 +147,12 @@ class Trip {
       driverId: map['driver_id'] as String?,
       finalFare: (map['final_fare'] as num?)?.toInt(),
       acceptedOfferId: map['accepted_offer_id'] as String?,
+      driverOnWay: (map['driver_on_way'] as bool?) ?? false,
+      driverArrivedAt: map['driver_arrived_at'] != null
+          ? DateTime.tryParse(map['driver_arrived_at'].toString())
+          : null,
+      driverLat: (map['driver_lat'] as num?)?.toDouble(),
+      driverLng: (map['driver_lng'] as num?)?.toDouble(),
     );
   }
 

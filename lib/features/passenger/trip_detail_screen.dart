@@ -17,6 +17,7 @@ import '../../data/providers.dart';
 import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/app_top_controls.dart';
 import '../../shared/widgets/empty_state.dart';
+import '../../shared/widgets/map/live_trip_map.dart';
 import '../../shared/widgets/map/route_map.dart';
 import '../../shared/widgets/nav_app_picker.dart';
 import '../../shared/widgets/primary_button.dart';
@@ -583,6 +584,110 @@ class _OfferCard extends StatelessWidget {
   }
 }
 
+/// Banner con el estado del conductor para el pasajero (confirmado, en camino,
+/// llegó con cuenta regresiva de espera, o en viaje).
+class _DriverStatusBanner extends StatefulWidget {
+  const _DriverStatusBanner({required this.trip});
+  final Trip trip;
+
+  @override
+  State<_DriverStatusBanner> createState() => _DriverStatusBannerState();
+}
+
+class _DriverStatusBannerState extends State<_DriverStatusBanner> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final trip = widget.trip;
+    final inProgress = trip.status == TripStatus.inProgress;
+    final arrived = trip.driverArrivedAt != null;
+
+    IconData icon;
+    Color color;
+    String title;
+    String message;
+
+    if (inProgress) {
+      icon = Icons.navigation_rounded;
+      color = AppColors.accent;
+      title = context.tr('En viaje');
+      message = context.tr('Vas en camino a tu destino.');
+    } else if (arrived) {
+      icon = Icons.where_to_vote_rounded;
+      color = AppColors.success;
+      title = context.tr('¡Tu conductor llegó!');
+      final ends = trip.driverArrivedAt!
+          .add(const Duration(minutes: AppConfig.tripExpiryMinutes));
+      final remaining = ends.difference(DateTime.now());
+      if (remaining > Duration.zero) {
+        final mm = remaining.inMinutes.remainder(60).toString().padLeft(2, '0');
+        final ss = remaining.inSeconds.remainder(60).toString().padLeft(2, '0');
+        message = context.trp(
+            'Te está esperando. Sal en {time} para no perder tu viaje.',
+            {'time': '$mm:$ss'});
+      } else {
+        message = context.tr('Te está esperando en el punto de partida.');
+      }
+    } else if (trip.driverOnWay) {
+      icon = Icons.directions_car_rounded;
+      color = AppColors.brand;
+      title = context.tr('Tu conductor va en camino');
+      message = context.tr('Está yendo a tu punto de partida.');
+    } else {
+      icon = Icons.check_circle_rounded;
+      color = AppColors.brand;
+      title = context.tr('Conductor confirmado');
+      message = context.tr('Tu conductor se está preparando.');
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: color)),
+                Text(message,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: context.palette.textSecondary,
+                        )),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _AssignedSection extends StatelessWidget {
   const _AssignedSection({required this.trip});
   final Trip trip;
@@ -593,6 +698,18 @@ class _AssignedSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _DriverStatusBanner(trip: trip),
+        const SizedBox(height: 12),
+        if (trip.hasRoute) ...[
+          LiveTripMap(
+            origin: LatLng(trip.originLat!, trip.originLng!),
+            destination: LatLng(trip.destinationLat!, trip.destinationLng!),
+            driver: trip.driverHasLocation
+                ? LatLng(trip.driverLat!, trip.driverLng!)
+                : null,
+          ),
+          const SizedBox(height: 16),
+        ],
         Text(context.tr('Tu conductor'),
             style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 12),

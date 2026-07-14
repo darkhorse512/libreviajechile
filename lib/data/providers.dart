@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../core/config/env.dart';
 import 'models/app_user.dart';
 import 'models/offer.dart';
+import 'models/rating.dart';
 import 'models/trip.dart';
 import 'repositories/demo_repositories.dart';
 import 'repositories/repositories.dart';
@@ -70,4 +71,10 @@ final tripOffersProvider =
 final driverOffersProvider =
     StreamProvider.family<List<Offer>, String>((ref, driverId) {
   return ref.watch(tripRepositoryProvider).watchDriverOffers(driverId);
+});
+
+/// Historial de calificaciones recibidas por un usuario.
+final userRatingsProvider =
+    FutureProvider.family<List<Rating>, String>((ref, userId) {
+  return ref.watch(tripRepositoryProvider).userRatings(userId);
 });

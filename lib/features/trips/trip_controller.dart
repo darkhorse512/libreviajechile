@@ -65,6 +65,15 @@ class TripActions {
   Future<void> updateStatus(String tripId, TripStatus status) =>
       _ref.read(tripRepositoryProvider).updateTripStatus(tripId, status);
 
+  Future<void> setOnWay(String tripId) =>
+      _ref.read(tripRepositoryProvider).setDriverOnWay(tripId);
+
+  Future<void> setArrived(String tripId) =>
+      _ref.read(tripRepositoryProvider).setDriverArrived(tripId);
+
+  Future<void> updateDriverLocation(String tripId, double lat, double lng) =>
+      _ref.read(tripRepositoryProvider).updateDriverLocation(tripId, lat, lng);
+
   Future<void> cancelTrip(String tripId) =>
       _ref.read(tripRepositoryProvider).cancelTrip(tripId);
 

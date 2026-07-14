@@ -8,6 +8,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/validators.dart';
 import '../../data/providers.dart';
+import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/app_logo.dart';
 import '../../shared/widgets/app_text_field.dart';
 import '../../shared/widgets/app_top_controls.dart';
@@ -42,6 +43,57 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         .read(authFormControllerProvider.notifier)
         .signIn(_email.text.trim(), _password.text);
     // La redirección la maneja el router al cambiar el estado de sesión.
+  }
+
+  Future<void> _forgotPassword() async {
+    final controller = TextEditingController(text: _email.text.trim());
+    final email = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(context.tr('Recuperar contraseña')),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(context.tr(
+                'Te enviaremos un enlace a tu correo para restablecer tu contraseña.')),
+            const SizedBox(height: 14),
+            TextField(
+              controller: controller,
+              keyboardType: TextInputType.emailAddress,
+              autofocus: true,
+              decoration: const InputDecoration(
+                hintText: 'tucorreo@ejemplo.cl',
+                prefixIcon: Icon(Icons.mail_outline_rounded, size: 20),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(context.tr('Cancelar')),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            child: Text(context.tr('Enviar')),
+          ),
+        ],
+      ),
+    );
+    if (email == null || email.isEmpty) return;
+    try {
+      await ref.read(authRepositoryProvider).resetPassword(email: email);
+      if (mounted) {
+        AppFeedback.success(context,
+            context.tr('Te enviamos un correo para recuperar tu contraseña.'));
+      }
+    } catch (_) {
+      if (mounted) {
+        AppFeedback.error(context,
+            context.tr('No se pudo enviar el correo de recuperación.'));
+      }
+    }
   }
 
   @override
@@ -94,6 +146,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     obscure: true,
                     textInputAction: TextInputAction.done,
                     validator: Validators.password,
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: _forgotPassword,
+                      child: Text(context.tr('¿Olvidaste tu contraseña?')),
+                    ),
                   ),
                   if (state.error != null) ...[
                     const SizedBox(height: 16),

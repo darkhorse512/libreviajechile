@@ -5,7 +5,7 @@ abstract class AppConfig {
 
   /// Versión visible de la app (debe coincidir con `version:` en pubspec.yaml).
   /// Sirve para confirmar de un vistazo qué build está instalado.
-  static const String appVersion = '0.9.0 (build 13)';
+  static const String appVersion = '0.10.0 (build 15)';
 
   /// Minutos que una solicitud puede estar abierta sin aceptar una oferta
   /// antes de cancelarse automáticamente.
