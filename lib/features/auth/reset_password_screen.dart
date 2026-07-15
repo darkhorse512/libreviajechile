@@ -146,7 +146,13 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(actions: const [AppTopControls(), SizedBox(width: 4)]),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () => context.go(Routes.login),
+        ),
+        actions: const [AppTopControls(), SizedBox(width: 4)],
+      ),
       body: SafeArea(
         top: false,
         child: SingleChildScrollView(

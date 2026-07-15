@@ -87,8 +87,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) {
         AppFeedback.success(context,
             context.tr('Te enviamos un código para recuperar tu contraseña.'));
-        // Abre la pantalla para ingresar el código y la nueva contraseña.
-        context.push(
+        // Usa `go` (no `push`): al verificar el código se abre una sesión de
+        // recuperación y el router reevalúa la redirección; con `go` la ruta
+        // activa es /recuperar y el guard evita que salte al inicio antes de
+        // definir la nueva contraseña.
+        context.go(
             '${Routes.resetPassword}?email=${Uri.encodeComponent(email)}');
       }
     } catch (_) {
