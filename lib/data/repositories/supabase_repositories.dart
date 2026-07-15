@@ -3,7 +3,6 @@ import 'dart:async';
 // Ocultamos la AuthException de gotrue para usar la nuestra (repositories.dart).
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 
-import '../../core/constants/chilean_cities.dart';
 import '../models/app_user.dart';
 import '../models/enums.dart';
 import '../models/offer.dart';
@@ -407,6 +406,8 @@ class SupabaseTripRepository implements TripRepository {
 
   @override
   Stream<List<Trip>> watchOpenTrips(DriverArea area) {
+    // Todos los conductores en línea ven todas las solicitudes abiertas, sin
+    // filtro por cercanía (un pasajero puede pedir viaje en cualquier zona).
     return _live<List<Trip>>(
       table: 'trips',
       fetch: () async {
@@ -415,17 +416,7 @@ class SupabaseTripRepository implements TripRepository {
             .select()
             .eq('status', 'requested')
             .order('created_at');
-        final nearby = rows
-            .where((r) => tripInDriverArea(
-                  tripLat: (r['origin_lat'] as num?)?.toDouble(),
-                  tripLng: (r['origin_lng'] as num?)?.toDouble(),
-                  tripCity: (r['city'] as String?) ?? '',
-                  refLat: area.lat,
-                  refLng: area.lng,
-                  refCity: area.city,
-                ))
-            .toList();
-        return _hydrateTrips(nearby);
+        return _hydrateTrips(rows);
       },
     );
   }

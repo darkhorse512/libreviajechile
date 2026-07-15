@@ -181,25 +181,17 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     )
 
-    // Conductores en línea + su ciudad.
+    // TODOS los conductores en línea (sin filtro por cercanía): un pasajero
+    // puede pedir viaje en cualquier zona del país.
     const { data: drivers } = await admin
       .from('driver_details')
-      .select('id, profile:profiles(city)')
+      .select('id')
       .eq('is_online', true)
 
-    const nearbyIds = (drivers ?? [])
-      .filter((d: any) =>
-        tripInArea(
-          trip.origin_lat ?? null,
-          trip.origin_lng ?? null,
-          trip.city ?? '',
-          d.profile?.city ?? null,
-        ),
-      )
-      .map((d: any) => d.id)
+    const nearbyIds = (drivers ?? []).map((d: any) => d.id)
 
     if (nearbyIds.length === 0) {
-      return new Response('no nearby drivers', { status: 200 })
+      return new Response('no online drivers', { status: 200 })
     }
 
     const { data: tokens } = await admin
