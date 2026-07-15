@@ -73,8 +73,15 @@ final driverOffersProvider =
   return ref.watch(tripRepositoryProvider).watchDriverOffers(driverId);
 });
 
-/// Historial de calificaciones recibidas por un usuario.
+/// Historial de calificaciones recibidas por un usuario. `autoDispose` para
+/// obtener datos frescos cada vez que se abre un perfil.
 final userRatingsProvider =
-    FutureProvider.family<List<Rating>, String>((ref, userId) {
+    FutureProvider.autoDispose.family<List<Rating>, String>((ref, userId) {
   return ref.watch(tripRepositoryProvider).userRatings(userId);
+});
+
+/// Perfil actualizado de un usuario (rating, vehículo, viajes).
+final userProfileProvider =
+    FutureProvider.autoDispose.family<AppUser?, String>((ref, userId) {
+  return ref.watch(tripRepositoryProvider).userProfile(userId);
 });

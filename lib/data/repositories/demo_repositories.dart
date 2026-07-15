@@ -225,4 +225,7 @@ class DemoTripRepository implements TripRepository {
 
   @override
   Future<List<Rating>> userRatings(String userId) async => const [];
+
+  @override
+  Future<AppUser?> userProfile(String userId) async => _db.users[userId];
 }

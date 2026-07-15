@@ -159,4 +159,7 @@ abstract class TripRepository {
 
   /// Calificaciones recibidas por un usuario (historial de reseñas).
   Future<List<Rating>> userRatings(String userId);
+
+  /// Perfil actualizado de un usuario (nombre, rating, vehículo, etc.).
+  Future<AppUser?> userProfile(String userId);
 }

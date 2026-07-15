@@ -21,6 +21,7 @@ import '../../shared/widgets/nav_app_picker.dart';
 import '../../shared/widgets/primary_button.dart';
 import '../../shared/widgets/surface_card.dart';
 import '../../shared/widgets/user_avatar.dart';
+import '../profile/user_profile_screen.dart';
 import '../trips/rate_sheet.dart';
 import '../trips/trip_controller.dart';
 import '../trips/widgets/trip_widgets.dart';
@@ -205,14 +206,26 @@ class _ActiveDriverTripState extends ConsumerState<_ActiveDriverTrip> {
           const SizedBox(height: 14),
           Row(
             children: [
-              UserAvatar(
-                  name: passenger?.fullName ?? context.tr('Pasajero'),
-                  imageUrl: passenger?.avatarUrl,
-                  size: 40),
+              GestureDetector(
+                onTap: passenger == null
+                    ? null
+                    : () => UserProfileScreen.show(context,
+                        userId: passenger.id, initial: passenger),
+                child: UserAvatar(
+                    name: passenger?.fullName ?? context.tr('Pasajero'),
+                    imageUrl: passenger?.avatarUrl,
+                    size: 40),
+              ),
               const SizedBox(width: 10),
               Expanded(
-                child: Text(passenger?.fullName ?? context.tr('Pasajero'),
-                    style: Theme.of(context).textTheme.titleSmall),
+                child: GestureDetector(
+                  onTap: passenger == null
+                      ? null
+                      : () => UserProfileScreen.show(context,
+                          userId: passenger.id, initial: passenger),
+                  child: Text(passenger?.fullName ?? context.tr('Pasajero'),
+                      style: Theme.of(context).textTheme.titleSmall),
+                ),
               ),
               IconButton(
                 tooltip: 'WhatsApp',
@@ -403,12 +416,20 @@ class _WaitCountdownState extends State<_WaitCountdown> {
   }
 }
 
-class _HistoryTile extends StatelessWidget {
+class _HistoryTile extends StatefulWidget {
   const _HistoryTile({required this.trip});
   final Trip trip;
 
   @override
+  State<_HistoryTile> createState() => _HistoryTileState();
+}
+
+class _HistoryTileState extends State<_HistoryTile> {
+  bool _rated = false;
+
+  @override
   Widget build(BuildContext context) {
+    final trip = widget.trip;
     final completed = trip.status == TripStatus.completed;
     return SurfaceCard(
       child: Column(
@@ -443,16 +464,22 @@ class _HistoryTile extends StatelessWidget {
                       )),
             ],
           ),
-          if (completed && !trip.driverRated && trip.passenger != null) ...[
+          if (completed &&
+              !(_rated || trip.driverRated) &&
+              trip.passenger != null) ...[
             const SizedBox(height: 12),
             OutlinedButton.icon(
-              onPressed: () => showRateSheet(
-                context,
-                tripId: trip.id,
-                personName: trip.passenger!.fullName,
-                personAvatar: trip.passenger!.avatarUrl,
-                roleLabel: context.tr('pasajero'),
-              ),
+              onPressed: () async {
+                final ok = await showRateSheet(
+                  context,
+                  tripId: trip.id,
+                  rateeId: trip.passenger!.id,
+                  personName: trip.passenger!.fullName,
+                  personAvatar: trip.passenger!.avatarUrl,
+                  roleLabel: context.tr('pasajero'),
+                );
+                if (ok == true && mounted) setState(() => _rated = true);
+              },
               icon: const Icon(Icons.star_rounded, size: 18, color: AppColors.star),
               label: Text(context.tr('Calificar pasajero')),
               style: OutlinedButton.styleFrom(

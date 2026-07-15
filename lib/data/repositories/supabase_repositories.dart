@@ -638,6 +638,9 @@ class SupabaseTripRepository implements TripRepository {
   }
 
   @override
+  Future<AppUser?> userProfile(String userId) => _fetchUser(userId);
+
+  @override
   Future<List<Rating>> userRatings(String userId) async {
     final rows = await _client
         .from('ratings')

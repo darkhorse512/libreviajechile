@@ -118,6 +118,8 @@ const Map<String, String> commonEn = {
   'Cuando completes viajes, las reseñas aparecerán aquí.':
       'When you complete trips, reviews will appear here.',
   '{n} reseñas': '{n} reviews',
+  'No pudimos cargar las reseñas': "We couldn't load the reviews",
+  'Sin reseñas todavía': 'No reviews yet',
   // Seguimiento del viaje
   'Voy en camino': "I'm on my way",
   'Llegué': "I've arrived",
@@ -137,6 +139,16 @@ const Map<String, String> commonEn = {
   'Te está esperando en el punto de partida.':
       'They are waiting for you at the pickup point.',
   'Vas en camino a tu destino.': 'You are on your way to your destination.',
+  // Fotos (avatar / auto)
+  'Tomar foto': 'Take photo',
+  'Elegir de la galería': 'Choose from gallery',
+  'Subir fotos requiere una cuenta real.':
+      'Uploading photos requires a real account.',
+  'No se pudo subir la imagen.': "Couldn't upload the image.",
+  'Máximo 6 fotos del auto.': 'Maximum 6 car photos.',
+  'Fotos del auto': 'Car photos',
+  'Ayuda al pasajero a reconocer tu auto.':
+      'Help the passenger recognize your car.',
 };
 
 const Map<String, String> commonPt = {
@@ -257,6 +269,8 @@ const Map<String, String> commonPt = {
   'Cuando completes viajes, las reseñas aparecerán aquí.':
       'Quando você concluir viagens, as avaliações aparecerão aqui.',
   '{n} reseñas': '{n} avaliações',
+  'No pudimos cargar las reseñas': 'Não foi possível carregar as avaliações',
+  'Sin reseñas todavía': 'Sem avaliações ainda',
   // Seguimiento del viaje
   'Voy en camino': 'Estou a caminho',
   'Llegué': 'Cheguei',
@@ -276,4 +290,14 @@ const Map<String, String> commonPt = {
   'Te está esperando en el punto de partida.':
       'Ele está esperando por você no ponto de partida.',
   'Vas en camino a tu destino.': 'Você está a caminho do seu destino.',
+  // Fotos (avatar / auto)
+  'Tomar foto': 'Tirar foto',
+  'Elegir de la galería': 'Escolher da galeria',
+  'Subir fotos requiere una cuenta real.':
+      'Enviar fotos requer uma conta real.',
+  'No se pudo subir la imagen.': 'Não foi possível enviar a imagem.',
+  'Máximo 6 fotos del auto.': 'Máximo de 6 fotos do carro.',
+  'Fotos del auto': 'Fotos do carro',
+  'Ayuda al pasajero a reconocer tu auto.':
+      'Ajude o passageiro a reconhecer seu carro.',
 };

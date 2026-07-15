@@ -23,6 +23,7 @@ import '../../shared/widgets/nav_app_picker.dart';
 import '../../shared/widgets/primary_button.dart';
 import '../../shared/widgets/surface_card.dart';
 import '../../shared/widgets/user_avatar.dart';
+import '../profile/user_profile_screen.dart';
 import '../trips/rate_sheet.dart';
 import '../trips/trip_controller.dart';
 import '../trips/widgets/driver_card.dart';
@@ -472,33 +473,49 @@ class _OfferCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              UserAvatar(
-                  name: driver?.fullName ?? context.tr('Conductor'),
-                  imageUrl: driver?.avatarUrl,
-                  size: 48),
+              GestureDetector(
+                onTap: driver == null
+                    ? null
+                    : () => UserProfileScreen.show(context,
+                        userId: driver.id, initial: driver),
+                child: UserAvatar(
+                    name: driver?.fullName ?? context.tr('Conductor'),
+                    imageUrl: driver?.avatarUrl,
+                    size: 48),
+              ),
               const SizedBox(width: 12),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(driver?.fullName ?? context.tr('Conductor'),
-                              style: Theme.of(context).textTheme.titleMedium,
-                              overflow: TextOverflow.ellipsis),
-                        ),
-                        if (driver?.isVerified ?? false) ...[
+                child: GestureDetector(
+                  onTap: driver == null
+                      ? null
+                      : () => UserProfileScreen.show(context,
+                          userId: driver.id, initial: driver),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                                driver?.fullName ?? context.tr('Conductor'),
+                                style: Theme.of(context).textTheme.titleMedium,
+                                overflow: TextOverflow.ellipsis),
+                          ),
+                          if (driver?.isVerified ?? false) ...[
+                            const SizedBox(width: 4),
+                            const Icon(Icons.verified_rounded,
+                                size: 15, color: AppColors.brand),
+                          ],
                           const SizedBox(width: 4),
-                          const Icon(Icons.verified_rounded,
-                              size: 15, color: AppColors.brand),
+                          Icon(Icons.chevron_right_rounded,
+                              size: 16, color: context.palette.textMuted),
                         ],
-                      ],
-                    ),
-                    if (driver != null)
-                      RatingStars(
-                          rating: driver.ratingAvg, size: 13, showValue: true),
-                  ],
+                      ),
+                      if (driver != null)
+                        RatingStars(
+                            rating: driver.ratingAvg, size: 13, showValue: true),
+                    ],
+                  ),
                 ),
               ),
               Column(
@@ -713,7 +730,12 @@ class _AssignedSection extends StatelessWidget {
         Text(context.tr('Tu conductor'),
             style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 12),
-        if (driver != null) DriverInfoCard(driver: driver),
+        if (driver != null)
+          GestureDetector(
+            onTap: () =>
+                UserProfileScreen.show(context, userId: driver.id, initial: driver),
+            child: DriverInfoCard(driver: driver),
+          ),
         const SizedBox(height: 12),
         Row(
           children: [
@@ -753,12 +775,22 @@ class _AssignedSection extends StatelessWidget {
   }
 }
 
-class _CompletedSection extends ConsumerWidget {
+class _CompletedSection extends StatefulWidget {
   const _CompletedSection({required this.trip});
   final Trip trip;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  State<_CompletedSection> createState() => _CompletedSectionState();
+}
+
+class _CompletedSectionState extends State<_CompletedSection> {
+  bool _rated = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final trip = widget.trip;
+    final driver = trip.driver;
+    final alreadyRated = _rated || trip.passengerRated;
     return Column(
       children: [
         SurfaceCard(
@@ -778,17 +810,21 @@ class _CompletedSection extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 16),
-        if (!trip.passengerRated && trip.driver != null)
+        if (!alreadyRated && driver != null)
           PrimaryButton(
             label: context.tr('Calificar a tu conductor'),
             icon: Icons.star_rounded,
-            onPressed: () => showRateSheet(
-              context,
-              tripId: trip.id,
-              personName: trip.driver!.fullName,
-              personAvatar: trip.driver!.avatarUrl,
-              roleLabel: context.tr('conductor'),
-            ),
+            onPressed: () async {
+              final ok = await showRateSheet(
+                context,
+                tripId: trip.id,
+                rateeId: driver.id,
+                personName: driver.fullName,
+                personAvatar: driver.avatarUrl,
+                roleLabel: context.tr('conductor'),
+              );
+              if (ok == true && mounted) setState(() => _rated = true);
+            },
           )
         else
           InfoPill(

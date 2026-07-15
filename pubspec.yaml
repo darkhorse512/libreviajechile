@@ -1,7 +1,7 @@
 name: libre_viaje_chile
 description: "Libre Viaje Chile — App de transporte de pasajeros con ofertas y contraofertas."
 publish_to: "none"
-version: 0.11.1+19
+version: 0.13.0+21
 
 environment:
   sdk: ">=3.6.0 <4.0.0"
@@ -40,6 +40,9 @@ dependencies:
 
   # Sonido de notificaciones (request.aac / accept.aac)
   audioplayers: ^6.1.0
+
+  # Selección de imágenes (avatar / fotos del auto)
+  image_picker: ^1.1.2
 
   # Utils
   http: ^1.2.2 # Nominatim (geocoding) + OSRM (rutas)

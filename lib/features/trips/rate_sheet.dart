@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/i18n/i18n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
+import '../../data/providers.dart';
 import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/app_text_field.dart';
 import '../../shared/widgets/primary_button.dart';
@@ -14,6 +15,7 @@ import 'trip_controller.dart';
 Future<bool?> showRateSheet(
   BuildContext context, {
   required String tripId,
+  required String rateeId,
   required String personName,
   String? personAvatar,
   required String roleLabel,
@@ -23,6 +25,7 @@ Future<bool?> showRateSheet(
     isScrollControlled: true,
     builder: (_) => _RateSheet(
       tripId: tripId,
+      rateeId: rateeId,
       personName: personName,
       personAvatar: personAvatar,
       roleLabel: roleLabel,
@@ -33,12 +36,14 @@ Future<bool?> showRateSheet(
 class _RateSheet extends ConsumerStatefulWidget {
   const _RateSheet({
     required this.tripId,
+    required this.rateeId,
     required this.personName,
     required this.personAvatar,
     required this.roleLabel,
   });
 
   final String tripId;
+  final String rateeId;
   final String personName;
   final String? personAvatar;
   final String roleLabel;
@@ -66,6 +71,10 @@ class _RateSheetState extends ConsumerState<_RateSheet> {
             stars: _stars,
             comment: _comment.text.trim().isEmpty ? null : _comment.text.trim(),
           );
+      // Refresca el perfil y las reseñas del calificado para que aparezcan al
+      // instante en su perfil.
+      ref.invalidate(userProfileProvider(widget.rateeId));
+      ref.invalidate(userRatingsProvider(widget.rateeId));
       if (mounted) {
         AppFeedback.success(context, context.tr('¡Gracias por tu calificación!'));
         Navigator.pop(context, true);

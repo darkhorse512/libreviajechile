@@ -7,6 +7,7 @@ class Vehicle {
     required this.color,
     required this.plate,
     this.seats = 4,
+    this.carPhotos = const [],
   });
 
   final String make;
@@ -15,6 +16,9 @@ class Vehicle {
   final String color;
   final String plate;
   final int seats;
+
+  /// URLs de fotos del auto (para que el pasajero lo reconozca).
+  final List<String> carPhotos;
 
   String get displayName => '$make $model';
   String get summary => '$make $model · $year · $color';
@@ -26,6 +30,7 @@ class Vehicle {
     String? color,
     String? plate,
     int? seats,
+    List<String>? carPhotos,
   }) {
     return Vehicle(
       make: make ?? this.make,
@@ -34,6 +39,7 @@ class Vehicle {
       color: color ?? this.color,
       plate: plate ?? this.plate,
       seats: seats ?? this.seats,
+      carPhotos: carPhotos ?? this.carPhotos,
     );
   }
 
@@ -45,6 +51,10 @@ class Vehicle {
       color: (map['color'] as String?) ?? '',
       plate: (map['plate'] as String?) ?? '',
       seats: (map['seats'] as num?)?.toInt() ?? 4,
+      carPhotos: (map['car_photos'] as List?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
     );
   }
 
@@ -55,5 +65,6 @@ class Vehicle {
         'color': color,
         'plate': plate.toUpperCase(),
         'seats': seats,
+        'car_photos': carPhotos,
       };
 }

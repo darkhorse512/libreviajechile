@@ -51,6 +51,8 @@ class ProfileScreen extends ConsumerWidget {
     }
     final themeMode = ref.watch(themeControllerProvider);
     final isDriver = user.role == UserRole.driver;
+    // Rating/reseñas frescos (se actualizan cuando alguien te califica).
+    final stats = ref.watch(userProfileProvider(user.id)).valueOrNull ?? user;
     ref.watch(localeControllerProvider); // reconstruye al cambiar idioma
     final language = ref.read(localeControllerProvider.notifier).selected;
     final languageLabel =
@@ -88,8 +90,8 @@ class ProfileScreen extends ConsumerWidget {
               Row(
                 children: [
                   _Stat(
-                    value: user.hasRatings
-                        ? user.ratingAvg.toStringAsFixed(1)
+                    value: stats.hasRatings
+                        ? stats.ratingAvg.toStringAsFixed(1)
                         : '—',
                     label: context.tr('Calificación'),
                     icon: Icons.star_rounded,
@@ -97,14 +99,14 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   _divider(context),
                   _Stat(
-                    value: '${user.tripsCount}',
+                    value: '${stats.tripsCount}',
                     label: context.tr('Viajes'),
                     icon: Icons.route_rounded,
                     color: AppColors.brand,
                   ),
                   _divider(context),
                   _Stat(
-                    value: '${user.ratingCount}',
+                    value: '${stats.ratingCount}',
                     label: context.tr('Reseñas'),
                     icon: Icons.reviews_rounded,
                     color: AppColors.accent,
