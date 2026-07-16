@@ -106,6 +106,14 @@ class DemoAuthRepository implements AuthRepository {
   @override
   Future<void> setOnline(String driverId, bool online) =>
       _db.setOnline(driverId, online);
+
+  @override
+  Future<AppUser> setDriverDocuments(
+          String driverId, Map<String, String> docs) async =>
+      _db.currentUser ?? (throw StateError('sin usuario'));
+
+  @override
+  Future<AppUser?> reloadUser() async => _db.currentUser;
 }
 
 class DemoTripRepository implements TripRepository {

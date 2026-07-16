@@ -330,7 +330,7 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
                     selected: _seats == n,
                     onSelected: (_) => setState(() => _seats = n),
                     labelStyle: TextStyle(
-                      color: _seats == n ? Colors.white : null,
+                      color: _seats == n ? AppColors.onBrand : null,
                       fontWeight: FontWeight.w700,
                     ),
                   ),

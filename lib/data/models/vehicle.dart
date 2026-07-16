@@ -8,6 +8,10 @@ class Vehicle {
     required this.plate,
     this.seats = 4,
     this.carPhotos = const [],
+    this.docCarFront,
+    this.docLicense,
+    this.docVehicleReg,
+    this.docVehicleRegBack,
   });
 
   final String make;
@@ -20,6 +24,13 @@ class Vehicle {
   /// URLs de fotos del auto (para que el pasajero lo reconozca).
   final List<String> carPhotos;
 
+  // Documentos de verificación (imagen o PDF en R2). Solo visibles para el
+  // conductor y el panel de administración.
+  final String? docCarFront;
+  final String? docLicense;
+  final String? docVehicleReg;
+  final String? docVehicleRegBack;
+
   String get displayName => '$make $model';
   String get summary => '$make $model · $year · $color';
 
@@ -31,6 +42,10 @@ class Vehicle {
     String? plate,
     int? seats,
     List<String>? carPhotos,
+    String? docCarFront,
+    String? docLicense,
+    String? docVehicleReg,
+    String? docVehicleRegBack,
   }) {
     return Vehicle(
       make: make ?? this.make,
@@ -40,6 +55,10 @@ class Vehicle {
       plate: plate ?? this.plate,
       seats: seats ?? this.seats,
       carPhotos: carPhotos ?? this.carPhotos,
+      docCarFront: docCarFront ?? this.docCarFront,
+      docLicense: docLicense ?? this.docLicense,
+      docVehicleReg: docVehicleReg ?? this.docVehicleReg,
+      docVehicleRegBack: docVehicleRegBack ?? this.docVehicleRegBack,
     );
   }
 
@@ -55,6 +74,10 @@ class Vehicle {
               ?.map((e) => e.toString())
               .toList() ??
           const [],
+      docCarFront: map['doc_car_front'] as String?,
+      docLicense: map['doc_license'] as String?,
+      docVehicleReg: map['doc_vehicle_reg'] as String?,
+      docVehicleRegBack: map['doc_vehicle_reg_back'] as String?,
     );
   }
 

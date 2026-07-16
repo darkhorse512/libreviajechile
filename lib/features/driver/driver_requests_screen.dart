@@ -21,6 +21,7 @@ import '../../shared/widgets/surface_card.dart';
 import '../../shared/widgets/user_avatar.dart';
 import '../trips/trip_controller.dart';
 import '../trips/widgets/trip_widgets.dart';
+import 'driver_verification_screen.dart';
 import 'offer_sheet.dart';
 
 class DriverRequestsScreen extends ConsumerWidget {
@@ -54,6 +55,15 @@ class DriverRequestsScreen extends ConsumerWidget {
     final user = ref.watch(currentUserProvider);
     if (user == null) {
       return const Center(child: CircularProgressIndicator());
+    }
+
+    // Un conductor no aprobado no puede ponerse en línea ni ofertar: primero
+    // debe subir sus documentos y esperar la aprobación del administrador.
+    if (!user.isApprovedDriver) {
+      return SafeArea(
+        bottom: false,
+        child: DriverVerificationScreen(user: user),
+      );
     }
 
     return Column(

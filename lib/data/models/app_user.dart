@@ -18,6 +18,8 @@ class AppUser {
     this.vehicle,
     this.isOnline = false,
     this.isVerified = false,
+    this.verificationStatus = DriverVerificationStatus.approved,
+    this.rejectionReason,
   });
 
   final String id;
@@ -37,8 +39,27 @@ class AppUser {
   final bool isOnline;
   final bool isVerified;
 
+  /// Estado de verificación (solo conductores). Los pasajeros se consideran
+  /// "aprobados" por defecto (no aplica).
+  final DriverVerificationStatus verificationStatus;
+  final String? rejectionReason;
+
   bool get isDriver => role == UserRole.driver;
   bool get hasRatings => ratingCount > 0;
+
+  /// Un conductor aprobado puede ponerse en línea y aceptar viajes.
+  bool get isApprovedDriver =>
+      !isDriver || verificationStatus == DriverVerificationStatus.approved;
+
+  /// El conductor ya envió sus documentos y espera revisión.
+  bool get hasSubmittedDocuments {
+    final v = vehicle;
+    return v != null &&
+        v.docCarFront != null &&
+        v.docLicense != null &&
+        v.docVehicleReg != null &&
+        v.docVehicleRegBack != null;
+  }
 
   AppUser copyWith({
     UserRole? role,
@@ -52,6 +73,8 @@ class AppUser {
     Vehicle? vehicle,
     bool? isOnline,
     bool? isVerified,
+    DriverVerificationStatus? verificationStatus,
+    String? rejectionReason,
   }) {
     return AppUser(
       id: id,
@@ -68,6 +91,8 @@ class AppUser {
       vehicle: vehicle ?? this.vehicle,
       isOnline: isOnline ?? this.isOnline,
       isVerified: isVerified ?? this.isVerified,
+      verificationStatus: verificationStatus ?? this.verificationStatus,
+      rejectionReason: rejectionReason ?? this.rejectionReason,
     );
   }
 
@@ -88,6 +113,9 @@ class AppUser {
           : null,
       isOnline: (map['is_online'] as bool?) ?? false,
       isVerified: (map['is_verified'] as bool?) ?? false,
+      verificationStatus:
+          DriverVerificationStatus.fromString(map['status'] as String?),
+      rejectionReason: map['rejection_reason'] as String?,
       vehicle: vehicle,
     );
   }

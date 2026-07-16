@@ -63,6 +63,8 @@ class SupabaseAuthRepository implements AuthRepository {
         if (driver != null) ...{
           'is_online': driver['is_online'],
           'is_verified': driver['is_verified'],
+          'status': driver['status'],
+          'rejection_reason': driver['rejection_reason'],
         },
         'email': authUser.email,
       };
@@ -276,6 +278,26 @@ class SupabaseAuthRepository implements AuthRepository {
       _cached = _cached!.copyWith(isOnline: online);
     }
   }
+
+  @override
+  Future<AppUser> setDriverDocuments(
+    String driverId,
+    Map<String, String> docs,
+  ) async {
+    // Guarda las URLs de los documentos y (re)envía a revisión: status pending.
+    await _client.from('driver_details').update({
+      ...docs,
+      'status': 'pending',
+      'rejection_reason': null,
+      'submitted_at': DateTime.now().toUtc().toIso8601String(),
+    }).eq('id', driverId);
+    final user = await _resolveUser(_auth.currentUser);
+    if (user == null) throw AuthException('No se pudo actualizar el perfil');
+    return user;
+  }
+
+  @override
+  Future<AppUser?> reloadUser() => _resolveUser(_auth.currentUser);
 
   String _translate(String message) {
     final m = message.toLowerCase();

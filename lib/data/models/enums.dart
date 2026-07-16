@@ -17,6 +17,23 @@ enum UserRole {
       };
 }
 
+/// Estado de verificación (KYC) de un conductor.
+enum DriverVerificationStatus {
+  pending,
+  approved,
+  rejected;
+
+  static DriverVerificationStatus fromString(String? value) => switch (value) {
+        'approved' => DriverVerificationStatus.approved,
+        'rejected' => DriverVerificationStatus.rejected,
+        _ => DriverVerificationStatus.pending,
+      };
+
+  bool get isApproved => this == DriverVerificationStatus.approved;
+  bool get isPending => this == DriverVerificationStatus.pending;
+  bool get isRejected => this == DriverVerificationStatus.rejected;
+}
+
 /// Estado del ciclo de vida de un viaje.
 enum TripStatus {
   requested, // publicado, esperando ofertas

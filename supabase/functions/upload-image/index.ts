@@ -4,7 +4,9 @@
 // devuelve su URL pública. Las credenciales de R2 viven como SECRETS del
 // proyecto (nunca en la app).
 //
-// Body JSON: { data: base64, contentType: 'image/jpeg', kind: 'avatar'|'car' }
+// Body JSON: { data: base64, contentType, kind }
+//   kind 'avatar' → avatars/ · 'car' → cars/ · cualquier otro (docs KYC) → docs/
+//   contentType puede ser image/jpeg, image/png o application/pdf.
 //
 // Secrets requeridos (supabase secrets set ...):
 //   R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET,
@@ -33,8 +35,17 @@ Deno.serve(async (req) => {
       return new Response('no image data', { status: 400 })
     }
     const ct = typeof contentType === 'string' ? contentType : 'image/jpeg'
-    const ext = ct.includes('png') ? 'png' : 'jpg'
-    const folder = kind === 'car' ? 'cars' : 'avatars'
+    const ext = ct.includes('pdf')
+      ? 'pdf'
+      : ct.includes('png')
+        ? 'png'
+        : 'jpg'
+    // avatar → avatars/  ·  car (fotos del auto) → cars/  ·  documentos KYC → docs/
+    const folder = kind === 'car'
+      ? 'cars'
+      : kind === 'avatar'
+        ? 'avatars'
+        : 'docs'
     const rand = crypto.randomUUID().slice(0, 8)
     const key = `${folder}/${user.id}/${rand}.${ext}`
 

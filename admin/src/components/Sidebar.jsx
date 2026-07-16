@@ -3,6 +3,7 @@ import {
   LayoutDashboard,
   Users,
   Car,
+  ShieldCheck,
   Route,
   Star,
   X,
@@ -12,6 +13,7 @@ const NAV = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/usuarios', label: 'Usuarios', icon: Users },
   { to: '/conductores', label: 'Conductores', icon: Car },
+  { to: '/solicitudes', label: 'Solicitudes', icon: ShieldCheck },
   { to: '/viajes', label: 'Viajes', icon: Route },
   { to: '/calificaciones', label: 'Calificaciones', icon: Star },
 ]

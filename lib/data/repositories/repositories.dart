@@ -68,6 +68,15 @@ abstract class AuthRepository {
   Future<AppUser> updateProfile(AppUser user);
 
   Future<void> setOnline(String driverId, bool online);
+
+  /// Guarda las URLs de los documentos de verificación del conductor y lo deja
+  /// en estado 'pending' (a la espera de revisión). [docs] usa las columnas de
+  /// `driver_details` como claves (doc_car_front, doc_license, …).
+  Future<AppUser> setDriverDocuments(String driverId, Map<String, String> docs);
+
+  /// Recarga el usuario autenticado desde el backend (p. ej. para reflejar un
+  /// cambio de estado de verificación hecho por el admin).
+  Future<AppUser?> reloadUser();
 }
 
 /// Punto de referencia de un conductor para buscar viajes cercanos: su ciudad

@@ -18,7 +18,7 @@ async function fetchDrivers() {
   const { data, error } = await supabase
     .from('driver_details')
     .select(
-      'id, make, model, year, color, plate, seats, license_number, is_online, is_verified, ' +
+      'id, make, model, year, color, plate, seats, license_number, is_online, is_verified, status, ' +
         'profile:profiles(full_name, phone, city, avatar_url, rating_avg, rating_count, trips_count, is_banned)',
     )
     .order('updated_at', { ascending: false })
@@ -28,10 +28,17 @@ async function fetchDrivers() {
 
 const FILTERS = [
   { value: 'all', label: 'Todos' },
+  { value: 'pending', label: 'Pendientes' },
   { value: 'verified', label: 'Verificados' },
   { value: 'unverified', label: 'Sin verificar' },
   { value: 'online', label: 'En línea' },
 ]
+
+const STATUS_BADGE = {
+  approved: { label: 'Aprobado', className: 'bg-emerald-100 text-emerald-700' },
+  pending: { label: 'Pendiente', className: 'bg-amber-100 text-amber-700' },
+  rejected: { label: 'Rechazado', className: 'bg-rose-100 text-rose-700' },
+}
 
 export default function Drivers() {
   const { data, loading, error, refetch, setData } = useQuery(fetchDrivers, [])
@@ -45,6 +52,7 @@ export default function Drivers() {
     return data.filter((d) => {
       if (filter === 'verified' && !d.is_verified) return false
       if (filter === 'unverified' && d.is_verified) return false
+      if (filter === 'pending' && (d.status ?? 'approved') !== 'pending') return false
       if (filter === 'online' && !d.is_online) return false
       if (!q) return true
       return (
@@ -142,7 +150,15 @@ export default function Drivers() {
                     </p>
                     {d.is_verified && <BadgeCheck size={16} className="shrink-0 text-brand" />}
                   </div>
-                  <p className="text-xs text-slate-400">{d.profile?.city || '—'}</p>
+                  <div className="mt-0.5 flex items-center gap-2">
+                    <p className="text-xs text-slate-400">{d.profile?.city || '—'}</p>
+                    {(() => {
+                      const s = STATUS_BADGE[d.status ?? 'approved']
+                      return s ? (
+                        <Badge className={s.className}>{s.label}</Badge>
+                      ) : null
+                    })()}
+                  </div>
                 </div>
                 <span
                   className={`inline-flex items-center gap-1 text-xs font-medium ${

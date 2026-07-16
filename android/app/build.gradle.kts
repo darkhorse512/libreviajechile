@@ -6,7 +6,8 @@ plugins {
 
 android {
     namespace = "cl.libreviaje.libre_viaje_chile"
-    compileSdk = flutter.compileSdkVersion
+    // file_picker (vía flutter_plugin_android_lifecycle) exige compileSdk 36.
+    compileSdk = maxOf(flutter.compileSdkVersion, 36)
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
