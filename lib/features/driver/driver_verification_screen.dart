@@ -87,6 +87,7 @@ class _DriverVerificationScreenState
   final Map<DriverDocType, PickedFileData> _captured = {};
   bool _submitting = false;
   bool _refreshing = false;
+  String? _error;
 
   bool _isDone(AppUser user, DriverDocType t) =>
       _captured.containsKey(t) || t.existingUrl(user).isNotEmpty;
@@ -106,23 +107,28 @@ class _DriverVerificationScreenState
   }
 
   Future<void> _submit(AppUser user) async {
-    setState(() => _submitting = true);
+    setState(() {
+      _submitting = true;
+      _error = null;
+    });
+    // Etapa actual, para dar un mensaje de error preciso.
+    String stage = 'preparación';
     try {
       final docs = <String, String>{};
       for (final type in DriverDocType.values) {
         final captured = _captured[type];
         if (captured != null) {
-          final url = await ImageUploadService.uploadBytes(
+          stage = 'subida de "${context.tr(type.title)}"';
+          docs[type.column] = await ImageUploadService.uploadBytes(
             bytes: captured.bytes,
             contentType: captured.contentType,
             kind: type.kind,
           );
-          if (url == null) throw Exception('upload failed');
-          docs[type.column] = url;
         } else {
           docs[type.column] = type.existingUrl(user); // reutiliza el existente
         }
       }
+      stage = 'guardado en la base de datos';
       final updated =
           await ref.read(authRepositoryProvider).setDriverDocuments(user.id, docs);
       _captured.clear(); // ya subidos: pasa a la pantalla "en revisión"
@@ -131,8 +137,10 @@ class _DriverVerificationScreenState
         AppFeedback.success(
             context, context.tr('¡Documentos enviados! Te avisaremos al aprobar.'));
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Driver docs submit failed at [$stage]: $e');
       if (mounted) {
+        setState(() => _error = 'Falló en: $stage.\n$e');
         AppFeedback.error(
             context, context.tr('No se pudieron enviar los documentos.'));
       }
@@ -211,6 +219,33 @@ class _DriverVerificationScreenState
           const SizedBox(height: 12),
         ],
         const SizedBox(height: 8),
+        if (_error != null) ...[
+          Container(
+            padding: const EdgeInsets.all(12),
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              color: AppColors.danger.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              border: Border.all(color: AppColors.danger.withValues(alpha: 0.4)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.error_outline_rounded,
+                    color: AppColors.danger, size: 18),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: SelectableText(
+                    _error!,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.danger,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
         PrimaryButton(
           label: context.tr('Enviar para revisión'),
           icon: Icons.send_rounded,

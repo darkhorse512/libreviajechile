@@ -86,23 +86,43 @@ abstract class ImageUploadService {
   }
 
   /// Sube bytes arbitrarios (imagen o PDF) a R2. Devuelve la URL pública.
-  static Future<String?> uploadBytes({
+  ///
+  /// Lanza [ImageUploadException] con un mensaje legible si la Edge Function
+  /// no está desplegada, faltan secretos de R2, o la subida falla.
+  static Future<String> uploadBytes({
     required Uint8List bytes,
     required String contentType,
     required String kind,
   }) async {
-    final res = await Supabase.instance.client.functions.invoke(
-      'upload-image',
-      body: {
-        'data': base64Encode(bytes),
-        'contentType': contentType,
-        'kind': kind,
-      },
-    );
-    final data = res.data;
-    if (data is Map && data['url'] is String) {
-      return data['url'] as String;
+    try {
+      final res = await Supabase.instance.client.functions.invoke(
+        'upload-image',
+        body: {
+          'data': base64Encode(bytes),
+          'contentType': contentType,
+          'kind': kind,
+        },
+      );
+      final data = res.data;
+      if (data is Map && data['url'] is String) {
+        return data['url'] as String;
+      }
+      throw ImageUploadException(
+          'Respuesta inesperada del servidor de subida (${res.status}).');
+    } on FunctionException catch (e) {
+      // La Edge Function devolvió un error (no desplegada, secretos de R2
+      // faltantes, fallo de R2, etc.). Extrae el detalle si existe.
+      final detail = e.details ?? e.reasonPhrase ?? '';
+      throw ImageUploadException(
+          'Error del servidor de subida (${e.status}). $detail'.trim());
     }
-    return null;
   }
+}
+
+/// Error legible al subir un archivo (para mostrar al usuario / depurar).
+class ImageUploadException implements Exception {
+  ImageUploadException(this.message);
+  final String message;
+  @override
+  String toString() => message;
 }
