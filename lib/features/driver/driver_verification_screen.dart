@@ -12,42 +12,63 @@ import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/primary_button.dart';
 
 /// Tipo de documento requerido para verificar a un conductor.
-enum DriverDocType { carFront, license, vehicleReg, vehicleRegBack }
+enum DriverDocType {
+  driverPhoto,
+  license,
+  vehicleReg,
+  antecedentes,
+  soap,
+  carFront,
+  carBack,
+}
 
 extension DriverDocSpec on DriverDocType {
   /// Columna en `driver_details`.
   String get column => switch (this) {
-        DriverDocType.carFront => 'doc_car_front',
+        DriverDocType.driverPhoto => 'doc_driver_photo',
         DriverDocType.license => 'doc_license',
         DriverDocType.vehicleReg => 'doc_vehicle_reg',
-        DriverDocType.vehicleRegBack => 'doc_vehicle_reg_back',
+        DriverDocType.antecedentes => 'doc_antecedentes',
+        DriverDocType.soap => 'doc_soap',
+        DriverDocType.carFront => 'doc_car_front',
+        DriverDocType.carBack => 'doc_car_back',
       };
 
+  /// `kind` que recibe la Edge Function (define la carpeta en R2). La foto del
+  /// conductor va a avatars/; el resto a docs/.
   String get kind => switch (this) {
-        DriverDocType.carFront => 'doc_car_front',
-        DriverDocType.license => 'doc_license',
-        DriverDocType.vehicleReg => 'doc_vehicle_reg',
-        DriverDocType.vehicleRegBack => 'doc_vehicle_reg_back',
+        DriverDocType.driverPhoto => 'avatar',
+        _ => column,
       };
+
+  /// La foto del conductor también se usa como avatar visible al pasajero.
+  bool get isDriverPhoto => this == DriverDocType.driverPhoto;
 
   IconData get icon => switch (this) {
-        DriverDocType.carFront => Icons.directions_car_rounded,
+        DriverDocType.driverPhoto => Icons.person_rounded,
         DriverDocType.license => Icons.badge_rounded,
         DriverDocType.vehicleReg => Icons.description_rounded,
-        DriverDocType.vehicleRegBack => Icons.flip_to_back_rounded,
+        DriverDocType.antecedentes => Icons.fact_check_rounded,
+        DriverDocType.soap => Icons.health_and_safety_rounded,
+        DriverDocType.carFront => Icons.directions_car_rounded,
+        DriverDocType.carBack => Icons.time_to_leave_rounded,
       };
 
   String get title => switch (this) {
-        DriverDocType.carFront => 'Foto de tu vehículo',
+        DriverDocType.driverPhoto => 'Foto del conductor',
         DriverDocType.license => 'Licencia de conducir',
         DriverDocType.vehicleReg => 'Permiso de circulación',
-        DriverDocType.vehicleRegBack => 'Reverso del permiso de circulación',
+        DriverDocType.antecedentes => 'Certificado de antecedentes',
+        DriverDocType.soap => 'Seguro Obligatorio (SOAP)',
+        DriverDocType.carFront => 'Foto del auto — parte delantera',
+        DriverDocType.carBack => 'Foto del auto — parte trasera',
       };
 
   /// Instrucciones (cada una es un ítem con check), como en el ejemplo.
   List<String> get instructions => switch (this) {
-        DriverDocType.carFront => [
-            'Toma una foto del auto desde el frente. Asegúrate de que el auto se vea por completo y que el número de placa sea fácil de leer.',
+        DriverDocType.driverPhoto => [
+            'Sube una foto tuya de frente, con buena iluminación y sin lentes de sol ni gorro.',
+            'Esta será la foto que verán los pasajeros cuando aceptes sus viajes.',
           ],
         DriverDocType.license => [
             'Sube una foto de tu licencia de conducir vigente.',
@@ -57,17 +78,30 @@ extension DriverDocSpec on DriverDocType {
             'Sube la foto del permiso de circulación donde se vea la placa, año y modelo del vehículo.',
             'El permiso de circulación debe estar vigente.',
           ],
-        DriverDocType.vehicleRegBack => [
-            'No uses filtros. Todos los datos deben ser totalmente visibles y legibles. Asegúrate de contar con buena iluminación.',
-            'Si tu permiso de circulación solo tiene una cara, sube la misma foto dos veces.',
+        DriverDocType.antecedentes => [
+            'Sube tu certificado de antecedentes vigente.',
+            'Puede ser una imagen o un archivo PDF.',
+          ],
+        DriverDocType.soap => [
+            'Sube tu Seguro Obligatorio de Accidentes Personales (SOAP) vigente.',
+            'Deben verse la patente y la fecha de vencimiento.',
+          ],
+        DriverDocType.carFront => [
+            'Toma una foto del auto desde el frente. Asegúrate de que el auto se vea por completo y que la placa sea fácil de leer.',
+          ],
+        DriverDocType.carBack => [
+            'Toma una foto del auto desde atrás. Asegúrate de que el auto se vea por completo y que la placa sea fácil de leer.',
           ],
       };
 
   String existingUrl(AppUser user) => switch (this) {
-        DriverDocType.carFront => user.vehicle?.docCarFront ?? '',
+        DriverDocType.driverPhoto => user.vehicle?.docDriverPhoto ?? '',
         DriverDocType.license => user.vehicle?.docLicense ?? '',
         DriverDocType.vehicleReg => user.vehicle?.docVehicleReg ?? '',
-        DriverDocType.vehicleRegBack => user.vehicle?.docVehicleRegBack ?? '',
+        DriverDocType.antecedentes => user.vehicle?.docAntecedentes ?? '',
+        DriverDocType.soap => user.vehicle?.docSoap ?? '',
+        DriverDocType.carFront => user.vehicle?.docCarFront ?? '',
+        DriverDocType.carBack => user.vehicle?.docCarBack ?? '',
       };
 }
 
@@ -129,8 +163,11 @@ class _DriverVerificationScreenState
         }
       }
       stage = 'guardado en la base de datos';
-      final updated =
-          await ref.read(authRepositoryProvider).setDriverDocuments(user.id, docs);
+      // La foto del conductor se usa también como avatar visible al pasajero.
+      final avatarUrl = docs[DriverDocType.driverPhoto.column];
+      final updated = await ref
+          .read(authRepositoryProvider)
+          .setDriverDocuments(user.id, docs, avatarUrl: avatarUrl);
       _captured.clear(); // ya subidos: pasa a la pantalla "en revisión"
       ref.read(currentUserProvider.notifier).update(updated);
       if (mounted) {

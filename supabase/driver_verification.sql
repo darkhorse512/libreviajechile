@@ -1,7 +1,15 @@
 -- =============================================================================
 -- Verificación de conductores (KYC).
--- El conductor sube 4 documentos (imagen o PDF) tras registrarse; queda en
+-- El conductor sube 7 documentos (imagen o PDF) tras registrarse; queda en
 -- estado 'pending' y NO puede aceptar viajes hasta que un admin lo apruebe.
+--
+--   1. doc_driver_photo   Foto del conductor (también será su avatar)
+--   2. doc_license        Licencia de conducir
+--   3. doc_vehicle_reg    Permiso de circulación
+--   4. doc_antecedentes   Certificado de antecedentes
+--   5. doc_soap           Seguro Obligatorio (SOAP)
+--   6. doc_car_front      Foto del auto — parte delantera
+--   7. doc_car_back       Foto del auto — parte trasera
 --
 -- Ejecuta este script UNA VEZ en el SQL Editor de Supabase.
 -- =============================================================================
@@ -9,13 +17,16 @@
 alter table public.driver_details
   add column if not exists status text not null default 'pending'
     check (status in ('pending', 'approved', 'rejected')),
-  add column if not exists doc_car_front        text,
-  add column if not exists doc_license          text,
-  add column if not exists doc_vehicle_reg      text,
-  add column if not exists doc_vehicle_reg_back text,
-  add column if not exists rejection_reason     text,
-  add column if not exists submitted_at         timestamptz,
-  add column if not exists reviewed_at          timestamptz;
+  add column if not exists doc_driver_photo   text,
+  add column if not exists doc_license        text,
+  add column if not exists doc_vehicle_reg    text,
+  add column if not exists doc_antecedentes   text,
+  add column if not exists doc_soap           text,
+  add column if not exists doc_car_front      text,
+  add column if not exists doc_car_back       text,
+  add column if not exists rejection_reason   text,
+  add column if not exists submitted_at       timestamptz,
+  add column if not exists reviewed_at        timestamptz;
 
 -- Grandfather: los conductores YA existentes se dan por aprobados para no
 -- bloquear a quienes ya están operando. Solo los registros NUEVOS (default

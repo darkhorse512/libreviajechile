@@ -24,10 +24,13 @@ import {
 } from '../components/ui'
 
 const DOCS = [
-  { key: 'doc_car_front', label: 'Foto del vehículo' },
+  { key: 'doc_driver_photo', label: 'Foto del conductor' },
   { key: 'doc_license', label: 'Licencia de conducir' },
   { key: 'doc_vehicle_reg', label: 'Permiso de circulación' },
-  { key: 'doc_vehicle_reg_back', label: 'Reverso del permiso' },
+  { key: 'doc_antecedentes', label: 'Cert. de antecedentes' },
+  { key: 'doc_soap', label: 'Seguro Obligatorio (SOAP)' },
+  { key: 'doc_car_front', label: 'Auto — delantera' },
+  { key: 'doc_car_back', label: 'Auto — trasera' },
 ]
 
 async function fetchPending() {
@@ -35,7 +38,8 @@ async function fetchPending() {
     .from('driver_details')
     .select(
       'id, make, model, year, color, plate, seats, status, submitted_at, ' +
-        'doc_car_front, doc_license, doc_vehicle_reg, doc_vehicle_reg_back, ' +
+        'doc_driver_photo, doc_license, doc_vehicle_reg, doc_antecedentes, doc_soap, ' +
+        'doc_car_front, doc_car_back, ' +
         'profile:profiles(full_name, phone, city, avatar_url, created_at)',
     )
     .eq('status', 'pending')

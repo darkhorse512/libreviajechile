@@ -8,10 +8,13 @@ class Vehicle {
     required this.plate,
     this.seats = 4,
     this.carPhotos = const [],
-    this.docCarFront,
+    this.docDriverPhoto,
     this.docLicense,
     this.docVehicleReg,
-    this.docVehicleRegBack,
+    this.docAntecedentes,
+    this.docSoap,
+    this.docCarFront,
+    this.docCarBack,
   });
 
   final String make;
@@ -26,10 +29,13 @@ class Vehicle {
 
   // Documentos de verificación (imagen o PDF en R2). Solo visibles para el
   // conductor y el panel de administración.
-  final String? docCarFront;
-  final String? docLicense;
-  final String? docVehicleReg;
-  final String? docVehicleRegBack;
+  final String? docDriverPhoto; // foto del conductor (también avatar)
+  final String? docLicense; // licencia de conducir
+  final String? docVehicleReg; // permiso de circulación
+  final String? docAntecedentes; // certificado de antecedentes
+  final String? docSoap; // seguro obligatorio (SOAP)
+  final String? docCarFront; // foto del auto — delantera
+  final String? docCarBack; // foto del auto — trasera
 
   String get displayName => '$make $model';
   String get summary => '$make $model · $year · $color';
@@ -42,10 +48,13 @@ class Vehicle {
     String? plate,
     int? seats,
     List<String>? carPhotos,
-    String? docCarFront,
+    String? docDriverPhoto,
     String? docLicense,
     String? docVehicleReg,
-    String? docVehicleRegBack,
+    String? docAntecedentes,
+    String? docSoap,
+    String? docCarFront,
+    String? docCarBack,
   }) {
     return Vehicle(
       make: make ?? this.make,
@@ -55,10 +64,13 @@ class Vehicle {
       plate: plate ?? this.plate,
       seats: seats ?? this.seats,
       carPhotos: carPhotos ?? this.carPhotos,
-      docCarFront: docCarFront ?? this.docCarFront,
+      docDriverPhoto: docDriverPhoto ?? this.docDriverPhoto,
       docLicense: docLicense ?? this.docLicense,
       docVehicleReg: docVehicleReg ?? this.docVehicleReg,
-      docVehicleRegBack: docVehicleRegBack ?? this.docVehicleRegBack,
+      docAntecedentes: docAntecedentes ?? this.docAntecedentes,
+      docSoap: docSoap ?? this.docSoap,
+      docCarFront: docCarFront ?? this.docCarFront,
+      docCarBack: docCarBack ?? this.docCarBack,
     );
   }
 
@@ -74,10 +86,13 @@ class Vehicle {
               ?.map((e) => e.toString())
               .toList() ??
           const [],
-      docCarFront: map['doc_car_front'] as String?,
+      docDriverPhoto: map['doc_driver_photo'] as String?,
       docLicense: map['doc_license'] as String?,
       docVehicleReg: map['doc_vehicle_reg'] as String?,
-      docVehicleRegBack: map['doc_vehicle_reg_back'] as String?,
+      docAntecedentes: map['doc_antecedentes'] as String?,
+      docSoap: map['doc_soap'] as String?,
+      docCarFront: map['doc_car_front'] as String?,
+      docCarBack: map['doc_car_back'] as String?,
     );
   }
 

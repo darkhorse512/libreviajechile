@@ -109,7 +109,10 @@ class DemoAuthRepository implements AuthRepository {
 
   @override
   Future<AppUser> setDriverDocuments(
-          String driverId, Map<String, String> docs) async =>
+    String driverId,
+    Map<String, String> docs, {
+    String? avatarUrl,
+  }) async =>
       _db.currentUser ?? (throw StateError('sin usuario'));
 
   @override

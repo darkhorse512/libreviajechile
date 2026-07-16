@@ -55,10 +55,13 @@ class AppUser {
   bool get hasSubmittedDocuments {
     final v = vehicle;
     return v != null &&
-        v.docCarFront != null &&
+        v.docDriverPhoto != null &&
         v.docLicense != null &&
         v.docVehicleReg != null &&
-        v.docVehicleRegBack != null;
+        v.docAntecedentes != null &&
+        v.docSoap != null &&
+        v.docCarFront != null &&
+        v.docCarBack != null;
   }
 
   AppUser copyWith({

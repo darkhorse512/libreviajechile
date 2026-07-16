@@ -282,8 +282,9 @@ class SupabaseAuthRepository implements AuthRepository {
   @override
   Future<AppUser> setDriverDocuments(
     String driverId,
-    Map<String, String> docs,
-  ) async {
+    Map<String, String> docs, {
+    String? avatarUrl,
+  }) async {
     // Guarda las URLs de los documentos y (re)envía a revisión: status pending.
     await _client.from('driver_details').update({
       ...docs,
@@ -291,6 +292,12 @@ class SupabaseAuthRepository implements AuthRepository {
       'rejection_reason': null,
       'submitted_at': DateTime.now().toUtc().toIso8601String(),
     }).eq('id', driverId);
+    // La foto del conductor también es su avatar público.
+    if (avatarUrl != null && avatarUrl.isNotEmpty) {
+      await _client
+          .from('profiles')
+          .update({'avatar_url': avatarUrl}).eq('id', driverId);
+    }
     final user = await _resolveUser(_auth.currentUser);
     if (user == null) throw AuthException('No se pudo actualizar el perfil');
     return user;

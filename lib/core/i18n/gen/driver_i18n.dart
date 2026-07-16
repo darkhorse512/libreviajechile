@@ -104,6 +104,27 @@ const Map<String, String> driverEn = {
       'Do not use filters. All details must be fully visible and legible. Make sure you have good lighting.',
   'Si tu permiso de circulación solo tiene una cara, sube la misma foto dos veces.':
       'If your vehicle registration has only one side, upload the same photo twice.',
+  // --- Documentos KYC (7) ---
+  'Foto del conductor': 'Driver photo',
+  'Certificado de antecedentes': 'Background certificate',
+  'Seguro Obligatorio (SOAP)': 'Mandatory insurance (SOAP)',
+  'Foto del auto — parte delantera': 'Car photo — front',
+  'Foto del auto — parte trasera': 'Car photo — rear',
+  'Sube una foto tuya de frente, con buena iluminación y sin lentes de sol ni gorro.':
+      'Upload a front-facing photo of yourself, well-lit, without sunglasses or a hat.',
+  'Esta será la foto que verán los pasajeros cuando aceptes sus viajes.':
+      'This is the photo passengers will see when you accept their trips.',
+  'Sube tu certificado de antecedentes vigente.':
+      'Upload your current background certificate.',
+  'Puede ser una imagen o un archivo PDF.': 'It can be an image or a PDF file.',
+  'Sube tu Seguro Obligatorio de Accidentes Personales (SOAP) vigente.':
+      'Upload your current mandatory personal accident insurance (SOAP).',
+  'Deben verse la patente y la fecha de vencimiento.':
+      'The plate and expiry date must be visible.',
+  'Toma una foto del auto desde el frente. Asegúrate de que el auto se vea por completo y que la placa sea fácil de leer.':
+      'Take a photo of the car from the front. Make sure the whole car is visible and the plate is easy to read.',
+  'Toma una foto del auto desde atrás. Asegúrate de que el auto se vea por completo y que la placa sea fácil de leer.':
+      'Take a photo of the car from the rear. Make sure the whole car is visible and the plate is easy to read.',
 };
 const Map<String, String> driverPt = {
   'Mis viajes': 'Minhas viagens',
@@ -211,4 +232,25 @@ const Map<String, String> driverPt = {
       'Não use filtros. Todos os dados devem estar totalmente visíveis e legíveis. Garanta boa iluminação.',
   'Si tu permiso de circulación solo tiene una cara, sube la misma foto dos veces.':
       'Se o documento do veículo tiver apenas um lado, envie a mesma foto duas vezes.',
+  // --- Documentos KYC (7) ---
+  'Foto del conductor': 'Foto do motorista',
+  'Certificado de antecedentes': 'Certidão de antecedentes',
+  'Seguro Obligatorio (SOAP)': 'Seguro obrigatório (SOAP)',
+  'Foto del auto — parte delantera': 'Foto do carro — frente',
+  'Foto del auto — parte trasera': 'Foto do carro — traseira',
+  'Sube una foto tuya de frente, con buena iluminación y sin lentes de sol ni gorro.':
+      'Envie uma foto sua de frente, com boa iluminação e sem óculos de sol ou boné.',
+  'Esta será la foto que verán los pasajeros cuando aceptes sus viajes.':
+      'Esta será a foto que os passageiros verão quando você aceitar as viagens.',
+  'Sube tu certificado de antecedentes vigente.':
+      'Envie sua certidão de antecedentes vigente.',
+  'Puede ser una imagen o un archivo PDF.': 'Pode ser uma imagem ou um arquivo PDF.',
+  'Sube tu Seguro Obligatorio de Accidentes Personales (SOAP) vigente.':
+      'Envie seu seguro obrigatório de acidentes pessoais (SOAP) vigente.',
+  'Deben verse la patente y la fecha de vencimiento.':
+      'A placa e a data de vencimento devem estar visíveis.',
+  'Toma una foto del auto desde el frente. Asegúrate de que el auto se vea por completo y que la placa sea fácil de leer.':
+      'Tire uma foto do carro pela frente. Certifique-se de que o carro apareça inteiro e a placa seja fácil de ler.',
+  'Toma una foto del auto desde atrás. Asegúrate de que el auto se vea por completo y que la placa sea fácil de leer.':
+      'Tire uma foto do carro por trás. Certifique-se de que o carro apareça inteiro e a placa seja fácil de ler.',
 };
