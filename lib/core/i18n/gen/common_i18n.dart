@@ -155,6 +155,15 @@ const Map<String, String> commonEn = {
   'Efectivo': 'Cash',
   'El conductor verá cómo prefieres pagar el viaje.':
       'The driver will see how you prefer to pay for the trip.',
+  // Eliminar cuenta
+  'Zona de peligro': 'Danger zone',
+  'Eliminar cuenta': 'Delete account',
+  'Esta acción es permanente. Se eliminarán tu perfil, tu historial de viajes y todos tus datos. No podrás deshacerla.':
+      'This action is permanent. Your profile, trip history and all your data will be deleted. It cannot be undone.',
+  'No se pudo eliminar la cuenta. Intenta nuevamente.':
+      "Couldn't delete the account. Please try again.",
+  'No disponible en el modo demostración.':
+      'Not available in demo mode.',
 };
 
 const Map<String, String> commonPt = {
@@ -312,4 +321,13 @@ const Map<String, String> commonPt = {
   'Efectivo': 'Dinheiro',
   'El conductor verá cómo prefieres pagar el viaje.':
       'O motorista verá como você prefere pagar a viagem.',
+  // Eliminar cuenta
+  'Zona de peligro': 'Zona de perigo',
+  'Eliminar cuenta': 'Excluir conta',
+  'Esta acción es permanente. Se eliminarán tu perfil, tu historial de viajes y todos tus datos. No podrás deshacerla.':
+      'Esta ação é permanente. Seu perfil, histórico de viagens e todos os seus dados serão excluídos. Não poderá ser desfeita.',
+  'No se pudo eliminar la cuenta. Intenta nuevamente.':
+      'Não foi possível excluir a conta. Tente novamente.',
+  'No disponible en el modo demostración.':
+      'Não disponível no modo demonstração.',
 };

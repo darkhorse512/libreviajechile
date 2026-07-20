@@ -256,6 +256,18 @@ class SupabaseAuthRepository implements AuthRepository {
   Future<void> signOut() => _auth.signOut();
 
   @override
+  Future<void> deleteAccount() async {
+    // La Edge Function borra el usuario de auth.users (cascada a todos sus
+    // datos). Lanza FunctionException si falla.
+    await _client.functions.invoke('delete-account');
+    // La sesión ya no es válida; cierra localmente y limpia la caché.
+    try {
+      await _auth.signOut();
+    } catch (_) {}
+    _cached = null;
+  }
+
+  @override
   Future<AppUser> updateProfile(AppUser user) async {
     await _client.from('profiles').update({
       'full_name': user.fullName,

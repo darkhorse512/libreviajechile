@@ -67,6 +67,10 @@ abstract class AuthRepository {
 
   Future<void> signOut();
 
+  /// Elimina de forma permanente la cuenta del usuario autenticado (y todos sus
+  /// datos) y cierra la sesión.
+  Future<void> deleteAccount();
+
   Future<AppUser> updateProfile(AppUser user);
 
   Future<void> setOnline(String driverId, bool online);

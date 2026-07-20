@@ -103,6 +103,9 @@ class DemoAuthRepository implements AuthRepository {
   Future<void> signOut() => _db.signOut();
 
   @override
+  Future<void> deleteAccount() => _db.signOut();
+
+  @override
   Future<AppUser> updateProfile(AppUser user) => _db.updateUser(user);
 
   @override

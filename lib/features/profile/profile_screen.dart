@@ -43,6 +43,58 @@ class ProfileScreen extends ConsumerWidget {
     }
   }
 
+  Future<void> _deleteAccount(BuildContext context, WidgetRef ref) async {
+    if (ref.read(isDemoModeProvider)) {
+      AppFeedback.info(
+          context, context.tr('No disponible en el modo demostración.'));
+      return;
+    }
+    // 1) Confirmación destructiva explícita.
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        icon: const Icon(Icons.warning_amber_rounded,
+            color: AppColors.danger, size: 34),
+        title: Text(context.tr('Eliminar cuenta')),
+        content: Text(
+          context.tr(
+              'Esta acción es permanente. Se eliminarán tu perfil, tu historial de viajes y todos tus datos. No podrás deshacerla.'),
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(context.tr('Cancelar'))),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(context.tr('Eliminar cuenta')),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+
+    // 2) Progreso bloqueante mientras se elimina.
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+    try {
+      await ref.read(authRepositoryProvider).deleteAccount();
+      // El stream de auth emite null → el router redirige al inicio de sesión.
+    } catch (_) {
+      if (context.mounted) {
+        Navigator.pop(context); // cierra el progreso
+        AppFeedback.error(
+            context,
+            context.tr(
+                'No se pudo eliminar la cuenta. Intenta nuevamente.'));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
@@ -250,6 +302,17 @@ class ProfileScreen extends ConsumerWidget {
                 onTap: () => _signOut(context, ref),
               ),
             ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        _SectionLabel(context.tr('Zona de peligro')),
+        SurfaceCard(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: _MenuTile(
+            icon: Icons.delete_forever_rounded,
+            label: context.tr('Eliminar cuenta'),
+            color: AppColors.danger,
+            onTap: () => _deleteAccount(context, ref),
           ),
         ),
         const SizedBox(height: 24),
