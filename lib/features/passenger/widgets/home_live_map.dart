@@ -1,23 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../core/services/location_service.dart';
+import '../../../data/providers.dart';
+import 'car_marker.dart';
 
 /// Mapa de Google en vivo para la pantalla de inicio del pasajero (estilo
-/// inDrive): muestra la ubicación actual y sirve de "hero" visual.
-class HomeLiveMap extends StatefulWidget {
+/// inDrive): muestra la ubicación actual y los conductores disponibles cercanos
+/// en tiempo real, con marcadores de auto personalizados.
+class HomeLiveMap extends ConsumerStatefulWidget {
   const HomeLiveMap({super.key});
 
   @override
-  State<HomeLiveMap> createState() => _HomeLiveMapState();
+  ConsumerState<HomeLiveMap> createState() => _HomeLiveMapState();
 }
 
-class _HomeLiveMapState extends State<HomeLiveMap> {
+class _HomeLiveMapState extends ConsumerState<HomeLiveMap> {
   // Temuco por defecto (marca "made in Temuco") hasta obtener el GPS.
   static const _temuco = LatLng(-38.7359, -72.5904);
 
   GoogleMapController? _controller;
   bool _myLocationEnabled = false;
+  LatLng? _me;
+  BitmapDescriptor? _carIcon;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCarIcon();
+  }
+
+  Future<void> _loadCarIcon() async {
+    final icon = await buildCarMarker();
+    if (mounted) setState(() => _carIcon = icon);
+  }
 
   @override
   void dispose() {
@@ -29,18 +46,47 @@ class _HomeLiveMapState extends State<HomeLiveMap> {
     final pos = await LocationService.current();
     if (!mounted) return;
     if (pos == null) return;
-    // El permiso está concedido → habilita el punto azul y centra la cámara.
-    setState(() => _myLocationEnabled = true);
+    setState(() {
+      _myLocationEnabled = true;
+      _me = LatLng(pos.latitude, pos.longitude);
+    });
     await _controller?.animateCamera(
-      CameraUpdate.newLatLngZoom(LatLng(pos.latitude, pos.longitude), 15.5),
+      CameraUpdate.newLatLngZoom(_me!, 15.5),
     );
   }
 
   Future<void> _recenter() => _goToMyLocation();
 
+  /// Redondea la ubicación (~1 km) para no re-suscribir el stream por cada
+  /// pequeño movimiento del pasajero.
+  NearbyQuery? get _query {
+    final me = _me;
+    if (me == null) return null;
+    double round(double v) => (v * 100).roundToDouble() / 100;
+    return (lat: round(me.latitude), lng: round(me.longitude));
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Conductores disponibles cercanos (tiempo real).
+    final markers = <Marker>{};
+    final query = _query;
+    if (query != null && _carIcon != null) {
+      final drivers = ref.watch(nearbyDriversProvider(query)).valueOrNull ??
+          const [];
+      for (final d in drivers) {
+        markers.add(Marker(
+          markerId: MarkerId('driver_${d.id}'),
+          position: LatLng(d.lat, d.lng),
+          icon: _carIcon!,
+          anchor: const Offset(0.5, 0.5),
+          flat: true,
+        ));
+      }
+    }
+
     return Stack(
       children: [
         GoogleMap(
@@ -50,12 +96,20 @@ class _HomeLiveMapState extends State<HomeLiveMap> {
           zoomControlsEnabled: false,
           mapToolbarEnabled: false,
           compassEnabled: false,
+          markers: markers,
           style: isDark ? _darkMapStyle : null,
           onMapCreated: (c) {
             _controller = c;
             _goToMyLocation();
           },
         ),
+        // Contador de conductores disponibles cerca.
+        if (markers.isNotEmpty)
+          Positioned(
+            left: 12,
+            bottom: 26,
+            child: _NearbyBadge(count: markers.length),
+          ),
         // Botón "mi ubicación".
         Positioned(
           right: 12,
@@ -69,6 +123,39 @@ class _HomeLiveMapState extends State<HomeLiveMap> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _NearbyBadge extends StatelessWidget {
+  const _NearbyBadge({required this.count});
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.94),
+        borderRadius: BorderRadius.circular(100),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.12), blurRadius: 10),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.directions_car_rounded, size: 16),
+          const SizedBox(width: 6),
+          Text(
+            '$count',
+            style: Theme.of(context)
+                .textTheme
+                .labelLarge
+                ?.copyWith(fontWeight: FontWeight.w800),
+          ),
+        ],
+      ),
     );
   }
 }

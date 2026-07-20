@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/chilean_cities.dart';
 import '../../core/i18n/i18n.dart';
 import '../../core/services/sound_service.dart';
+import '../../core/utils/trip_geo.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../data/models/enums.dart';
@@ -29,12 +30,20 @@ class DriverNotifications extends ConsumerWidget {
     if (user != null && user.isOnline) {
       final city = cityByName(user.city);
       final area = DriverArea(city: user.city, lat: city.lat, lng: city.lng);
+      final live = ref.watch(driverLiveLocationProvider);
+      final refLat = live?.latitude ?? city.lat;
+      final refLng = live?.longitude ?? city.lng;
       ref.listen<AsyncValue<List<Trip>>>(openTripsProvider(area), (prev, next) {
         final prevIds = prev?.valueOrNull?.map((t) => t.id).toSet();
         if (prevIds == null) return; // primera carga: sin notificar
-        final fresh = (next.valueOrNull ?? const <Trip>[])
-            .where((t) => !prevIds.contains(t.id))
-            .toList();
+        // Solo notifica solicitudes NUEVAS dentro del radio de cercanía.
+        final fresh = tripsWithinRadius(
+          (next.valueOrNull ?? const <Trip>[])
+              .where((t) => !prevIds.contains(t.id))
+              .toList(),
+          refLat,
+          refLng,
+        );
         if (fresh.isEmpty) return;
         final t = fresh.first;
         SoundService.request();

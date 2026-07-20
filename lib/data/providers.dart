@@ -1,8 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../core/config/app_config.dart';
 import '../core/config/env.dart';
 import 'models/app_user.dart';
+import 'models/driver_location.dart';
 import 'models/offer.dart';
 import 'models/rating.dart';
 import 'models/trip.dart';
@@ -60,6 +63,23 @@ final driverTripsProvider =
 
 final tripProvider = StreamProvider.family<Trip?, String>((ref, tripId) {
   return ref.watch(tripRepositoryProvider).watchTrip(tripId);
+});
+
+/// Ubicación GPS en vivo del conductor (mientras está en línea). La alimenta
+/// `DriverPresenceReporter`; se usa para filtrar solicitudes por cercanía.
+final driverLiveLocationProvider = StateProvider<LatLng?>((_) => null);
+
+/// Consulta de conductores cercanos (redondeada para evitar re-suscripciones).
+typedef NearbyQuery = ({double lat, double lng});
+
+/// Conductores disponibles cerca de un punto, para el mapa del pasajero.
+final nearbyDriversProvider =
+    StreamProvider.family<List<DriverLocation>, NearbyQuery>((ref, q) {
+  return ref.watch(tripRepositoryProvider).watchNearbyDrivers(
+        lat: q.lat,
+        lng: q.lng,
+        radiusKm: AppConfig.nearbyDriversRadiusKm,
+      );
 });
 
 final tripOffersProvider =

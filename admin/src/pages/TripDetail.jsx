@@ -6,10 +6,20 @@ import {
   StickyNote,
   Star,
   Clock,
+  Wallet,
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useQuery } from '../hooks/useQuery'
 import { clp, dateTime } from '../lib/format'
+
+const PAYMENT_LABELS = {
+  cash: 'Efectivo',
+  pago_rut: 'PagoRUT',
+  mercado_pago: 'Mercado Pago',
+  banco_santander: 'Banco Santander',
+  mach: 'MACH',
+  tenpo: 'Tenpo',
+}
 import { tripStatusMeta, offerStatusMeta } from '../lib/constants'
 import { Card, Spinner, Badge, Avatar, EmptyState } from '../components/ui'
 import TripMap from '../components/TripMap'
@@ -216,6 +226,9 @@ export default function TripDetail() {
               </InfoRow>
               <InfoRow icon={UsersIcon} label="Pasajeros">
                 {trip.passengers}
+              </InfoRow>
+              <InfoRow icon={Wallet} label="Método de pago">
+                {PAYMENT_LABELS[trip.payment_method] ?? 'Efectivo'}
               </InfoRow>
               <InfoRow icon={MapPin} label="Ciudad">
                 {trip.city}

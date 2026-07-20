@@ -1,7 +1,7 @@
 name: libre_viaje_chile
 description: "Libre Viaje Chile — App de transporte de pasajeros con ofertas y contraofertas."
 publish_to: "none"
-version: 0.15.0+24
+version: 0.17.0+26
 
 environment:
   sdk: ">=3.6.0 <4.0.0"
@@ -66,6 +66,13 @@ flutter:
     - assets/icon.png
     - assets/request.mp3
     - assets/accept.mp3
+    # Íconos de métodos de pago
+    - assets/cash.jpeg
+    - assets/mercado.jpeg
+    - assets/pagorut.jpeg
+    - assets/mach.jpeg
+    - assets/banco.jpeg
+    - assets/tenpo.jpeg
 
 # Íconos de la app (Android + iOS). Generar con:
 #   dart run flutter_launcher_icons

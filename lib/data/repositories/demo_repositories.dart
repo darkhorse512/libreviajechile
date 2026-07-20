@@ -1,6 +1,8 @@
 import '../models/app_user.dart';
+import '../models/driver_location.dart';
 import '../models/enums.dart';
 import '../models/offer.dart';
+import '../models/payment_method.dart';
 import '../models/rating.dart';
 import '../models/trip.dart';
 import '../models/vehicle.dart';
@@ -117,6 +119,10 @@ class DemoAuthRepository implements AuthRepository {
 
   @override
   Future<AppUser?> reloadUser() async => _db.currentUser;
+
+  @override
+  Future<void> updateDriverPresence(
+      String driverId, double lat, double lng) async {}
 }
 
 class DemoTripRepository implements TripRepository {
@@ -137,6 +143,14 @@ class DemoTripRepository implements TripRepository {
 
   @override
   Stream<Trip?> watchTrip(String tripId) => _db.trip(tripId);
+
+  @override
+  Stream<List<DriverLocation>> watchNearbyDrivers({
+    required double lat,
+    required double lng,
+    required double radiusKm,
+  }) =>
+      Stream.value(const <DriverLocation>[]);
 
   @override
   Stream<List<Offer>> watchOffers(String tripId) => _db.tripOffers(tripId);
@@ -161,6 +175,7 @@ class DemoTripRepository implements TripRepository {
     double? destinationLng,
     String? note,
     int passengers = 1,
+    PaymentMethod paymentMethod = PaymentMethod.efectivo,
   }) {
     final trip = Trip(
       id: _id('trip'),
@@ -177,6 +192,7 @@ class DemoTripRepository implements TripRepository {
       destinationLng: destinationLng,
       note: note,
       passengers: passengers,
+      paymentMethod: paymentMethod,
     );
     return _db.createTrip(trip);
   }

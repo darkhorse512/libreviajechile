@@ -82,6 +82,13 @@ const Map<String, String> authEn = {
       'Demo mode with test data. Ideal for reviewing the interface.',
   'Pasajero': 'Passenger',
   'Conductor': 'Driver',
+  // Declaración de aceptación (registro de conductor)
+  'Aceptar y continuar': 'Accept and continue',
+  'Declaro que he leído y acepto los ':
+      'I declare that I have read and accept the ',
+  ' y la ': ' and the ',
+  'Política de Privacidad': 'Privacy Policy',
+  ' de EligeDrive.': ' of EligeDrive.',
 };
 
 const Map<String, String> authPt = {
@@ -166,4 +173,11 @@ const Map<String, String> authPt = {
       'Modo demonstração com dados de teste. Ideal para revisar a interface.',
   'Pasajero': 'Passageiro',
   'Conductor': 'Motorista',
+  // Declaración de aceptación (registro de conductor)
+  'Aceptar y continuar': 'Aceitar e continuar',
+  'Declaro que he leído y acepto los ':
+      'Declaro que li e aceito os ',
+  ' y la ': ' e a ',
+  'Política de Privacidad': 'Política de Privacidade',
+  ' de EligeDrive.': ' da EligeDrive.',
 };

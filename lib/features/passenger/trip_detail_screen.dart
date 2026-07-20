@@ -20,6 +20,7 @@ import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/map/live_trip_map.dart';
 import '../../shared/widgets/map/route_map.dart';
 import '../../shared/widgets/nav_app_picker.dart';
+import '../../shared/widgets/payment_method_widgets.dart';
 import '../../shared/widgets/primary_button.dart';
 import '../../shared/widgets/surface_card.dart';
 import '../../shared/widgets/user_avatar.dart';
@@ -192,6 +193,16 @@ class _TripBody extends ConsumerWidget {
                       label: trip.finalFare != null
                           ? context.tr('Acordado')
                           : context.tr('Tu oferta')),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Text('${context.tr('Método de pago')}: ',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: context.palette.textSecondary,
+                          )),
+                  PaymentMethodChip(method: trip.paymentMethod),
                 ],
               ),
               if (trip.note != null && trip.note!.isNotEmpty) ...[

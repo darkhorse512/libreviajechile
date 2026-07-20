@@ -45,7 +45,6 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
   final _color = TextEditingController();
   final _plate = TextEditingController();
   int _seats = 4;
-  bool _accepted = false;
 
   @override
   void dispose() {
@@ -77,11 +76,7 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
 
   Future<void> _submit() async {
     if (!_step2Key.currentState!.validate()) return;
-    if (!_accepted) {
-      AppFeedback.error(
-          context, context.tr('Debes aceptar los términos y condiciones'));
-      return;
-    }
+    // El botón "Aceptar y continuar" implica la aceptación de la declaración.
     FocusScope.of(context).unfocus();
     final result =
         await ref.read(authFormControllerProvider.notifier).registerDriver(
@@ -145,7 +140,7 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
                       onPressed: _continue,
                     )
                   : PrimaryButton(
-                      label: context.tr('Crear cuenta de conductor'),
+                      label: context.tr('Aceptar y continuar'),
                       loading: state.loading,
                       onPressed: _submit,
                     ),
@@ -336,11 +331,8 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
                   ),
               ],
             ),
-            const SizedBox(height: 18),
-            _TermsRow(
-              value: _accepted,
-              onChanged: (v) => setState(() => _accepted = v),
-            ),
+            const SizedBox(height: 20),
+            const _TermsDeclaration(),
             if (error != null) ...[
               const SizedBox(height: 16),
               ErrorBanner(message: error),
@@ -382,43 +374,50 @@ class _StepBar extends StatelessWidget {
   }
 }
 
-class _TermsRow extends StatelessWidget {
-  const _TermsRow({required this.value, required this.onChanged});
-  final bool value;
-  final ValueChanged<bool> onChanged;
+/// Declaración de aceptación mostrada justo encima del botón
+/// "Aceptar y continuar" (la pulsación del botón confirma la aceptación).
+class _TermsDeclaration extends StatelessWidget {
+  const _TermsDeclaration();
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => onChanged(!value),
-      borderRadius: BorderRadius.circular(AppRadius.sm),
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: context.palette.surfaceAlt,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: context.palette.border),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Checkbox(
-            value: value,
-            onChanged: (v) => onChanged(v ?? false),
-            visualDensity: VisualDensity.compact,
-          ),
-          const SizedBox(width: 4),
+          const Icon(Icons.verified_user_outlined,
+              size: 18, color: AppColors.accent),
+          const SizedBox(width: 10),
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: Text.rich(
-                TextSpan(
-                  style: Theme.of(context).textTheme.bodySmall,
-                  children: [
-                    TextSpan(
-                        text: context.tr(
-                            'Confirmo que mis datos son verídicos y acepto los ')),
-                    TextSpan(
-                      text: context.tr('Términos del Conductor'),
-                      style: const TextStyle(
-                          color: AppColors.accent, fontWeight: FontWeight.w700),
+            child: Text.rich(
+              TextSpan(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      height: 1.4,
+                      color: context.palette.textSecondary,
                     ),
-                    const TextSpan(text: '.'),
-                  ],
-                ),
+                children: [
+                  TextSpan(
+                      text: context.tr(
+                          'Declaro que he leído y acepto los ')),
+                  TextSpan(
+                    text: context.tr('Términos y Condiciones'),
+                    style: const TextStyle(
+                        color: AppColors.accent, fontWeight: FontWeight.w700),
+                  ),
+                  TextSpan(text: context.tr(' y la ')),
+                  TextSpan(
+                    text: context.tr('Política de Privacidad'),
+                    style: const TextStyle(
+                        color: AppColors.accent, fontWeight: FontWeight.w700),
+                  ),
+                  TextSpan(text: context.tr(' de EligeDrive.')),
+                ],
               ),
             ),
           ),

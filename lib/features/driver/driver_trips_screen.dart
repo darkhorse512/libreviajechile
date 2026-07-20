@@ -18,6 +18,7 @@ import '../../data/providers.dart';
 import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/nav_app_picker.dart';
+import '../../shared/widgets/payment_method_widgets.dart';
 import '../../shared/widgets/primary_button.dart';
 import '../../shared/widgets/surface_card.dart';
 import '../../shared/widgets/user_avatar.dart';
@@ -122,7 +123,7 @@ class _ActiveDriverTripState extends ConsumerState<_ActiveDriverTrip> {
     _computeLegB();
     _pushLocation();
     _locTimer =
-        Timer.periodic(const Duration(seconds: 8), (_) => _pushLocation());
+        Timer.periodic(const Duration(seconds: 5), (_) => _pushLocation());
   }
 
   @override
@@ -245,6 +246,15 @@ class _ActiveDriverTripState extends ConsumerState<_ActiveDriverTrip> {
             origin: trip.originAddress,
             destination: trip.destinationAddress,
             compact: true,
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Icon(Icons.account_balance_wallet_rounded,
+                  size: 14, color: context.palette.textMuted),
+              const SizedBox(width: 6),
+              PaymentMethodChip(method: trip.paymentMethod),
+            ],
           ),
           const SizedBox(height: 12),
           // Distancias tramo A (recoger) y tramo B (al destino).

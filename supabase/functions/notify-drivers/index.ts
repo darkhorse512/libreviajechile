@@ -181,17 +181,46 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     )
 
-    // TODOS los conductores en línea (sin filtro por cercanía): un pasajero
-    // puede pedir viaje en cualquier zona del país.
+    // Distribución por geolocalización: solo conductores EN LÍNEA, aprobados,
+    // con ubicación GPS reciente y dentro del radio del punto de partida.
+    const RADIUS_KM = 15
+    const PRESENCE_STALE_SECONDS = 120
+
     const { data: drivers } = await admin
       .from('driver_details')
-      .select('id')
+      .select(
+        'id, last_lat, last_lng, last_seen, status, is_online, ' +
+          'profile:profiles(city)',
+      )
       .eq('is_online', true)
+      .eq('status', 'approved')
 
-    const nearbyIds = (drivers ?? []).map((d: any) => d.id)
+    // Punto de referencia: origen del viaje; si falta, el centro de la ciudad.
+    const tripLat: number | null = trip.origin_lat ?? null
+    const tripLng: number | null = trip.origin_lng ?? null
+    const tripCity: string = trip.city ?? ''
+    const center = cityCenter(tripCity)
+    const refLat = tripLat ?? center?.lat ?? null
+    const refLng = tripLng ?? center?.lng ?? null
+
+    const nowMs = Date.now()
+    const isRecent = (ts: string | null) =>
+      ts != null && nowMs - new Date(ts).getTime() <= PRESENCE_STALE_SECONDS * 1000
+
+    const nearbyIds = (drivers ?? [])
+      .filter((d: any) => {
+        // Con GPS reciente → filtro por distancia al punto de partida.
+        if (d.last_lat != null && d.last_lng != null && isRecent(d.last_seen)) {
+          if (refLat == null || refLng == null) return true
+          return distanceKm(d.last_lat, d.last_lng, refLat, refLng) <= RADIUS_KM
+        }
+        // Sin GPS reciente → respaldo por ciudad/región del conductor.
+        return tripInArea(tripLat, tripLng, tripCity, d.profile?.city ?? null)
+      })
+      .map((d: any) => d.id)
 
     if (nearbyIds.length === 0) {
-      return new Response('no online drivers', { status: 200 })
+      return new Response('no nearby drivers', { status: 200 })
     }
 
     const { data: tokens } = await admin

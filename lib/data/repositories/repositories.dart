@@ -1,6 +1,8 @@
 import '../models/app_user.dart';
+import '../models/driver_location.dart';
 import '../models/enums.dart';
 import '../models/offer.dart';
+import '../models/payment_method.dart';
 import '../models/rating.dart';
 import '../models/trip.dart';
 import '../models/vehicle.dart';
@@ -69,6 +71,10 @@ abstract class AuthRepository {
 
   Future<void> setOnline(String driverId, bool online);
 
+  /// Reporta la ubicación GPS del conductor (mientras está en línea). Alimenta
+  /// la distribución de solicitudes por cercanía y el mapa del pasajero.
+  Future<void> updateDriverPresence(String driverId, double lat, double lng);
+
   /// Guarda las URLs de los documentos de verificación del conductor y lo deja
   /// en estado 'pending' (a la espera de revisión). [docs] usa las columnas de
   /// `driver_details` como claves (doc_driver_photo, doc_license, …).
@@ -117,6 +123,14 @@ abstract class TripRepository {
   /// Un viaje puntual con sus datos embebidos.
   Stream<Trip?> watchTrip(String tripId);
 
+  /// Conductores disponibles (en línea + ubicación reciente) cerca de un punto,
+  /// para mostrarlos en el mapa del pasajero en tiempo real.
+  Stream<List<DriverLocation>> watchNearbyDrivers({
+    required double lat,
+    required double lng,
+    required double radiusKm,
+  });
+
   /// Ofertas de un viaje (vista del pasajero).
   Stream<List<Offer>> watchOffers(String tripId);
 
@@ -138,6 +152,7 @@ abstract class TripRepository {
     double? destinationLng,
     String? note,
     int passengers,
+    PaymentMethod paymentMethod,
   });
 
   Future<Offer> sendOffer({

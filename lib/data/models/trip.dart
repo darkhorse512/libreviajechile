@@ -1,5 +1,6 @@
 import 'app_user.dart';
 import 'enums.dart';
+import 'payment_method.dart';
 
 /// Solicitud de viaje creada por un pasajero.
 class Trip {
@@ -18,6 +19,7 @@ class Trip {
     this.destinationLng,
     this.note,
     this.passengers = 1,
+    this.paymentMethod = PaymentMethod.efectivo,
     this.driverId,
     this.finalFare,
     this.acceptedOfferId,
@@ -49,6 +51,7 @@ class Trip {
 
   final String? note;
   final int passengers;
+  final PaymentMethod paymentMethod;
   final String? driverId;
   final int? finalFare;
   final String? acceptedOfferId;
@@ -112,6 +115,7 @@ class Trip {
       destinationLng: destinationLng,
       note: note,
       passengers: passengers,
+      paymentMethod: paymentMethod,
       driverId: driverId ?? this.driverId,
       finalFare: finalFare ?? this.finalFare,
       acceptedOfferId: acceptedOfferId ?? this.acceptedOfferId,
@@ -144,6 +148,7 @@ class Trip {
       destinationLng: (map['destination_lng'] as num?)?.toDouble(),
       note: map['note'] as String?,
       passengers: (map['passengers'] as num?)?.toInt() ?? 1,
+      paymentMethod: PaymentMethod.fromString(map['payment_method'] as String?),
       driverId: map['driver_id'] as String?,
       finalFare: (map['final_fare'] as num?)?.toInt(),
       acceptedOfferId: map['accepted_offer_id'] as String?,
@@ -168,6 +173,7 @@ class Trip {
         'offered_fare': offeredFare,
         'note': note,
         'passengers': passengers,
+        'payment_method': paymentMethod.value,
         'status': status.value,
       };
 }

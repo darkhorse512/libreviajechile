@@ -8,6 +8,7 @@ import '../../core/i18n/i18n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/formatters.dart';
+import '../../core/utils/trip_geo.dart';
 import '../../data/models/app_user.dart';
 import '../../data/models/enums.dart';
 import '../../data/models/offer.dart';
@@ -17,6 +18,7 @@ import '../../data/repositories/repositories.dart';
 import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/map/route_map.dart';
+import '../../shared/widgets/payment_method_widgets.dart';
 import '../../shared/widgets/surface_card.dart';
 import '../../shared/widgets/user_avatar.dart';
 import '../trips/trip_controller.dart';
@@ -207,13 +209,19 @@ class _RequestsFeed extends ConsumerWidget {
     // DriverNotifications a nivel de shell, para que funcione en todas las
     // pestañas del conductor.
     final tripsAsync = ref.watch(openTripsProvider(area));
+    // Ubicación en vivo del conductor (o centro de su ciudad como respaldo).
+    final live = ref.watch(driverLiveLocationProvider);
+    final refLat = live?.latitude ?? city.lat;
+    final refLng = live?.longitude ?? city.lng;
     return tripsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (_, __) => EmptyState(
         icon: Icons.error_outline_rounded,
         title: context.tr('No pudimos cargar las solicitudes'),
       ),
-      data: (trips) {
+      data: (all) {
+        // Segundo filtro: solo solicitudes dentro del radio configurado.
+        final trips = tripsWithinRadius(all, refLat, refLng);
         if (trips.isEmpty) {
           return EmptyState(
             icon: Icons.inbox_rounded,
@@ -323,6 +331,15 @@ class _RequestCard extends ConsumerWidget {
               ],
             ),
           ],
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Icon(Icons.account_balance_wallet_rounded,
+                  size: 14, color: context.palette.textMuted),
+              const SizedBox(width: 6),
+              PaymentMethodChip(method: trip.paymentMethod),
+            ],
+          ),
           const SizedBox(height: 14),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

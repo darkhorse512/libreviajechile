@@ -149,6 +149,12 @@ const Map<String, String> commonEn = {
   'Fotos del auto': 'Car photos',
   'Ayuda al pasajero a reconocer tu auto.':
       'Help the passenger recognize your car.',
+  // Métodos de pago
+  'Método de pago': 'Payment method',
+  'Métodos de pago': 'Payment methods',
+  'Efectivo': 'Cash',
+  'El conductor verá cómo prefieres pagar el viaje.':
+      'The driver will see how you prefer to pay for the trip.',
 };
 
 const Map<String, String> commonPt = {
@@ -300,4 +306,10 @@ const Map<String, String> commonPt = {
   'Fotos del auto': 'Fotos do carro',
   'Ayuda al pasajero a reconocer tu auto.':
       'Ajude o passageiro a reconhecer seu carro.',
+  // Métodos de pago
+  'Método de pago': 'Forma de pagamento',
+  'Métodos de pago': 'Formas de pagamento',
+  'Efectivo': 'Dinheiro',
+  'El conductor verá cómo prefieres pagar el viaje.':
+      'O motorista verá como você prefere pagar a viagem.',
 };

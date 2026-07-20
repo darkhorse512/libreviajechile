@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/models/enums.dart';
 import '../../data/models/offer.dart';
+import '../../data/models/payment_method.dart';
 import '../../data/models/trip.dart';
 import '../../data/providers.dart';
 
@@ -21,6 +22,7 @@ class TripActions {
     double? destinationLng,
     String? note,
     int passengers = 1,
+    PaymentMethod paymentMethod = PaymentMethod.efectivo,
   }) {
     final user = _ref.read(currentUserProvider);
     return _ref.read(tripRepositoryProvider).createTrip(
@@ -35,6 +37,7 @@ class TripActions {
           destinationLng: destinationLng,
           note: note,
           passengers: passengers,
+          paymentMethod: paymentMethod,
         );
   }
 

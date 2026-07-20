@@ -10,6 +10,7 @@ import '../../data/models/enums.dart';
 import '../../data/models/trip.dart';
 import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/app_text_field.dart';
+import '../../shared/widgets/payment_method_widgets.dart';
 import '../../shared/widgets/primary_button.dart';
 import '../trips/trip_controller.dart';
 import '../trips/widgets/trip_widgets.dart';
@@ -113,6 +114,16 @@ class _OfferSheetState extends ConsumerState<_OfferSheet> {
               origin: trip.originAddress,
               destination: trip.destinationAddress,
               compact: true,
+            ),
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Text('${context.tr('Método de pago')}: ',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: context.palette.textSecondary,
+                        )),
+                PaymentMethodChip(method: trip.paymentMethod),
+              ],
             ),
             const SizedBox(height: 20),
             _ModeSwitch(counter: _counter, onChanged: _setMode, trip: trip),

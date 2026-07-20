@@ -5,7 +5,7 @@ abstract class AppConfig {
 
   /// Versión visible de la app (debe coincidir con `version:` en pubspec.yaml).
   /// Sirve para confirmar de un vistazo qué build está instalado.
-  static const String appVersion = '0.15.0 (build 24)';
+  static const String appVersion = '0.17.0 (build 26)';
 
   /// Minutos que una solicitud puede estar abierta sin aceptar una oferta
   /// antes de cancelarse automáticamente.
@@ -27,4 +27,20 @@ abstract class AppConfig {
   /// Debe coincidir con "Email OTP Length" en Supabase (por defecto 6; este
   /// proyecto está configurado en 8).
   static const int otpLength = 8;
+
+  // ---- Distribución de solicitudes por geolocalización ----------------------
+
+  /// Radio (km) alrededor del punto de partida dentro del cual se envían las
+  /// solicitudes a los conductores. Configurable.
+  static const double requestRadiusKm = 15;
+
+  /// Radio (km) para mostrar conductores disponibles en el mapa del pasajero.
+  static const double nearbyDriversRadiusKm = 12;
+
+  /// Un conductor se considera "activo/con ubicación reciente" si reportó su
+  /// posición hace menos de estos segundos.
+  static const int presenceStaleSeconds = 120;
+
+  /// Cada cuántos segundos el conductor en línea reporta su ubicación GPS.
+  static const int presenceIntervalSeconds = 15;
 }

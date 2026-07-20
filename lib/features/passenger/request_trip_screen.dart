@@ -12,6 +12,7 @@ import '../../core/services/location_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/formatters.dart';
+import '../../data/models/payment_method.dart';
 import '../../data/providers.dart';
 import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/app_text_field.dart';
@@ -19,6 +20,7 @@ import '../../shared/widgets/app_top_controls.dart';
 import '../../shared/widgets/city_picker.dart';
 import '../../shared/widgets/map/location_picker_screen.dart';
 import '../../shared/widgets/map/route_map.dart';
+import '../../shared/widgets/payment_method_widgets.dart';
 import '../../shared/widgets/primary_button.dart';
 import '../../shared/widgets/surface_card.dart';
 import '../trips/trip_controller.dart';
@@ -39,6 +41,7 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
   GeoPlace? _destination;
   int _fare = 2500;
   int _passengers = 1;
+  PaymentMethod _paymentMethod = PaymentMethod.efectivo;
   bool _submitting = false;
   bool _locatingOrigin = false;
 
@@ -142,6 +145,7 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
             offeredFare: _fare,
             note: _note.text.trim().isEmpty ? null : _note.text.trim(),
             passengers: _passengers,
+            paymentMethod: _paymentMethod,
           );
       if (!mounted) return;
       context.pushReplacement('${Routes.passengerTrip}/${trip.id}');
@@ -254,6 +258,22 @@ class _RequestTripScreenState extends ConsumerState<RequestTripScreen> {
                               ),
                             ),
                         ],
+                      ),
+                      const SizedBox(height: 20),
+                      Text(context.tr('Método de pago'),
+                          style: Theme.of(context).textTheme.titleMedium),
+                      const SizedBox(height: 4),
+                      Text(
+                        context.tr(
+                            'El conductor verá cómo prefieres pagar el viaje.'),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: context.palette.textSecondary,
+                            ),
+                      ),
+                      const SizedBox(height: 10),
+                      PaymentMethodField(
+                        value: _paymentMethod,
+                        onChanged: (v) => setState(() => _paymentMethod = v),
                       ),
                       const SizedBox(height: 20),
                       AppTextField(

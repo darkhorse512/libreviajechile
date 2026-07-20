@@ -3,9 +3,13 @@ import 'dart:async';
 // Ocultamos la AuthException de gotrue para usar la nuestra (repositories.dart).
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 
+import '../../core/config/app_config.dart';
+import '../../core/utils/geo_utils.dart';
 import '../models/app_user.dart';
+import '../models/driver_location.dart';
 import '../models/enums.dart';
 import '../models/offer.dart';
+import '../models/payment_method.dart';
 import '../models/rating.dart';
 import '../models/trip.dart';
 import '../models/vehicle.dart';
@@ -306,6 +310,16 @@ class SupabaseAuthRepository implements AuthRepository {
   @override
   Future<AppUser?> reloadUser() => _resolveUser(_auth.currentUser);
 
+  @override
+  Future<void> updateDriverPresence(
+      String driverId, double lat, double lng) async {
+    await _client.from('driver_details').update({
+      'last_lat': lat,
+      'last_lng': lng,
+      'last_seen': DateTime.now().toUtc().toIso8601String(),
+    }).eq('id', driverId);
+  }
+
   String _translate(String message) {
     final m = message.toLowerCase();
     if (m.contains('invalid login')) return 'Correo o contraseña incorrectos';
@@ -435,17 +449,50 @@ class SupabaseTripRepository implements TripRepository {
 
   @override
   Stream<List<Trip>> watchOpenTrips(DriverArea area) {
-    // Todos los conductores en línea ven todas las solicitudes abiertas, sin
-    // filtro por cercanía (un pasajero puede pedir viaje en cualquier zona).
+    // Primer filtro (servidor): solo solicitudes de la MISMA ciudad del
+    // conductor. No se envían solicitudes de otras ciudades. El segundo filtro
+    // (radio geográfico desde la ubicación en vivo del conductor) se aplica en
+    // el cliente, en el feed y en las notificaciones.
     return _live<List<Trip>>(
       table: 'trips',
       fetch: () async {
-        final rows = await _client
-            .from('trips')
-            .select()
-            .eq('status', 'requested')
-            .order('created_at');
+        var query =
+            _client.from('trips').select().eq('status', 'requested');
+        if (area.city != null && area.city!.isNotEmpty) {
+          query = query.eq('city', area.city!);
+        }
+        final rows = await query.order('created_at');
         return _hydrateTrips(rows);
+      },
+    );
+  }
+
+  @override
+  Stream<List<DriverLocation>> watchNearbyDrivers({
+    required double lat,
+    required double lng,
+    required double radiusKm,
+  }) {
+    return _live<List<DriverLocation>>(
+      table: 'driver_details',
+      poll: const Duration(seconds: 6),
+      fetch: () async {
+        final staleCutoff = DateTime.now()
+            .toUtc()
+            .subtract(const Duration(seconds: AppConfig.presenceStaleSeconds))
+            .toIso8601String();
+        final rows = await _client
+            .from('driver_details')
+            .select('id, last_lat, last_lng, last_seen, status')
+            .eq('is_online', true)
+            .eq('status', 'approved')
+            .not('last_lat', 'is', null)
+            .gte('last_seen', staleCutoff);
+        return (rows as List)
+            .map((r) => DriverLocation.fromMap(r as Map<String, dynamic>))
+            .where((d) =>
+                GeoUtils.distanceKm(lat, lng, d.lat, d.lng) <= radiusKm)
+            .toList();
       },
     );
   }
@@ -560,6 +607,7 @@ class SupabaseTripRepository implements TripRepository {
     double? destinationLng,
     String? note,
     int passengers = 1,
+    PaymentMethod paymentMethod = PaymentMethod.efectivo,
   }) async {
     final row = await _client
         .from('trips')
@@ -575,6 +623,7 @@ class SupabaseTripRepository implements TripRepository {
           'offered_fare': offeredFare,
           'note': note,
           'passengers': passengers,
+          'payment_method': paymentMethod.value,
           'status': 'requested',
         })
         .select()

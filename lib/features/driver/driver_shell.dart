@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'driver_presence_reporter.dart';
 import 'driver_requests_screen.dart';
 import 'driver_trips_screen.dart';
 import '../../core/i18n/i18n.dart';
@@ -27,7 +28,8 @@ class _DriverShellState extends ConsumerState<DriverShell> {
 
   @override
   Widget build(BuildContext context) {
-    return DriverNotifications(
+    return DriverPresenceReporter(
+      child: DriverNotifications(
       child: Scaffold(
       body: SafeArea(
         bottom: false,
@@ -63,6 +65,7 @@ class _DriverShellState extends ConsumerState<DriverShell> {
             label: context.tr('Perfil'),
           ),
         ],
+      ),
       ),
       ),
     );
