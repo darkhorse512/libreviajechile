@@ -165,6 +165,22 @@ const Map<String, String> commonEn = {
   'No disponible en el modo demostración.':
       'Not available in demo mode.',
   'Escribir a soporte': 'Contact support',
+  // Verificación de pasajeros (identidad)
+  'Verifica tu identidad': 'Verify your identity',
+  'Sube tu documento de identidad para empezar a viajar.':
+      'Upload your ID document to start riding.',
+  'Recibimos tu documento de identidad. Un administrador revisará tu cuenta y te avisaremos cuando puedas empezar a solicitar viajes.':
+      'We received your ID document. An administrator will review your account and we will notify you when you can start requesting trips.',
+  'Cédula de identidad (frente)': 'ID card (front)',
+  'Cédula de identidad (reverso)': 'ID card (back)',
+  'Sube una foto del frente de tu cédula de identidad o pasaporte.':
+      'Upload a photo of the front of your ID card or passport.',
+  'Asegúrate de que la foto, el nombre y el número se vean completos y legibles.':
+      'Make sure the photo, name and number are fully visible and legible.',
+  'Sube una foto del reverso de tu cédula de identidad.':
+      'Upload a photo of the back of your ID card.',
+  'Sin filtros y con buena iluminación. Si tu documento tiene una sola cara, sube la misma foto.':
+      'No filters and good lighting. If your document has only one side, upload the same photo.',
   // Números de emergencia
   'Números de emergencia': 'Emergency numbers',
   'Números de Emergencia': 'Emergency Numbers',
@@ -342,6 +358,22 @@ const Map<String, String> commonPt = {
   'No disponible en el modo demostración.':
       'Não disponível no modo demonstração.',
   'Escribir a soporte': 'Falar com o suporte',
+  // Verificación de pasajeros (identidad)
+  'Verifica tu identidad': 'Verifique sua identidade',
+  'Sube tu documento de identidad para empezar a viajar.':
+      'Envie seu documento de identidade para começar a viajar.',
+  'Recibimos tu documento de identidad. Un administrador revisará tu cuenta y te avisaremos cuando puedas empezar a solicitar viajes.':
+      'Recebemos seu documento de identidade. Um administrador revisará sua conta e avisaremos quando você puder começar a solicitar viagens.',
+  'Cédula de identidad (frente)': 'Documento de identidade (frente)',
+  'Cédula de identidad (reverso)': 'Documento de identidade (verso)',
+  'Sube una foto del frente de tu cédula de identidad o pasaporte.':
+      'Envie uma foto da frente do seu documento de identidade ou passaporte.',
+  'Asegúrate de que la foto, el nombre y el número se vean completos y legibles.':
+      'Certifique-se de que a foto, o nome e o número estejam completos e legíveis.',
+  'Sube una foto del reverso de tu cédula de identidad.':
+      'Envie uma foto do verso do seu documento de identidade.',
+  'Sin filtros y con buena iluminación. Si tu documento tiene una sola cara, sube la misma foto.':
+      'Sem filtros e com boa iluminação. Se o documento tiver apenas um lado, envie a mesma foto.',
   // Números de emergencia
   'Números de emergencia': 'Números de emergência',
   'Números de Emergencia': 'Números de Emergência',

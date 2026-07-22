@@ -11,6 +11,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Users = lazy(() => import('./pages/Users'))
 const Drivers = lazy(() => import('./pages/Drivers'))
 const DriverApprovals = lazy(() => import('./pages/DriverApprovals'))
+const PassengerApprovals = lazy(() => import('./pages/PassengerApprovals'))
 const Trips = lazy(() => import('./pages/Trips'))
 const TripDetail = lazy(() => import('./pages/TripDetail'))
 const Ratings = lazy(() => import('./pages/Ratings'))
@@ -56,6 +57,14 @@ export default function App() {
           element={
             <Suspense fallback={<Spinner label="Cargando…" />}>
               <DriverApprovals />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/solicitudes-pasajeros"
+          element={
+            <Suspense fallback={<Spinner label="Cargando…" />}>
+              <PassengerApprovals />
             </Suspense>
           }
         />

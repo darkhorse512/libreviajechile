@@ -20,6 +20,8 @@ class AppUser {
     this.isVerified = false,
     this.verificationStatus = DriverVerificationStatus.approved,
     this.rejectionReason,
+    this.idFront,
+    this.idBack,
   });
 
   final String id;
@@ -39,17 +41,30 @@ class AppUser {
   final bool isOnline;
   final bool isVerified;
 
-  /// Estado de verificación (solo conductores). Los pasajeros se consideran
-  /// "aprobados" por defecto (no aplica).
+  /// Estado de verificación KYC. En conductores proviene de `driver_details`;
+  /// en pasajeros, de `profiles` (documento de identidad).
   final DriverVerificationStatus verificationStatus;
   final String? rejectionReason;
+
+  /// Documento de identidad del pasajero (frente y reverso).
+  final String? idFront;
+  final String? idBack;
 
   bool get isDriver => role == UserRole.driver;
   bool get hasRatings => ratingCount > 0;
 
+  /// Cuenta aprobada por un administrador.
+  bool get isApproved =>
+      verificationStatus == DriverVerificationStatus.approved;
+
   /// Un conductor aprobado puede ponerse en línea y aceptar viajes.
-  bool get isApprovedDriver =>
-      !isDriver || verificationStatus == DriverVerificationStatus.approved;
+  bool get isApprovedDriver => !isDriver || isApproved;
+
+  /// Un pasajero aprobado puede solicitar viajes.
+  bool get isApprovedPassenger => isDriver || isApproved;
+
+  /// El pasajero ya envió su documento de identidad (frente y reverso).
+  bool get hasSubmittedIdDocuments => idFront != null && idBack != null;
 
   /// El conductor ya envió sus documentos y espera revisión.
   bool get hasSubmittedDocuments {
@@ -78,6 +93,8 @@ class AppUser {
     bool? isVerified,
     DriverVerificationStatus? verificationStatus,
     String? rejectionReason,
+    String? idFront,
+    String? idBack,
   }) {
     return AppUser(
       id: id,
@@ -96,6 +113,8 @@ class AppUser {
       isVerified: isVerified ?? this.isVerified,
       verificationStatus: verificationStatus ?? this.verificationStatus,
       rejectionReason: rejectionReason ?? this.rejectionReason,
+      idFront: idFront ?? this.idFront,
+      idBack: idBack ?? this.idBack,
     );
   }
 
@@ -119,6 +138,8 @@ class AppUser {
       verificationStatus:
           DriverVerificationStatus.fromString(map['status'] as String?),
       rejectionReason: map['rejection_reason'] as String?,
+      idFront: map['doc_id_front'] as String?,
+      idBack: map['doc_id_back'] as String?,
       vehicle: vehicle,
     );
   }

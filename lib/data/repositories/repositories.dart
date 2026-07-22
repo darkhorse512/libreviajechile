@@ -89,6 +89,11 @@ abstract class AuthRepository {
     String? avatarUrl,
   });
 
+  /// Guarda el documento de identidad del pasajero (columnas de `profiles`) y
+  /// deja la cuenta en estado 'pending' a la espera de revisión.
+  Future<AppUser> setPassengerDocuments(
+      String userId, Map<String, String> docs);
+
   /// Recarga el usuario autenticado desde el backend (p. ej. para reflejar un
   /// cambio de estado de verificación hecho por el admin).
   Future<AppUser?> reloadUser();

@@ -62,13 +62,17 @@ class SupabaseAuthRepository implements AuthRepository {
       }
       final merged = {
         ...profile,
-        // Los campos de conductor (estado en línea / verificación) viven en
-        // driver_details; se fusionan aquí para que AppUser los refleje.
+        // El estado de verificación (KYC) del conductor vive en driver_details;
+        // el del pasajero, en profiles. Se normaliza a 'status'/'rejection_reason'
+        // para que AppUser.fromMap lo lea igual en ambos casos.
         if (driver != null) ...{
           'is_online': driver['is_online'],
           'is_verified': driver['is_verified'],
           'status': driver['status'],
           'rejection_reason': driver['rejection_reason'],
+        } else ...{
+          'status': profile['verification_status'],
+          'rejection_reason': profile['verification_rejection_reason'],
         },
         'email': authUser.email,
       };
@@ -314,6 +318,20 @@ class SupabaseAuthRepository implements AuthRepository {
           .from('profiles')
           .update({'avatar_url': avatarUrl}).eq('id', driverId);
     }
+    final user = await _resolveUser(_auth.currentUser);
+    if (user == null) throw AuthException('No se pudo actualizar el perfil');
+    return user;
+  }
+
+  @override
+  Future<AppUser> setPassengerDocuments(
+      String userId, Map<String, String> docs) async {
+    await _client.from('profiles').update({
+      ...docs,
+      'verification_status': 'pending',
+      'verification_rejection_reason': null,
+      'verification_submitted_at': DateTime.now().toUtc().toIso8601String(),
+    }).eq('id', userId);
     final user = await _resolveUser(_auth.currentUser);
     if (user == null) throw AuthException('No se pudo actualizar el perfil');
     return user;

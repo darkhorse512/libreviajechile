@@ -121,6 +121,11 @@ class DemoAuthRepository implements AuthRepository {
       _db.currentUser ?? (throw StateError('sin usuario'));
 
   @override
+  Future<AppUser> setPassengerDocuments(
+          String userId, Map<String, String> docs) async =>
+      _db.currentUser ?? (throw StateError('sin usuario'));
+
+  @override
   Future<AppUser?> reloadUser() async => _db.currentUser;
 
   @override

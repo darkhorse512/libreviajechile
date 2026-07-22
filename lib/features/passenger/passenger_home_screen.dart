@@ -13,6 +13,7 @@ import '../../data/providers.dart';
 import '../../shared/widgets/surface_card.dart';
 import '../../shared/widgets/user_avatar.dart';
 import '../trips/widgets/trip_widgets.dart';
+import 'passenger_verification_screen.dart';
 import 'widgets/home_live_map.dart';
 
 class PassengerHomeScreen extends ConsumerWidget {
@@ -23,6 +24,14 @@ class PassengerHomeScreen extends ConsumerWidget {
     final user = ref.watch(currentUserProvider);
     if (user == null) {
       return const Center(child: CircularProgressIndicator());
+    }
+    // Un pasajero no aprobado debe verificar su identidad antes de solicitar
+    // viajes: se muestra el flujo de verificación en lugar del inicio.
+    if (!user.isApprovedPassenger) {
+      return SafeArea(
+        bottom: false,
+        child: PassengerVerificationScreen(user: user),
+      );
     }
     final tripsAsync = ref.watch(passengerTripsProvider(user.id));
     final activeList =
