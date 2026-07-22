@@ -164,6 +164,17 @@ const Map<String, String> commonEn = {
       "Couldn't delete the account. Please try again.",
   'No disponible en el modo demostración.':
       'Not available in demo mode.',
+  'Escribir a soporte': 'Contact support',
+  // Números de emergencia
+  'Números de emergencia': 'Emergency numbers',
+  'Números de Emergencia': 'Emergency Numbers',
+  'Chile': 'Chile',
+  'Si tienes una emergencia:': 'If you have an emergency:',
+  'Detente en un lugar seguro': 'Stop in a safe place',
+  'Comparte tu ubicación': 'Share your location',
+  'Llama al número correspondiente': 'Call the right number',
+  'Mantén la calma': 'Stay calm',
+  'Tu seguridad es prioridad en': 'Your safety is a priority at',
 };
 
 const Map<String, String> commonPt = {
@@ -330,4 +341,15 @@ const Map<String, String> commonPt = {
       'Não foi possível excluir a conta. Tente novamente.',
   'No disponible en el modo demostración.':
       'Não disponível no modo demonstração.',
+  'Escribir a soporte': 'Falar com o suporte',
+  // Números de emergencia
+  'Números de emergencia': 'Números de emergência',
+  'Números de Emergencia': 'Números de Emergência',
+  'Chile': 'Chile',
+  'Si tienes una emergencia:': 'Se você tiver uma emergência:',
+  'Detente en un lugar seguro': 'Pare em um lugar seguro',
+  'Comparte tu ubicación': 'Compartilhe sua localização',
+  'Llama al número correspondiente': 'Ligue para o número correspondente',
+  'Mantén la calma': 'Mantenha a calma',
+  'Tu seguridad es prioridad en': 'Sua segurança é prioridade na',
 };

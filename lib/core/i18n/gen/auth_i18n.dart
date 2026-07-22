@@ -87,7 +87,11 @@ const Map<String, String> authEn = {
   'Declaro que he leído y acepto los ':
       'I declare that I have read and accept the ',
   ' y la ': ' and the ',
+  ', la ': ', the ',
+  ' y las ': ' and the ',
   'Política de Privacidad': 'Privacy Policy',
+  'Condiciones para conductores': 'Driver conditions',
+  'Condiciones para Conductores': 'Driver Conditions',
   ' de EligeDrive.': ' of EligeDrive.',
 };
 
@@ -178,6 +182,10 @@ const Map<String, String> authPt = {
   'Declaro que he leído y acepto los ':
       'Declaro que li e aceito os ',
   ' y la ': ' e a ',
+  ', la ': ', a ',
+  ' y las ': ' e as ',
   'Política de Privacidad': 'Política de Privacidade',
+  'Condiciones para conductores': 'Condições para motoristas',
+  'Condiciones para Conductores': 'Condições para Motoristas',
   ' de EligeDrive.': ' da EligeDrive.',
 };

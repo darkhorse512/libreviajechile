@@ -1,7 +1,7 @@
 name: libre_viaje_chile
 description: "Libre Viaje Chile — App de transporte de pasajeros con ofertas y contraofertas."
 publish_to: "none"
-version: 0.18.0+27
+version: 0.23.0+32
 
 environment:
   sdk: ">=3.6.0 <4.0.0"

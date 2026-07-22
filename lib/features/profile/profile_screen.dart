@@ -14,6 +14,11 @@ import '../../data/providers.dart';
 import '../../shared/widgets/app_feedback.dart';
 import '../../shared/widgets/surface_card.dart';
 import '../../shared/widgets/user_avatar.dart';
+import '../legal/driver_terms_screen.dart';
+import '../legal/privacy_screen.dart';
+import '../legal/support_screen.dart';
+import '../legal/terms_screen.dart';
+import '../safety/emergency_screen.dart';
 import 'edit_profile_screen.dart';
 import 'ratings_screen.dart';
 
@@ -284,17 +289,32 @@ class ProfileScreen extends ConsumerWidget {
                 ),
               ),
               _MenuTile(
+                icon: Icons.emergency_rounded,
+                label: context.tr('Números de emergencia'),
+                color: AppColors.danger,
+                onTap: () => EmergencyScreen.show(context),
+              ),
+              _MenuTile(
                 icon: Icons.help_outline_rounded,
                 label: context.tr('Ayuda y soporte'),
-                onTap: () =>
-                    AppFeedback.info(context, context.tr('Disponible próximamente')),
+                onTap: () => SupportScreen.show(context),
               ),
               _MenuTile(
                 icon: Icons.shield_outlined,
-                label: context.tr('Privacidad y términos'),
-                onTap: () =>
-                    AppFeedback.info(context, context.tr('Disponible próximamente')),
+                label: context.tr('Términos y Condiciones'),
+                onTap: () => TermsScreen.show(context),
               ),
+              _MenuTile(
+                icon: Icons.privacy_tip_outlined,
+                label: context.tr('Política de Privacidad'),
+                onTap: () => PrivacyScreen.show(context),
+              ),
+              if (isDriver)
+                _MenuTile(
+                  icon: Icons.assignment_ind_outlined,
+                  label: context.tr('Condiciones para conductores'),
+                  onTap: () => DriverTermsScreen.show(context),
+                ),
               _MenuTile(
                 icon: Icons.logout_rounded,
                 label: context.tr('Cerrar sesión'),

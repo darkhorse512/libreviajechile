@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +13,8 @@ import '../../shared/widgets/app_text_field.dart';
 import '../../shared/widgets/app_top_controls.dart';
 import '../../shared/widgets/error_banner.dart';
 import '../../shared/widgets/primary_button.dart';
+import '../legal/privacy_screen.dart';
+import '../legal/terms_screen.dart';
 import 'auth_controller.dart';
 import 'widgets/auth_header.dart';
 
@@ -156,24 +159,46 @@ class _PassengerRegisterScreenState
   }
 }
 
-class _TermsCheck extends StatelessWidget {
+class _TermsCheck extends StatefulWidget {
   const _TermsCheck({required this.value, required this.onChanged});
   final bool value;
   final ValueChanged<bool> onChanged;
 
   @override
+  State<_TermsCheck> createState() => _TermsCheckState();
+}
+
+class _TermsCheckState extends State<_TermsCheck> {
+  final _termsTap = TapGestureRecognizer();
+  final _privacyTap = TapGestureRecognizer();
+
+  @override
+  void initState() {
+    super.initState();
+    _termsTap.onTap = () => TermsScreen.show(context);
+    _privacyTap.onTap = () => PrivacyScreen.show(context);
+  }
+
+  @override
+  void dispose() {
+    _termsTap.dispose();
+    _privacyTap.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(AppRadius.sm),
-      onTap: () => onChanged(!value),
+      onTap: () => widget.onChanged(!widget.value),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Checkbox(
-              value: value,
-              onChanged: (v) => onChanged(v ?? false),
+              value: widget.value,
+              onChanged: (v) => widget.onChanged(v ?? false),
               visualDensity: VisualDensity.compact,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
@@ -190,9 +215,16 @@ class _TermsCheck extends StatelessWidget {
                         text: context.tr('Términos y Condiciones'),
                         style: const TextStyle(
                             color: AppColors.brand, fontWeight: FontWeight.w700),
+                        recognizer: _termsTap,
                       ),
+                      TextSpan(text: context.tr(' y la ')),
                       TextSpan(
-                          text: context.tr(' y la Política de Privacidad.')),
+                        text: context.tr('Política de Privacidad'),
+                        style: const TextStyle(
+                            color: AppColors.brand, fontWeight: FontWeight.w700),
+                        recognizer: _privacyTap,
+                      ),
+                      const TextSpan(text: '.'),
                     ],
                   ),
                 ),

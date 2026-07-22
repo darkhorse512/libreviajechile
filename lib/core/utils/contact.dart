@@ -18,6 +18,22 @@ abstract class Contact {
     }
   }
 
+  /// Abre el cliente de correo con el destinatario (y asunto opcional).
+  static Future<void> email(
+    BuildContext context,
+    String address, {
+    String? subject,
+  }) async {
+    final query =
+        subject != null ? '?subject=${Uri.encodeComponent(subject)}' : '';
+    final uri = Uri.parse('mailto:$address$query');
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      if (context.mounted) {
+        AppFeedback.error(context, 'No se pudo abrir el correo');
+      }
+    }
+  }
+
   static Future<void> whatsapp(
     BuildContext context,
     String? phone, {

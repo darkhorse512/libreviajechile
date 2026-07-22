@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +16,9 @@ import '../../shared/widgets/app_top_controls.dart';
 import '../../shared/widgets/city_picker.dart';
 import '../../shared/widgets/error_banner.dart';
 import '../../shared/widgets/primary_button.dart';
+import '../legal/driver_terms_screen.dart';
+import '../legal/privacy_screen.dart';
+import '../legal/terms_screen.dart';
 import 'auth_controller.dart';
 import 'widgets/auth_header.dart';
 
@@ -376,11 +380,39 @@ class _StepBar extends StatelessWidget {
 
 /// Declaración de aceptación mostrada justo encima del botón
 /// "Aceptar y continuar" (la pulsación del botón confirma la aceptación).
-class _TermsDeclaration extends StatelessWidget {
+/// Los enlaces abren el documento de Términos y Condiciones.
+class _TermsDeclaration extends StatefulWidget {
   const _TermsDeclaration();
 
   @override
+  State<_TermsDeclaration> createState() => _TermsDeclarationState();
+}
+
+class _TermsDeclarationState extends State<_TermsDeclaration> {
+  final _termsTap = TapGestureRecognizer();
+  final _privacyTap = TapGestureRecognizer();
+  final _driverTap = TapGestureRecognizer();
+
+  @override
+  void initState() {
+    super.initState();
+    _termsTap.onTap = () => TermsScreen.show(context);
+    _privacyTap.onTap = () => PrivacyScreen.show(context);
+    _driverTap.onTap = () => DriverTermsScreen.show(context);
+  }
+
+  @override
+  void dispose() {
+    _termsTap.dispose();
+    _privacyTap.dispose();
+    _driverTap.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    const linkStyle =
+        TextStyle(color: AppColors.accent, fontWeight: FontWeight.w700);
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -403,18 +435,23 @@ class _TermsDeclaration extends StatelessWidget {
                     ),
                 children: [
                   TextSpan(
-                      text: context.tr(
-                          'Declaro que he leído y acepto los ')),
+                      text: context.tr('Declaro que he leído y acepto los ')),
                   TextSpan(
                     text: context.tr('Términos y Condiciones'),
-                    style: const TextStyle(
-                        color: AppColors.accent, fontWeight: FontWeight.w700),
+                    style: linkStyle,
+                    recognizer: _termsTap,
                   ),
-                  TextSpan(text: context.tr(' y la ')),
+                  TextSpan(text: context.tr(', la ')),
                   TextSpan(
                     text: context.tr('Política de Privacidad'),
-                    style: const TextStyle(
-                        color: AppColors.accent, fontWeight: FontWeight.w700),
+                    style: linkStyle,
+                    recognizer: _privacyTap,
+                  ),
+                  TextSpan(text: context.tr(' y las ')),
+                  TextSpan(
+                    text: context.tr('Condiciones para Conductores'),
+                    style: linkStyle,
+                    recognizer: _driverTap,
                   ),
                   TextSpan(text: context.tr(' de EligeDrive.')),
                 ],
