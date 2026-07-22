@@ -309,12 +309,11 @@ class ProfileScreen extends ConsumerWidget {
                 label: context.tr('Política de Privacidad'),
                 onTap: () => PrivacyScreen.show(context),
               ),
-              if (isDriver)
-                _MenuTile(
-                  icon: Icons.assignment_ind_outlined,
-                  label: context.tr('Condiciones para conductores'),
-                  onTap: () => DriverTermsScreen.show(context),
-                ),
+              _MenuTile(
+                icon: Icons.assignment_ind_outlined,
+                label: context.tr('Condiciones para conductores'),
+                onTap: () => DriverTermsScreen.show(context),
+              ),
               _MenuTile(
                 icon: Icons.logout_rounded,
                 label: context.tr('Cerrar sesión'),
